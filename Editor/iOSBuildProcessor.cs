@@ -51,6 +51,14 @@ namespace Unity.PolySpatial.Internals.Editor
                 return;
             }
 
+            if (!File.Exists("Packages/com.unity.polyspatial.visionos/Lib~/libPolySpatial_iphoneos.a"))
+            {
+#if POLYSPATIAL_INTERNAL
+                Debug.LogWarning("Expected to find libPolySpatial_iphoneos.a, but it doesn't exist");
+#endif
+                return;
+            }
+
             try
             {
                 var outputPath = report.summary.outputPath;

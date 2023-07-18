@@ -35,6 +35,15 @@ namespace Unity.PolySpatial.Internals.Editor
                 return;
             }
 
+            if (!Directory.Exists("Packages/com.unity.polyspatial.visionos/Lib~/PolySpatial-macOS.bundle"))
+            {
+#if POLYSPATIAL_INTERNAL
+                Debug.LogWarning("Expected to find PolySpatial-macOS.bundle, but it doesn't exist");
+#endif
+                return;
+            }
+
+
             try
             {
                 CopyMacPlugin(report);

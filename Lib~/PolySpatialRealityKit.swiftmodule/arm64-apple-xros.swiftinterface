@@ -1,0 +1,52 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.120.7 clang-1500.0.34.3)
+// swift-module-flags: -target arm64-apple-xros1.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name PolySpatialRealityKit
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AVFoundation
+import Combine
+import CoreGraphics
+import Foundation
+import RealityKit
+import SceneKit
+import Swift
+import SwiftUI
+import UIKit
+import _Concurrency
+import _RealityKit_SwiftUI
+import _StringProcessing
+import _SwiftConcurrencyShims
+import simd
+extension PolySpatialRealityKit.PolySpatialVolume {
+  public static func with(identifier: Swift.String) -> PolySpatialRealityKit.PolySpatialVolume?
+}
+@_hasMissingDesignatedInitializers public class PolySpatialVolume : Foundation.ObservableObject, Swift.Identifiable {
+  final public let root: RealityFoundation.Entity
+  public var id: Swift.String {
+    get
+  }
+  public var view: some SwiftUI.View {
+    get
+  }
+  public typealias ID = Swift.String
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+extension Swift.Float {
+  public func approximatelyEqual(_ other: Swift.Float, _ epsilon: Swift.Float = 1e-6) -> Swift.Bool
+}
+extension simd.simd_quatf {
+  public func approximatelyEqual(_ other: simd.simd_quatf, _ epsilon: Swift.Float = 1e-6) -> Swift.Bool
+  public func eulerAngles() -> Swift.SIMD3<Swift.Float>
+}
+public protocol PolySpatialRealityKitDelegate {
+  func reset()
+  func on(volumeAdded: PolySpatialRealityKit.PolySpatialVolume)
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class PolySpatialRealityKitAccess : ObjectiveC.NSObject {
+  public static func register()
+  public static func getApiData() -> Swift.UnsafeRawPointer
+  public static func getApiSize() -> Swift.Int32
+  public static func addDelegate(_ delegate: any PolySpatialRealityKit.PolySpatialRealityKitDelegate)
+  public static func tmpOneAndOnlyVolume() -> PolySpatialRealityKit.PolySpatialVolume
+  @objc deinit
+}

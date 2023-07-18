@@ -59,8 +59,6 @@ namespace Unity.PolySpatial.Internals.Editor
                 // only active arch hack for macOS
                 var destarg = destinations.Length == 0 ? "ONLY_ACTIVE_ARCH=NO" : $"-destination 'generic/platform={destinations[i]}'";
                 XcodeBuildPolySpatialRealityKit($"-scheme {scheme} {destarg} BUILD_FOR_DISTRIBUTION=YES");
-
-                System.Threading.Thread.Sleep(50); // Simulate a time-consuming operation
             }
 
         }

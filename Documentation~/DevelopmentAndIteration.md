@@ -23,7 +23,7 @@ Note: unlike iOS, there is no need to switch to a different SDK in Project Setti
 
 For building to a development kit make sure you have setup a valid provisioning profile and signing certificate for Apple Development (that includes visionOS) platform. You will also need to make sure the device is correctly registered to your development account.
 
-### Recording and playback
+### Recording and Playback
 PolySpatial for visionOS supports a unique recording and playback workflow that allows you to record a session (including input commands) and then play it back within the Unity Editor. For more information, see information about [PolySpatial tooling](Tooling.md)
 
 ## Debugging Support

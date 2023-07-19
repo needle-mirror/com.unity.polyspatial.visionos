@@ -144,6 +144,20 @@ extension UnitySwiftUIiPhoneApp {{
             pbx.AddFrameworkToProject(pbx.GetUnityFrameworkTargetGuid(), "CompositorServices.framework", false);
             pbx.AddFrameworkToProject(pbx.GetUnityFrameworkTargetGuid(), "ARKit.framework", false);
 
+            // add in -ld64, for object file compat
+            foreach (var tgt in new[] { pbx.GetUnityFrameworkTargetGuid(), pbx.GetUnityMainTargetGuid() })
+            {
+                foreach (var cfgname in pbx.BuildConfigNames())
+                {
+                    var cfguid = pbx.BuildConfigByName(tgt, cfgname);
+                    if (cfguid == null)
+                        continue;
+
+                    var existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS") ?? "";
+                    pbx.SetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS", $"-ld64 {existing}");
+                }
+            }
+
             pbx.WriteToFile(xcodePbx);
         }
 

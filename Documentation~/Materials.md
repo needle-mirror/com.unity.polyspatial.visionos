@@ -7,12 +7,12 @@ Several important standard shaders for each pipeline have been mapped to their c
 ## Custom Shaders
 Shaders and materials can be authored for visionOS via the Unity ShaderGraph. Behind the scenes, these shadergraphs are converted into MaterialX. While MaterialX is very expressive, some ShaderGraph nodes have no analog in MaterialX. Within the ShaderGraph editor, unsupported nodes will be indicated by the presence of a `#` symbol, but please also refer to [ShaderGraph Support](ShaderGraph.md). Both Lit and Unlit root nodes are supported.
 
-ShaderLab, metal, and other code-based shaders are not available, as RealityKit for visionOS does not currently expose a low level shading language.
+ShaderLab, Metal, and other code-based shaders are not available, as RealityKit for visionOS does not currently expose a low level shading language.
 
-## Unlit materials
+## Unlit Materials
 
 ### Universal Render Pipeline/Unlit
-For the URP unlit material, Polyspatial supports the `Base Map` color and texture properties as well as the `Opaque` and `Transparent` (with blending mode `Alpha`) surface types.  `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing).
+For the URP unlit material, PolySpatial supports the `Base Map` color and texture properties as well as the `Opaque` and `Transparent` (with blending mode `Alpha`) surface types.  `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing).
 
 ### Unlit/Color
 For the built-in renderer pipeline unlit color material, the `Main Color` property is supported.
@@ -23,12 +23,12 @@ For the built-in renderer pipeline unlit texture material, the `Base (RGB)` text
 ### Unlit/Transparent
 For the built-in renderer pipeline unlit transparent material, the `Base (RGBA)` texture is supported.
 
-## Lit materials
+## Lit Materials
 
 ### Universal Render Pipeline/Lit
 For the URP lit material, the `Base Map` color and texture are respected, as is the `Render Face` option and the `Surface Inputs` `Tiling` and `Offset` properties.
 
-When in the `Specular` workflow and `Specular Highlights` are enabled, Polyspatial supports the `Specular Map` texture or the (grayscale) intensity of the associated color.  When in the `Metallic` workflow, Polyspatial supports the `Metallic Map` texture or intensity and respects the `Specular Highlights` toggle.
+When in the `Specular` workflow and `Specular Highlights` are enabled, PolySpatial supports the `Specular Map` texture or the (grayscale) intensity of the associated color.  When in the `Metallic` workflow, PolySpatial supports the `Metallic Map` texture or intensity and respects the `Specular Highlights` toggle.
 
 For both workflows, the `Smoothness` intensity is respected, but smoothness from texture channel (e.g., from `Metallic Alpha`) is not supported.  `Normal Map`[^1] is supported, but the normal scale is not.  Likewise, `Occlusion Map` is supported, but occlusion intensity is not.  `Emission` color *or* texture may be specified; if they are both given, the color is reduced to grayscale and acts as a multiplier.
 
@@ -43,12 +43,12 @@ For the URP complex lit material, the options supported are the same as for the 
 ### Standard
 The built-in standard lit material is supported in much the same way as the URP lit material in `Metallic` workflow.  The `Albedo` texture and color are similarly respected, as is the `Metallic` map or intensity and the `Smoothness` intensity (but not the smoothness `Source`).  `Normal Map`[^1] and `Occlusion` are supported (but not their corresponding intensities), as is `Emission` color or texture, `Main Maps` `Tiling` and `Offset`, and the `Specular Highlights` flag.  All rendering modes are supported: `Opaque`, `Transparent`, `Fade`, and `Cutout`.
 
-### Standard (Specular setup)
+### Standard (Specular Setup)
 The built-in lit specular material is supported in the same way as the URP lit material in `Specular` workflow.  The `Albedo` texture and color are similarly respected, as is the `Specular` map or (grayscale) intensity and the `Smoothness` intensity (but not the smoothness `Source`).  `Normal Map`[^1] and `Occlusion` are supported (but not their corresponding intensities), as is `Emission` color or texture, `Main Maps` `Tiling` and `Offset`, and the `Specular Highlights` flag.  All rendering modes are supported: `Opaque`, `Transparent`, `Fade`, and `Cutout`.
 
 [^1]: Currently, normal maps used in non-shader-graph materials must be imported as the `Default` texture type--that is, *not* the `Normal map` type--with the `sRGB (Color Texture)` option unchecked.
 
-## Special purpose materials
+## Special Purpose Materials
 
 ### TextMeshPro/Distance Field
 
@@ -65,6 +65,6 @@ The URP unlit particles material is converted to an unlit material that respects
 ### AR/Occlusion
 The occlusion materials are converted to basic equivalents.
 
-## Shader graph materials
+## Shader Graph Materials
 Shader graphs may use the Builtin or URP targets and the Unlit or Lit materials.  All output blocks are supported.  For more information about shader graph support, see the [shader graph conversion notes](ShaderGraph.md).
 

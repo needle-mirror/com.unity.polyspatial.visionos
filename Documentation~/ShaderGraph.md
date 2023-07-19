@@ -3,10 +3,10 @@ You can use the Unity ShaderGraph to create custom materials for visionOS. These
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
-## Shader Graph limitations in visionOS
+## Shader Graph Limitations in visionOS
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
 
-If a node doesn't appear here it means is not currently supported *Note that this list will be updated as we continue to add support for more nodes.*
+If a node doesn't appear here it means that it's not currently supported. *Note that this list will be updated as we continue to add support for more nodes.*
 
 ## Artistic
 
@@ -141,13 +141,13 @@ If a node doesn't appear here it means is not currently supported *Note that thi
 
 ### Utility
 
-| Section | Node         | Notes                                                                                                                |
-|---------|--------------|----------------------------------------------------------------------------------------------------------------------|
-| Utility | Preview      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                           |
-|         | Split LR     | Non-standard shader graph node specific to Quantum. Implements the splitlr function as described in the MaterialX spec: https://materialx.org/assets/MaterialX.v1.38.Spec.pdf |
-| Logic   | Branch       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                           |
-|         | Comparison   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                           |
-|         | Or           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                           |
+| Section | Node         | Notes                                                                                                                                                                                |
+|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Utility | Preview      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Split LR     | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
+| Logic   | Branch       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Comparison   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Or           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 
 ### UV
 

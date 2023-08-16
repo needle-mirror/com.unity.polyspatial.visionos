@@ -1,3 +1,6 @@
+---
+uid: psl-vos-volume-camera
+---
 # Volume Camera
 PolySpatial provides a new Unity component called a `Volume Camera` to interact with the modes and volumes provided by the visionOS environment. Volume cameras are similar to regular Unity cameras in that they indicate which content should be visible to the user, but differ in that they capture 3D content rather than a 2D image.
 

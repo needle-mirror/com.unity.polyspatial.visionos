@@ -1,5 +1,8 @@
-# Unity PolySpatial ShaderGraph Support
-You can use the Unity ShaderGraph to create custom materials for visionOS. These will previewed in their compiled form within Unity, but converted to MaterialX for display in simulator and on device. While MaterialX is very expressive, some ShaderGraph nodes have no analog in materialX. Within the ShaderGraph editor, unsupported nodes will be indicated by the presence of a `#` symbol.
+---
+uid: psl-vos-shader-graph
+---
+# Unity PolySpatial Shader Graph Support
+You can use the Unity Shader Graph to create custom materials for visionOS. These will previewed in their compiled form within Unity, but converted to MaterialX for display in simulator and on device. While MaterialX is very expressive, some Shader Graph nodes have no analog in materialX. Within the Shader Graph editor, unsupported nodes will be indicated by the presence of a `#` symbol.
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
@@ -8,21 +11,20 @@ The following tables show the [current support status for Shader Graph nodes](ht
 
 If a node doesn't appear here it means that it's not currently supported. *Note that this list will be updated as we continue to add support for more nodes.*
 
-## Artistic
+### Artistic
 
 | Section       | Node                | Notes                                                                                                                         |
 |---------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| Adjustment    | Contrast            | Colors may not be consistent.                                                                                                 |
-|               | Hue                 | Colors may not be consistent.                                                                                                 |
-|               | Saturation          | Colors may not be consistent.                                                                                                 |
+| Adjustment    | Contrast            | Colors may not be consistent.                                                                                             |
+|               | Hue                 | Colors may not be consistent.                                                                                               |
+|               | Saturation          | Colors may not be consistent.                                                                                                |
 | Blend         | Blend               | Supports Difference, Subtract, Burn, Dodge, Linear Dodge, Overlay, Screen, Overwrite, Negation, Multiply                      |
-| Filter        | Dither              | - Requires simulation of Screen Space Position.<br>- Doesn't work at the moment due to bug with curvelookup node definitions. |
 | Normal        | Normal Blend        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal From Height  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Reconstruct Z| <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Strength     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Unpack       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-| Utility       | Colorspace Conversion| Not consistent - linear conversions not implemented.                                                                          |
+| Utility       | Colorspace Conversion| Not consistent - linear conversions not implemented.                                                                         |
 
 
 ### Channel
@@ -35,7 +37,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 ### Input
 
-`Custom Interpolators` are limited to only this specific/names types:
+`Custom Interpolators` are limited to these specific/names types:
 * `Color`: Vector4
 * `UV0`: Vector2
 * `UV1`: Vector2
@@ -54,11 +56,11 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Vector2                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vector3                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vector4                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Geometry  | Bitangent Vector          | Tangent and View space options are not standard.                                                                       |
-  |           | Normal Vector             | Tangent and View space options are not standard.                                                                       |
-  |           | Position                  | Tangent and View space options are not standard.                                                                       |
+  | Geometry  | Bitangent Vector          | Tangent and View space options are not standard.                                                                      |
+  |           | Normal Vector             | Tangent and View space options are not standard.                                                                      |
+  |           | Position                  | Tangent and View space options are not standard.                                                                      |
   |           | Screen Position           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Tangent Vector            | Tangent and View space options are not standard.                                                                       |
+  |           | Tangent Vector            | Tangent and View space options are not standard.                                                                      |
   |           | UV                        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex Color              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex ID                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -68,14 +70,14 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   | Matrix    | ~~Matrix 3x3~~            | Doesn't work (due to bug in constant matrix node definitions)                                                          |
   |           | ~~Matrix 4x4~~            | Doesn't work (due to bug in constant matrix node definitions)                                                          |
   |           | Matrix Construction       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Transformation Matrix     | Tangent and View space options are not standard.                                                                       |
-  | Scene     | Camera                    | `Position` and `Direction` outputs supported (non-standard).                                                           |
+  |           | Transformation Matrix     | Tangent and View space options are not standard.                                                                      |
+  | Scene     | Camera                    | `Position` and `Direction` outputs supported (non-standard).                                                          |
   |           | Object                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Scene Depth               | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Texture   | Sample Texture 2D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D LOD     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                  |
+  |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                 |
   |           | Texture 2D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture Size              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
 
@@ -100,8 +102,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Interpolation | Inverse Lerp         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Lerp                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Smoothstep           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Matrix        | Matrix Determinant   | Will flag as unsupported if using Matrix2.                                                         |
-|               | Matrix Transpose     | Will flag as unsupported if using Matrix2.                                                         |
+| Matrix        | Matrix Determinant   | Will flag as unsupported if using Matrix2.                                                        |
+|               | Matrix Transpose     | Will flag as unsupported if using Matrix2.                                                        |
 | Range         | Clamp                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Fraction             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Maximum              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
@@ -128,7 +130,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Fresnel Effect       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Reflection           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Rotate About Axis    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Transform            | Some spaces are simulated and not covered in tests.                                                |
+|               | Transform            | Some spaces are simulated and not covered in tests.                                               |
 | Wave          | Triangle Wave        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 
 ### Procedural
@@ -136,7 +138,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Section | Node             | Notes                                                                                                                                                                 |
 |---------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Noise   | Gradient Noise   | - Can't be certain that target platform noise functions will behave the same. <br> - Frequency is currently off (scale is mapped to amplitude rather than frequency). |
-|         | Voronoi          | - Can't be certain that target platform noise functions will behave the same.                                                                                         |
+|         | Voronoi          | - Can't be certain that target platform noise functions will behave the same.                                                                                        |
 | Shapes  | Ellipse          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 
 ### Utility
@@ -154,6 +156,6 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Section | Node              | Notes                                                                    |
 |---------|-------------------|--------------------------------------------------------------------------|
 | UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Rotate            | Only Degrees are supported.                                              |
+|         | Rotate            | Only Degrees are supported.                                             |
 |         | Tiling and Offset | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Triplanar         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |

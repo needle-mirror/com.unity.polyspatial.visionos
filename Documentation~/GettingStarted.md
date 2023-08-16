@@ -1,3 +1,6 @@
+---
+uid: psl-vos-getting-started
+---
 # Getting Started
 This section covers several important topics to get you up to speed when developing for the visionOS platform. Here you will find links to a step-by-step guide for building your first Unity PolySpatial XR app and some development best practices when developing for PolySpatial XR.
 
@@ -13,8 +16,8 @@ you will find a wide range of vertical slices demo projects explaining how to de
 
 ## Porting Existing Projects
 
-When porting existing Unity projects to visonOS, several considerations need to be taken into account. The biggest limitation is that some core Unity features aren't supported, and others provide a reduced feature set. In addition, input is different, and processing power and supported components will vary. Sometimes you will have to develop your own systems to support your unique project features and work around these limitations.
+When porting existing Unity projects to visionOS, several considerations need to be taken into account. The biggest limitation is that some core Unity features aren't supported, and others provide a reduced feature set. In addition, input is different, and processing power and supported components will vary. Sometimes you will have to develop your own systems to support your unique project features and work around these limitations. 
 
-You can find information about [porting VR experiences to visionOS](VRApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project. For more information on input and other dev topics, review the [Reference documentation](TableOfContents.md#reference-documentation).
+You can find information about [porting VR experiences to visionOS](VRApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project.
 
 <!-- ## Development best practices -->

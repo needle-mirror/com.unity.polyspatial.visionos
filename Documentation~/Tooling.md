@@ -1,10 +1,13 @@
+---
+uid: psl-vos-tooling
+---
 # PolySpatial Tooling
 
 ## Logging
 PolySpatial logging messages are tagged by category and level to facilitate more targeted debugging. From the main menu of the Unity Editor, select **Window &gt; PolySpatial &gt; Logging** to open the PolySpatial Logging window. From here, you can toggle which categories are enabled, whether they should generate stack traces, and for categories for which stack traces are enabled, what levels will generate the traces. 
 
 ## PolySpatial Statistics
-First, enable PolySpatial statistics tracking by enabling **Project Settings &gt; PolySpatial &gt; Enable Statistics**. The editor can then be found in Unity Editor main menu under **Window &gt; PolySpatial &gt; PolySpatial Statistics**. In Play Mode, this editor dispays histogram tracking for timing, tracked objects, and assets that have been replicated to the PolySpatial host.
+First, enable PolySpatial statistics tracking by enabling **Project Settings &gt; PolySpatial &gt; Enable Statistics**. The editor can then be found in Unity Editor main menu under **Window &gt; PolySpatial &gt; PolySpatial Statistics**. In Play Mode, this editor displays histogram tracking for timing, tracked objects, and assets that have been replicated to the PolySpatial host.
 
 ## Debug Links
 To facilitate debugging in Play Mode, the PolySpatial runtime adds **DebugPolySpatialGameObjectLinks** components to connect each **simulation** GameObject to its corresponding **backing** GameObject in the Unity SceneGraph.

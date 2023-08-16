@@ -1,8 +1,11 @@
+---
+uid: psl-vos-platform-overview
+---
 # visionOS Platform Overview
 <a name="visionos-platform-overview"></a>
 Unity’s support for **visionOS** combines the full power of Unity's Editor and runtime engine with the rendering capabilities provided by **RealityKit**. Unity’s core features - including scripting, physics, animation blending, AI, scene management, and more - are supported without modification. This allows game and application logic to run on **visionOS** like any other Unity-supported platform, and the goal is to allow existing Unity games or applications to be able to bring over their logic without changes.
 
-For rendering, **visionOS** support support is provided through **RealityKit**. Core features such as meshes, materials, textures should work transparently. More complex features like particles are subject to limitations. Advanced features like full screen post processing and decals are currently unsupported, though this may change in the future. For more details, see [visionOS PolySpatial Requirements & Limitations](Requirements.md) and [Supported Unity Features & Components](SupportedFeatures.md). 
+For rendering, **visionOS** support support is provided through **RealityKit**. Core features such as meshes, materials, textures should work as expected. More complex features like particles are subject to limitations. Advanced features like full screen post processing and decals are currently unsupported, though this may change in the future. For more details, see [visionOS PolySpatial Requirements & Limitations](Requirements.md) and [Supported Unity Features & Components](SupportedFeatures.md). 
 
 Building for the visionOS platform using PolySpatial in Unity adds new functionality to support XR content creation that runs on separate devices, while also having a seamless and effective development experience. Most importantly, Unity PolySpatial for visionOS reacts to real-world and other AR content by default like any other XR Unity app.
 

@@ -1,7 +1,10 @@
+---
+uid: psl-vos-index
+---
 ![Unity PolySpatial](images/polyspatial-xr-landing-page.png)
 
 ## Introduction
-visionOS enables 3D multi-tasking experiences that seamlessly integrate with the real world and coexist alongside other virtual content. This opens a world of new possibilities around personal productivity, lifestyle and entertainment applications and a whole new market for developers. However, it also introduces new challenges around multitasking and interactions with the physical. Unity PolySpatial is a collection of technologies targetted to address this new platforms and its unique challenges  
+visionOS enables 3D multi-tasking experiences that seamlessly integrate with the real world and coexist alongside other virtual content. This opens a world of new possibilities around personal productivity, lifestyle and entertainment applications and a whole new market for developers. However, it also introduces new challenges around multitasking and interactions with the physical. Unity PolySpatial is a collection of technologies targeted to address this new platforms and its unique challenges  
 
 ## visionOS Platform Overview
 You can find information about Unity's support for visionOS in the [visionOSPlatformOverview](visionOSPlatformOverview.md). 
@@ -15,15 +18,11 @@ Unity supports several different application types on visionOS, each with their 
 ## Resources
 **New users** should find the [Getting Started](GettingStarted.md) page an ideal place for an introduction to visionOS and PolySpatial. It guides you through setup, prerequisites, iterating, previewing, building, and debugging with with [development and iteration](DevelopmentAndIteration.md) basics and building your first app for visionOS.
 
-If you are **creating a new project** you can [build a project from scratch](TutorialCreateFromScratch.md), [use the project template](TutorialCreateFromTemplate.md), or [learn from sample content](Samples.md).
+**All developers** should familiarize themselves with [development and iteration](DevelopmentAndIteration.md) on this platform. This section covers the nuts and bolts of setting up PolySpatial for visionOS, iterating, previewing, building, and debugging. 
 
-If you are **porting an existing project** you can find information about [porting VR experiences to visionOS](VRApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project.
+**Content Creators** should consult [PolySpatial XR Project Validation](PolySpatialXRProjectValidation.md), which offers an overview of the new project validation system introduced for visionOS and PolySpatial. This system provides helpful assistance on supported and unsupported features when developing Unity apps for visionOS and PolySpatial
 
 To **find answers and workarounds**, please consult the [FAQ](FAQ.md), which presents answers to many common questions about design, implementation, and use of the PolySpatial XR package.
 
-For **in-depth technical information**, review the [Reference documentation](TableOfContents.md#reference-documentation).
-
 The [Glossary](Glossary.md) can help clarify **technical terminology** introduced for visionOS and PolySpatial and used throughout this documentation.
 
-## Table of Contents
-You can find a comprehensive index of documentation in the [Table of Contents](TableOfContents.md)

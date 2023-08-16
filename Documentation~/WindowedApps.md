@@ -1,6 +1,9 @@
+---
+uid: psl-vos-windowed-apps
+---
 # Windowed Apps in visionOS
 In visionOS, users can use [windows to present 2D or 3D content](https://developer.apple.com/design/human-interface-guidelines/windows#visionOS), or use volumes to present 3D content and objects. Unity describes such applications that live within these windows as **Windowed Apps**.
 
-By default, your Unity content will become Windowed Apps in visionOS if you build a Unity application targeted at the visionOS platform without enabling the PolySpatial Runtime or visionOS plugin via the XR Plugin Manager. You can see this in action by building SimpleSamples towards the visionOS platform without PolySpatial Runtime or visionOS plugin enabled. 
+By default, your Unity content will become Windowed Apps in visionOS if you build a Unity application targeted at the visionOS platform without enabling the PolySpatial Runtime or visionOS plugin via the XR Plugin Manager. 
 
 To detect interactions on the Unity application within a window component on visionOS, users can leverage “Touch Support” provided by the input system package ([com.unity.inputsystem](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.6/manual/Touch.html)). To learn more about designing for the windows component on visionOS, [visit Apple’s Human Interface Guidelines for visionOS. ](https://developer.apple.com/design/human-interface-guidelines/windows#visionOS)

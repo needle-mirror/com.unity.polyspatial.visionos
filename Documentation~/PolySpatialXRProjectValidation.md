@@ -1,3 +1,6 @@
+---
+uid: psl-vos-xr-project-validation
+---
 # PolySpatial Validation
 
 ## Project Validation
@@ -14,15 +17,15 @@ This section covers several settings checks under your Unity project when develo
 
 ### Hierarchy Issue icons (1)
 
-When a component fails to pass one or more PolySpatial XR Scene Validation rules, the associated Game Object will have a yellow warning icon in the Hierarchy view and its root Game Object will have a greyed out warning icon. You can click in the greyed out warning icon to select the first child game object with an issue.
+When a component fails to pass one or more PolySpatial XR Scene Validation rules, the associated GameObject will have a yellow warning icon in the Hierarchy view and its root GameObject will have a greyed out warning icon. You can click in the grayed out warning icon to select the first child GameObject with an issue.
 
 ### Inspector issues header (2)
 
-The Scene Validation system will automatically display an issue header in the Inspector of Game Objects that fail any validation rule. 
+The Scene Validation system will automatically display an issue header in the Inspector of GameObjects that fail any validation rule. 
 
-The issues header has buttons to navigate between Game Objects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes. 
+The issues header has buttons to navigate between GameObjects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes. 
 
-The **Fix this Object** button automatically fixes all validation issues in the currently selected Game Object. The **Inspect Modes** dropdown will inspect the Component issues in all the Game Objects against different modes: **All Modes**, **VR**, **Shared AR**, **Exclusive AR**.
+The **Fix this Object** button automatically fixes all validation issues in the currently selected GameObject. The **Hide/Show Alerts** button will hide or show the Component issues in all the GameObjects.
 
 ### Per Component Inspector issue (3)
 
@@ -32,8 +35,8 @@ The Component at hand that has one or more issues will contain a message explain
 
 When pressing the **Fix** button, Unity will automatically fix the issue in the Component at hand; When pressing the **Edit** button, Unity will take you to the appropriate place in the Editor where you can correct the problem in your project. Both the **Fix** and **Edit** buttons provide tool tips that explain steps to manually correct the issue.
 
-## ShaderGraph Validation
-Shaders and materials can be authored for visionOS via Unity ShaderGraph. Behind the scenes, these shadergraphs are converted into MaterialX. While MaterialX is very expressive, some ShaderGraph nodes have no analog in MaterialX. Within the ShaderGraph editor, unsupported nodes will be indicated by the presence of a `#` symbol. Please also refer to [ShaderGraph Support](ShaderGraph.md) for information about which nodes are currently supported.
+## Shader Graph Validation
+Shaders and materials can be authored for visionOS via Unity ShaderGraph. Behind the scenes, these shader graphs are converted into MaterialX. While MaterialX is very expressive, some Shader Graph nodes have no analog in MaterialX. Within the Shader Graph editor, unsupported nodes will be indicated by the presence of a `#` symbol. Please also refer to [Shader Graph Support](ShaderGraph.md) for information about which nodes are currently supported.
 
 ## Runtime Validation
 ### Volume Camera

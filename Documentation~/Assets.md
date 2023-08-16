@@ -1,3 +1,6 @@
+---
+uid: psl-vos-assets
+---
 # PolySpatial Asset Support
 
 ## Meshes
@@ -8,8 +11,8 @@ As Unity and RealityKit use different coordinate systems, some vertex attributes
 ## Materials
 Please refer to [PolySpatial Material Support](Materials.md) for detailed information about material and shader support on visionOS.
 
-### Unity ShaderGraphs
-Please refer to [Shader Graph Support](ShaderGraph.md) for detailed information about how custom shaders defined via Unity ShaderGraph are converted to MaterialX to interop with RealityKit.
+### Unity Shader Graphs
+Please refer to [Shader Graph Support](ShaderGraph.md) for detailed information about how custom shaders defined via Unity Shader Graph are converted to MaterialX to interop with RealityKit.
 
 ## Textures
 Unity provides support for 2D textures on visionOS, and takes advantage of native texture compression options. 
@@ -17,7 +20,7 @@ Unity provides support for 2D textures on visionOS, and takes advantage of nativ
 RealityKit for visionOS does not support 3D textures or cubemaps, so users must reimplement these texture assets in terms of 2D textures instead.
 
 ### Render Textures 
-Unity will replicate render targets to RealityKit in real time, but currently only a limited number of submissions can be made at rate. Introducing additional render targets may contend with Unity's own graphics buffer sumbmission, hindering overall performance.
+Unity will replicate render targets to RealityKit in real time, but currently only a limited number of submissions can be made at rate. Introducing additional render targets may contend with Unity's own graphics buffer submission, hindering overall performance.
 
 Also note that you must manually mark RenderTextures as dirty after modifying them; currently, no such dirtying occurs automatically, and if the texture isn't dirtied it won't be replicated over to RealityKit.
 

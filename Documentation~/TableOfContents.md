@@ -1,7 +1,6 @@
-## Table of Contents
-* [Introduction](index.md#introduction)
+* [Introduction](index.md)
 * [visionOS Platform Overview](visionOSPlatformOverview.md)
-    * [visionOS Modes](visionOSPlatformOverview.md#visionos-moes)
+    * visionOS Modes
         * [PolySpatial MR Apps on visionOS](PolySpatialMRApps.md)
         * [Windowed Apps on visionOS](WindowedApps.md)
         * [Fully Immersive VR on visionOS](VRApps.md)
@@ -9,21 +8,18 @@
     * [Development & Iteration](DevelopmentAndIteration.md)
 * [Getting Started](GettingStarted.md)
     * [Create a visionOS project from scratch](TutorialCreateFromScratch.md)
-    * [Create a visionOS project from the Immersive App Template](TutorialCreateFromScratch.md)
+    * [Create a visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md)
     * [Sample Content](Samples.md)
-* Reference Documentation <a name="reference-documentation"></a>
+* Reference Documentation
     * [Supported Features & Components](SupportedFeatures.md)
     * [Asset Support](Assets.md)
         * [Materials](Materials.md)
-            * [ShaderGraph Support](ShaderGraph.md)
+            * [Shader Graph Support](ShaderGraph.md)
     * [Input](Input.md)
     * Custom PolySpatial Components
         * [VolumeCamera](VolumeCamera.md)
         * [PolySpatial Video Component](VideoComponent.md)
         * [Hover Effect](HoverEffect.md)
-        * [Material Swap Set](MaterialSwapSet.md)
     * [Tooling](Tooling.md)
-* [License](../LICENSE.md)
-* [Readme](../README.md)
 * [FAQ](FAQ.md)
 * [Glossary](Glossary.md)

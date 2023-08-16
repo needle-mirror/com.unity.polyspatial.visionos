@@ -1,6 +1,9 @@
+---
+uid: psl-vos-glossary
+---
 # Glossary
 
-- **PolySpatial Core** (com.unity.polyspatial): The foundational PolySpatial Package, where initialization and all setup begins. It performs change tracking and processing, serialization/deserialization, and includes the ShaderGraph to MaterialX converter
+- **PolySpatial Core** (com.unity.polyspatial): The foundational PolySpatial Package, where initialization and all setup begins. It performs change tracking and processing, serialization/deserialization, and includes the Shader Graph to MaterialX converter
 
 - **PolySpatial XR** (com.unity.polyspatial.xr): Includes scene validation, capability profiles, building blocks, and coaching UI. Adds package dependencies on XRI, AR Foundation, and XR hands.
 
@@ -18,10 +21,11 @@
     - **Host (or Backend) Space**: The world space of the backend or Host in which a PolySpatial app is running. This may differ from **Unity Sim Space** because the host environment may allow apps to be moved around independently (for example, relocated to another position and volume in the real world).
     - **Host (or Backend) Physics**: The physics and colliders implemented within the backend to model the full shared environment for purposes such as input, selection, and cross-app interactions.
 
+
 - **PolySpatial Layer**: A Unity layer that is created to house the backing objects of the Unity SceneGraph. If no such layer already exists *and* there are no free layers in which to create a new layer, the PolySpatial runtime will not initialize when you enter Play Mode, and you will instead get vanilla Unity rendering.
 
 - **Volume Camera**: A new component which defines what content within a Sim scene that should be displayed on the Host. A volume camera consists of a mode, an oriented bounding box (OBB), and a culling mask. There are currently two modes:
-    - Bounded Mode: In this mode, all content within the volume camera's OBB *and* whose layer matches the culling mask will be replicated to the host. Content that falls on the border (partially inside and partially outside the OBB) will be clipped.  
+    - Bounded Mode: In this mode, all content within the volume camera's OBB *and* whose layer matches the culling mask will be replicated to the host. Content that falls on the border (partially inside and partially outside the OBB) will be clipped. 
     - Unbounded Mode: In this mode, the OBB is ignored, and all content in the scene whose layer matches the culling mask will be replicated to the host. No content is explicitly clipped. See (see [VolumeCamera](VolumeCamera.md)) for more details.
 
 - **Exclusive Mode**: Refers to the runtime behavior where an app is the only active and visible application

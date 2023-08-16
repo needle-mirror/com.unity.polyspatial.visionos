@@ -1,3 +1,6 @@
+---
+uid: psl-vos-porting-xr
+---
 # Porting existing Unity projects into PolySpatial XR
 When porting an existing project to a new platform, it is important to know what potential technical risks and challenges you will face; PolySpatial XR is no exception. This section discusses several aspects of porting Unity projects, with emphasis on their support in PolySpatial XR.
 
@@ -13,7 +16,7 @@ Projects that use [Unity's classic input system](https://docs.unity3d.com/Script
 ### Render Pipelines
 By default Unity PolySpatial XR supports both [Universal Render Pipeline (URP)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/index.html) and [Unity's Built-in Render Pipeline](https://docs.unity3d.com/Manual/built-in-render-pipeline.html).
 
-Unity PolySpatial XR doesn't support **custom ShaderLab shaders** on any render pipeline, and if your project uses custom shaders, all of them will have to be authored using [Unity's Shader graph](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest/index.html). The ParticleSystem component only supports materials with Unity's built-in shaders.  Unity's Shader Graph support is an ongoing work in progress for particles.
+Unity PolySpatial XR doesn't support **custom ShaderLab shaders** on any render pipeline, and if your project uses custom shaders, all of them will have to be authored using [Unity's Shader graph](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest/index.html). The ParticleSystem component only supports materials with Unity's built-in shaders. Unity's Shader Graph support is an ongoing work in progress for particles.
 
 ### Rendering Components
 See [Supported Rendering Components](SupportedFeatures.md#rendering-components-systems) for information about which rendering features and components are supported.

@@ -1,3 +1,6 @@
+---
+uid: psvos-supported-features
+---
 # Supported Unity Features & Components
 <a name="supported-unity-features-and-components"></a>
 The majority of Unity components will work without modification on this platform - including most custom MonoBehaviours, animation logic, physics, input handling, asset management, AI, and so forth. However, components that need to be rendered require special support. Consequently, some components offer a reduced feature set on this platform; others are not currently supported. The tables below summarize the current state of various rendering component support on this platform. 
@@ -27,7 +30,7 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 | **Component**             | **Status**               |
 |---------------------------|--------------------------|
 | **MeshRenderer**          | No support for "Lighting" (shadows, GI)     No support for "Probes"     No support for this component in Immediate mode     No support for "Additional Settings" (dynamic occlusion, rendering layer) |
-| **SkinnedMeshRenderer**   |  Unoptimized animation only (the Optimize Game Object option on the Rig tab of the Model Import inspector must be ticked off if it appears.) |
+| **SkinnedMeshRenderer**   |  Unoptimized animation only (the **Optimize Game Objects** option on the Rig tab of the Model Import inspector must be ticked off if it appears.) |
 | **Particle Systems**      | Partial support; see [Particle Systems](#particle-systems) below |
 | **Light**                 | Not supported |
 | **Camera**                | Not supported |
@@ -88,7 +91,7 @@ Support for particles in PolySpatial XR is an on-going work in progress. The tab
 | **Renderer**                     | Partially supported |
 
 ## User Interface (UI)
-[Unity UI](https://docs.unity3d.com/Manual/com.unity.ugui.html) works in world space, but screen space UI and advanced visual features like masking, shadowing, etc do not currentl work. The table below summarizes the supprot status for other UI features:
+[Unity UI](https://docs.unity3d.com/Manual/com.unity.ugui.html) works in world space, but screen space UI and advanced visual features like masking, shadowing, etc do not currently work. The table below summarizes the supprot status for other UI features:
 
 | **Component**       | **Status**                                                                |
 |---------------------|---------------------------------------------------------------------------|

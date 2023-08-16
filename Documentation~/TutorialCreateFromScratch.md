@@ -1,9 +1,10 @@
+---
+uid: psl-vos-tutorial-new-project
+---
 # Starting a new visionOS project from scratch
 <a name="starting-a-new-visionos-mr-project-from-scratch"></a>
 
-For more information on hardware and Unity version requirements visit [Requirements](Requirements.md)
-
-Make sure to switch the build platform for visionOS (experimental)
+Make sure to switch the  build platform for visionOS (experimental)
 
 ## Fully Immersive Virtual Reality 
 
@@ -26,7 +27,7 @@ Make sure you have the **com.unity.polyspatial**, **com.unity.polyspatial.vision
 
 1. Create a Volume Camera in your scene
 	</br> 1. Open the scene tooling / XR Building Blocks Menu and click **Volume Camera**
-	</br> 2. Create an empty game object and add a **Volume Camera** component
+	</br> 2. Create an empty GameObject and add a **Volume Camera** component
 2. Configure the volume camera for bounded or unbounded mode and adjust the dimensions
 	</br> 1. Dimensions will adjust the rendering scale of your content
 	</br> 2.. For bounded apps make sure something is visible within the dimensions of the volume camera
@@ -34,7 +35,7 @@ Make sure you have the **com.unity.polyspatial**, **com.unity.polyspatial.vision
 	1. check the Enable PolySpatial Runtime box
 
 **Unbounded apps** </br>
-For unbounded apps that want to use ARKit features you will need to enable visionOS in the XR Plug-in Managment settings and make sure you have the **AR Foundation package** in your project. For ARKit Hands make sure you have **XR Hands package** in your project.
+For unbounded apps that want to use ARKit features you will need to enable visionOS in the XR Plug-in Management settings and make sure you have the **AR Foundation package** in your project. For ARKit Hands make sure you have **XR Hands package** in your project.
 
 4. Select **File &gt; Build Settings**…
 	1. Add Scenes (SampleScene)

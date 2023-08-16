@@ -1,15 +1,22 @@
+---
+uid: psl-vos-requirements
+---
 # visionOS PolySpatial Requirements & Limitations
 
 ## Requirements
 ### Unity Version
 
-Unity PolySpatial and its support for visionOS require **Unity 2022.3 (LTS) or later**.  **Versions of Unity before 2022.3 cannot be supported.**
+Unity PolySpatial and its support for visionOS require **Unity 2022.3 (LTS) or later**.  
+
+> [!IMPORTANT[
+> Versions of Unity before 2022.3 aren't supported.
 
 A developer can get started without the PolySpatial beta with an existing project by bringing it up to 2022.3 before starting to work on a visionOS port.
 
 ### Hardware, OS, and Xcode
 - Compiling for visionOS currently requires Xcode 15 beta 2.
 - You must currently use an Apple Silicon (M1/M2) Mac in order to compile for visionOS. 
+- Make sure **visionOS Build Support (experimental)** and **iOS Build Support** are both installed.
 
 For more information about development setup, refer to [Development & Iteration](DevelopmentAndIteration.md)
 
@@ -22,7 +29,7 @@ Rendering on RealityKit will most likely have visual differences over in Unity r
 Your project must use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline. URP is preferred; if you are considering migrating your project, this would be a good opportunity to do so. Migration documentation is available for moving to URP from the Built-in pipeline: [Move on over to the Universal Render Pipeline with our advanced guide | Unity Blog](https://blog.unity.com/technology/move-on-over-to-the-universal-render-pipeline-with-our-advanced-guide)
 
 #### Shaders and Materials
-You can author custom shaders for visionOS using a subset of the Unity ShaderGraph. Behind the scenes, this is converted to MaterialX. ShaderLab and other coding shaders are not supported, as RealityKit for visionOS doesn't expose a low-level shading language. 
+You can author custom shaders for visionOS using a subset of the Unity ShaderGraph. Behind the scenes, this is converted to MaterialX. ShaderLab and other custom coded shaders are not supported, as RealityKit for visionOS doesn't expose a low-level shading language. 
 
 Several important standard shaders for each pipeline have been mapped to their closest available RealityKit analog. Current support includes:
 * Standard URP shaders: Lit, Simple Lit, Unlit, (+TBD - more coming)
@@ -35,4 +42,4 @@ Currently Unity PolySpatial XR is shipped as an alpha product. Since this is an 
 
 See [Supported Unity Features & Components](SupportedFeatures.md) for information about which Unity features will work without modification, and which need to be reconsidered. 
 
-For information about materials supported on this platform, see [PolySpatial Material Support](Materials.md), and [ShaderGraph Support](ShaderGraph.md) for details about implementing custom shaders via Unity ShaderGraph and MaterialX.
+For information about materials supported on this platform, see [PolySpatial Material Support](Materials.md), and [Shader Graph Support](ShaderGraph.md) for details about implementing custom shaders via Unity Shader Graph and MaterialX.

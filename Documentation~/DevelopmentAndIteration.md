@@ -32,6 +32,10 @@ PolySpatial for visionOS supports a unique recording and playback workflow that 
 ## Debugging Support
 The standard debugging workflow works normally when using PolySpatial. You enable Script Debugging in the build settings and optionally Wait for Managed Debugger. Then attach a managed debugger/IDE to your running application and debug your script code.
 
+## Project Validation
+
+PolySpatial provides a way to validate your visionOS project before building and deploying to a device. Unsupported scene objects will be indicated by a warning icon in the Hierarchy view, while the Inspector view provides helpful UIs to navigate between these objects and address the issues. For detailed information about the validation system, please refer to the [Project Validation](PolySpatialXRProjectValidation.md) page.
+
 ## Building Blocks in PolySpatial XR
 
 ![Building Blocks Menu](images/BuildingBlocks/buildingblocksmenu.png)

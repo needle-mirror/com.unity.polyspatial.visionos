@@ -78,7 +78,9 @@ namespace Unity.PolySpatial.Internals.Editor
             CopyAndAddToBuildTarget(swiftAppTarget, "UnitySwiftUIAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
             CopyAndAddToBuildTarget(swiftAppTarget, "UnitySwiftUIiPhoneApp.swift", UNITY_RK_SRC_PATH, "MainApp");
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
-            CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+
+            if (buildTarget == BuildTarget.StandaloneOSX)
+                CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             if (buildTarget == BuildUtils.tmp_BuildTarget_VisionOS)
             {

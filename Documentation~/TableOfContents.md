@@ -6,6 +6,7 @@
         * [Fully Immersive VR on visionOS](VRApps.md)
     * [Requirements](Requirements.md)
     * [Development & Iteration](DevelopmentAndIteration.md)
+        * [Project Validation](PolySpatialXRProjectValidation.md)
 * [Getting Started](GettingStarted.md)
     * [Create a visionOS project from scratch](TutorialCreateFromScratch.md)
     * [Create a visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md)
@@ -15,6 +16,8 @@
     * [Asset Support](Assets.md)
         * [Materials](Materials.md)
             * [Shader Graph Support](ShaderGraph.md)
+                * [Custom Function Node Support](CustomFunctionNode.md)
+                * [PolySpatial Lighting](PolySpatialLighting.md)
     * [Input](Input.md)
     * Custom PolySpatial Components
         * [VolumeCamera](VolumeCamera.md)

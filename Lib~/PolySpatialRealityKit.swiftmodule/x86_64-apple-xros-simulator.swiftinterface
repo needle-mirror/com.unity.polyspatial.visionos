@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.120.7 clang-1500.0.34.3)
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.124.4 clang-1500.0.38.1)
 // swift-module-flags: -target x86_64-apple-xros1.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name PolySpatialRealityKit
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import AVFoundation
@@ -24,6 +24,7 @@ extension PolySpatialRealityKit.PolySpatialVolume {
   public var id: Swift.String {
     get
   }
+  public var mode: Swift.Int32
   public var view: some SwiftUI.View {
     get
   }

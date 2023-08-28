@@ -124,21 +124,6 @@ extension UnitySwiftUIiPhoneApp {{
             var pbx = new PBXProject();
             pbx.ReadFromFile(xcodePbx);
 
-#if false
-            File.WriteAllText(outputPath + "/Entitlements.plist", @"<?xml version=""1.0"" encoding=""UTF-8""?>
-                    <!DOCTYPE plist PUBLIC ""-//Apple//DTD PLIST 1.0//EN"" ""http://www.apple.com/DTDs/PropertyList-1.0.dtd"">
-                <plist version=""1.0"">
-                <dict>
-                <key>com.apple.arkit</key>
-                <true/>
-                </dict>
-                </plist>");
-            var targetName = "Unity-visionOS";
-            var swiftGUID = pbx.TargetGuidByName(targetName);
-            pbx.AddBuildProperty(swiftGUID, "CODE_SIGN_ENTITLEMENTS", "Entitlements.plist");
-            pbx.AddFile(outputPath + "/" + "Entitlements.plist", "Entitlements.plist");
-#endif
-
             //pbx.RemoveFile(pbx.FindFileGuidByProjectPath("LaunchScreen-iPhone.storyboard"));
             //pbx.RemoveFile(pbx.FindFileGuidByProjectPath("LaunchScreen-iPad.storyboard"));
             pbx.AddFrameworkToProject(pbx.GetUnityFrameworkTargetGuid(), "CompositorServices.framework", false);
@@ -155,6 +140,10 @@ extension UnitySwiftUIiPhoneApp {{
 
                     var existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS") ?? "";
                     pbx.SetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS", $"-ld64 {existing}");
+
+                    // Add TARGET_OS_XR define which was renamed to TARGET_OS_VISION in visionOS beta 2 (Xcode beta 5)
+                    existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS") ?? "";
+                    pbx.SetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS", $"-DTARGET_OS_XR {existing}");
                 }
             }
 

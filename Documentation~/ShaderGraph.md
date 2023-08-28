@@ -15,17 +15,17 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 | Section       | Node                | Notes                                                                                                                         |
 |---------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| Adjustment    | Contrast            | Colors may not be consistent.                                                                                             |
-|               | Hue                 | Colors may not be consistent.                                                                                               |
-|               | Saturation          | Colors may not be consistent.                                                                                                |
-| Blend         | Blend               | Supports Difference, Subtract, Burn, Dodge, Linear Dodge, Overlay, Screen, Overwrite, Negation, Multiply                      |
+| Adjustment    | Contrast            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Hue                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Invert Colors       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Saturation          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Blend         | Blend               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Normal        | Normal Blend        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal From Height  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Reconstruct Z| <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Strength     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Unpack       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Utility       | Colorspace Conversion| Not consistent - linear conversions not implemented.                                                                         |
-
 
 ### Channel
 
@@ -43,7 +43,6 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 * `UV1`: Vector2
 * `UserAttribute`: Vector4
 
-
   | Section   | Node                      | Notes                                                                                                                  |
   |-----------|---------------------------|------------------------------------------------------------------------------------------------------------------------|
   | Basic     | Boolean                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -56,82 +55,90 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Vector2                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vector3                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vector4                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Geometry  | Bitangent Vector          | Tangent and View space options are not standard.                                                                      |
-  |           | Normal Vector             | Tangent and View space options are not standard.                                                                      |
-  |           | Position                  | Tangent and View space options are not standard.                                                                      |
+  | Geometry  | Bitangent Vector          | Tangent and View space options are not standard.                                                                       |
+  |           | Normal Vector             | Tangent and View space options are not standard.                                                                       |
+  |           | Position                  | Tangent and View space options are not standard.                                                                       |
   |           | Screen Position           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Tangent Vector            | Tangent and View space options are not standard.                                                                      |
+  |           | Tangent Vector            | Tangent and View space options are not standard.                                                                       |
   |           | UV                        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex Color              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex ID                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Gradient  | Gradient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Lighting  | Main Light Direction      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Matrix    | ~~Matrix 3x3~~            | Doesn't work (due to bug in constant matrix node definitions)                                                          |
-  |           | ~~Matrix 4x4~~            | Doesn't work (due to bug in constant matrix node definitions)                                                          |
-  |           | Matrix Construction       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Transformation Matrix     | Tangent and View space options are not standard.                                                                      |
-  | Scene     | Camera                    | `Position` and `Direction` outputs supported (non-standard).                                                          |
+  | Matrix    | Matrix 2x2                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Matrix 3x3                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Matrix 4x4                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Transformation Matrix     | Tangent and View space options are not standard.                                                                       |
+  | PBR       | Metal Reflectance         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Scene     | Camera                    | `Position` and `Direction` outputs supported (non-standard).                                                           |
+  |           | Eye Index                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
   |           | Object                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Scene Depth               | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Texture   | Sample Texture 2D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D LOD     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                 |
+  |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                  |
   |           | Texture 2D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture Size              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
 
-
 ### Math
 
-| Section       | Node                 | Notes                                                                                              |
-|---------------|----------------------|----------------------------------------------------------------------------------------------------|
-| Advanced      | Absolute             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Exponential          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Length               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Log                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Modulo               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Negate               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Normalize            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Basic         | Add                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Divide               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Multiply             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Power                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Square Root          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Subtract             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Interpolation | Inverse Lerp         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Lerp                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Smoothstep           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Matrix        | Matrix Determinant   | Will flag as unsupported if using Matrix2.                                                        |
-|               | Matrix Transpose     | Will flag as unsupported if using Matrix2.                                                        |
-| Range         | Clamp                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Fraction             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Maximum              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Minimum              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | One Minus            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Random Range         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Remap                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Saturate             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Round         | Ceiling              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Floor                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Round                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Sign                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Step                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Trigonometry  | Arccosine            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Arcsine              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Arctangent           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Arctangent2          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Cosine               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Sine                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Tangent              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-| Vector        | Cross Product        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Distance             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Dot Product          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Fresnel Effect       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Reflection           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Rotate About Axis    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Transform            | Some spaces are simulated and not covered in tests.                                               |
-| Wave          | Triangle Wave        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Section       | Node                   | Notes                                                                                              |
+|---------------|------------------------|----------------------------------------------------------------------------------------------------|
+| Advanced      | Absolute               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Exponential            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Length                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Log                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Modulo                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Negate                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Normalize              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Posterize              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Reciprocal             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Reciprocal Square Root | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Basic         | Add                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Divide                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Multiply               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Power                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Square Root            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Subtract               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Interpolation | Inverse Lerp           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Lerp                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Smoothstep             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Matrix        | Matrix Construction    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Matrix Determinant     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Matrix Transpose       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Range         | Clamp                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Fraction               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Maximum                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Minimum                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | One Minus              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Random Range           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Remap                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Saturate               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Round         | Ceiling                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Floor                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Round                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Sign                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Step                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Trigonometry  | Arccosine              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Arcsine                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Arctangent             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Arctangent2            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Cosine                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Degrees to Radians     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Radians to Degrees     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Sine                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Tangent                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Vector        | Cross Product          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Distance               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Dot Product            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Fresnel Effect         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Reflection             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Rotate About Axis      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Sphere Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Transform              | Some spaces are simulated and not covered in tests.                                                |
+| Wave          | Triangle Wave          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 
 ### Procedural
 
@@ -143,19 +150,25 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 ### Utility
 
-| Section | Node         | Notes                                                                                                                                                                                |
-|---------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Utility | Preview      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Split LR     | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
-| Logic   | Branch       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Comparison   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Or           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+| Section | Node                 | Notes                                                                                                                                                                                |
+|---------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Utility | Custom Function      | See [custom function node conversion notes](CustomFunctionNode.md).                                                                                                                  |
+|         | PolySpatial Lighting | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
+|         | Preview              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Split LR             | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
+| Logic   | Branch               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Comparison           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Or                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 
 ### UV
 
 | Section | Node              | Notes                                                                    |
 |---------|-------------------|--------------------------------------------------------------------------|
 | UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Rotate            | Only Degrees are supported.                                             |
+|         | Polar Coordinates | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Radial Shear      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Rotate            | Only Degrees are supported.                                              |
+|         | Spherize          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Tiling and Offset | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Triplanar         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Twirl             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |

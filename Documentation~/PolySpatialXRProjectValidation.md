@@ -7,27 +7,29 @@ uid: psl-vos-xr-project-validation
 
 This section covers several settings checks under your Unity project when developing for PolySpatial XR devices.
 
- The [Project validation](https://docs.unity3d.com/Packages/com.unity.xr.core-utils@latest?subfolder=/manual/project-validation.html) system helps you avoid common Scene and Project configuration issues you might encounter depending on the packages installed and the platform you are building for since not all Unity components are fully supported by Unity PolySpatial XR.
+The [Project validation](https://docs.unity3d.com/Packages/com.unity.xr.core-utils@latest?subfolder=/manual/project-validation.html) system helps you avoid common Scene and Project configuration issues you might encounter depending on the packages installed and the platform you are building for since not all Unity components are fully supported by Unity PolySpatial XR.
 
- Some features are partially supported and others are not supported at all. The Project validation system in PolySpatial XR helps you to detect and fix these unsupported features and configurations in your scenes. The system has a set of [Project Validation](https://docs.unity3d.com/Packages/com.unity.xr.core-utils@latest?subfolder=/manual/project-validation.html) rules to evaluate the components of your opened Scenes.
+Some features are partially supported and others are not supported at all. The Project validation system in PolySpatial XR helps you to detect and fix these unsupported features and configurations in your scenes. The system has a set of [Project Validation](https://docs.unity3d.com/Packages/com.unity.xr.core-utils@latest?subfolder=/manual/project-validation.html) rules to evaluate the components of your opened Scenes.
 
 ## Scene Validation
 
 ![Scene Validation display](images/SceneValidation/scenevalidation.png)
 
-### Hierarchy Issue icons (1)
+### Hierarchy Issue icons (A)
 
 When a component fails to pass one or more PolySpatial XR Scene Validation rules, the associated GameObject will have a yellow warning icon in the Hierarchy view and its root GameObject will have a greyed out warning icon. You can click in the grayed out warning icon to select the first child GameObject with an issue.
 
-### Inspector issues header (2)
+### Inspector issues header (B)
 
 The Scene Validation system will automatically display an issue header in the Inspector of GameObjects that fail any validation rule. 
 
 The issues header has buttons to navigate between GameObjects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes. 
 
+The availability of some features and components is dependent on the visionOS application type that your scene is targeting. The dropdown button labeled **Everything** in the image, allows you to choose the application types to use for validation.
+
 The **Fix this Object** button automatically fixes all validation issues in the currently selected GameObject. The **Hide/Show Alerts** button will hide or show the Component issues in all the GameObjects.
 
-### Per Component Inspector issue (3)
+### Per Component Inspector issue (C)
 
 The Scene Validation system automatically displays issue messages in the Inspector of Components that fail any Validation rules. 
 

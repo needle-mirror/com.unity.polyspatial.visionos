@@ -27,6 +27,7 @@ For the built-in renderer pipeline unlit texture material, the `Base (RGB)` text
 For the built-in renderer pipeline unlit transparent material, the `Base (RGBA)` texture is supported.
 
 ## Lit Materials
+By default, using a lit material will only apply the host system's illumination to your materials. For example, on visionOS, this only applies the system IBL that encodes real world illumination. If you also want to apply Unity's internal illumination to your materials (e.g., light maps, light probes, and/or dynamic lights), you need to opt in to add these more expensive lighting calculations on a per-material basis by wiring up a [PolySpatial Lighting Node](PolySpatialLighting.md).
 
 ### Universal Render Pipeline/Lit
 For the URP lit material, the `Base Map` color and texture are respected, as is the `Render Face` option and the `Surface Inputs` `Tiling` and `Offset` properties.

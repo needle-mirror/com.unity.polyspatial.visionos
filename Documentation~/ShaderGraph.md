@@ -63,6 +63,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | UV                        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex Color              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex ID                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | View Direction            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Gradient  | Gradient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Lighting  | Main Light Direction      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -138,15 +139,20 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Rotate About Axis      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sphere Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Transform              | Some spaces are simulated and not covered in tests.                                                |
-| Wave          | Triangle Wave          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Wave          | Noise Sine Wave        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Sawtooth Wave          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Square Wave            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Triangle Wave          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 
 ### Procedural
 
 | Section | Node             | Notes                                                                                                                                                                 |
 |---------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Noise   | Gradient Noise   | - Can't be certain that target platform noise functions will behave the same. <br> - Frequency is currently off (scale is mapped to amplitude rather than frequency). |
-|         | Voronoi          | - Can't be certain that target platform noise functions will behave the same.                                                                                        |
+|         | Voronoi          | - Can't be certain that target platform noise functions will behave the same.                                                                                         |
 | Shapes  | Ellipse          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|         | Polygon          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|         | Rectangle        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 
 ### Utility
 

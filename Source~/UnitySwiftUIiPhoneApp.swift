@@ -71,7 +71,7 @@ struct UnitySwiftUIiPhoneApp: App {
 
         ImmersiveSpace(id: "ImmersiveSpace") {
             PolySpatialRealityKitAccess.tmpOneAndOnlyVolume().view
-            let unityClass = NSClassFromString("UnityVisionOS") as? NSObject.Type
+            let unityClass = NSClassFromString("UnityVisionOSNativeBridge") as? NSObject.Type
             let _ = unityClass?.perform(Selector(("setImmersiveSpaceReady")))
         }
     }

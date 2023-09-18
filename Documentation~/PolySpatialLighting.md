@@ -20,3 +20,6 @@ The `Baked Lighting` setting has three options: `None` to omit baked lighting en
 
 #### Dynamic Lighting
 The `Dynamic Lighting` toggle determines whether dynamic point/spot/directional lights (that is, lights represented by non-baked [Light](https://docs.unity3d.com/ScriptReference/Light.html) components) affect the output.
+
+### Light Selection
+The [Render Mode](https://docs.unity3d.com/ScriptReference/Light-renderMode.html) property of Light components may be used to control which dynamic lights are applied.  Lights marked [Not Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForceVertex.html) will never be included in the four lights used by the PolySpatial Lighting Node.  Lights marked [Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForcePixel.html) will be prioritized over lights marked [Auto](https://docs.unity3d.com/ScriptReference/LightRenderMode.Auto.html) (the default).

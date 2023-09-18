@@ -11,6 +11,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
 using UnityEditor.UnityLinker;
 using UnityEditor.XR.VisionOS;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Unity.PolySpatial.Internals.Editor
@@ -43,6 +44,9 @@ namespace Unity.PolySpatial.Internals.Editor
             if (report.summary.platform != BuildUtils.tmp_BuildTarget_VisionOS)
                 return;
 
+            var outputPath = report.summary.outputPath;
+            PatchIl2Cpp(outputPath);
+
             var settings = VisionOSSettings.currentSettings;
             if (settings.appMode == VisionOSSettings.AppMode.VR)
                 return;
@@ -61,8 +65,6 @@ namespace Unity.PolySpatial.Internals.Editor
                 // TODO -- this is not Unity simulator SDK goop, but whether the actual real target is a simulator
                 // Always true for now
                 bool isSimulator = true;
-
-                var outputPath = report.summary.outputPath;
 
                 // Set up a VisionOSBuildSettings.swift file
                 // Format x y z as floats, always with a decimal
@@ -195,6 +197,28 @@ extension UnitySwiftUIiPhoneApp {{
             }
 
             plist.WriteToFile(plistPath);
+        }
+
+        static void PatchIl2Cpp(string outputPath)
+        {
+            // Only 2022.3.9f1 can be patched to work with Xcode 15b8. Earlier versions will not work, and later versions do not require the patch
+            if (Application.unityVersion != "2022.3.9f1")
+                return;
+
+            const string patchesDirectory = "Packages/com.unity.polyspatial.visionos/Patches~";
+            if (!Directory.Exists(patchesDirectory))
+            {
+#if POLYSPATIAL_INTERNAL
+                Debug.LogWarning("Expected to find patches directory, but it doesn't exist");
+#endif
+                return;
+            }
+
+            const string patchFileName = "Bee.Toolchain.Xcode.dll";
+            const string il2CppPath = "Il2CppOutputProject/IL2CPP/build/deploy_arm64";
+            var destFileName = Path.Combine(outputPath, il2CppPath, patchFileName);
+            var sourceFileName = Path.Combine(patchesDirectory, patchFileName);
+            File.Copy(sourceFileName, destFileName, true);
         }
     }
 }

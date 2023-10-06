@@ -133,7 +133,7 @@ namespace Unity.PolySpatial.Internals.Editor
                     {
                         BuildiOSPlugin();
                     }
-                    else if (report.summary.platform == BuildUtils.tmp_BuildTarget_VisionOS)
+                    else if (report.summary.platform == BuildTarget.VisionOS)
                     {
                         BuildVisionOSPlugin();
                     }

@@ -82,11 +82,12 @@ namespace Unity.PolySpatial.Internals.Editor
             if (buildTarget == BuildTarget.StandaloneOSX)
                 CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
-            if (buildTarget == BuildUtils.tmp_BuildTarget_VisionOS)
+            if (buildTarget == BuildTarget.VisionOS)
             {
                 // remove the input system iOS step counter implementation
                 RemoveFileFromProjectAndDelete("Libraries/com.unity.inputsystem/InputSystem/Plugins/iOS/iOSStepCounter.mm");
                 // and add a dummy one
+                CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "iOSStepCounterDummy.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
             }
 
@@ -125,7 +126,7 @@ namespace Unity.PolySpatial.Internals.Editor
             // These are hacks -- both of these are required, and Unity doesn't properly
             // fill them out in the iPhone project.
             // TODO fix this in new project generation
-            if (buildTarget == BuildUtils.tmp_BuildTarget_VisionOS) {
+            if (buildTarget == BuildTarget.VisionOS) {
 #if UNITY_VISIONOS
                 var swiftAppConfigGuids = proj.BuildConfigNames()
                     .Select(name => proj.BuildConfigByName(swiftAppTarget, name))
@@ -207,7 +208,7 @@ namespace Unity.PolySpatial.Internals.Editor
             if (target == BuildTarget.iOS)
                 return IsSimulator() ? "iphonesimulator" : "iphoneos";
 
-            if (target == BuildUtils.tmp_BuildTarget_VisionOS)
+            if (target == BuildTarget.VisionOS)
                 return IsSimulator() ? "xrsimulator" : "xros";
 
             throw new InvalidOperationException("Unknown build target");

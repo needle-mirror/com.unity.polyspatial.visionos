@@ -16,7 +16,11 @@ namespace Unity.PolySpatial.Internals.Editor
 {
     internal class iOSBuildPreProcessor : IPreprocessBuildWithReport
     {
+#if UNITY_2022_3_9 || UNITY_2022_3_10
         internal const string k_XcodeProjName = "Unity-iPhone.xcodeproj";
+#else
+        internal const string k_XcodeProjName = "Unity-VisionOS.xcodeproj";
+#endif
 
         public int callbackOrder => 0;
 

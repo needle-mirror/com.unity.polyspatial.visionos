@@ -14,28 +14,6 @@ namespace Unity.PolySpatial.Internals.Editor
 {
     internal static class BuildUtils
     {
-        // Temporary hack to give us access to the visionOS build target identifier,
-        // which doesn't exist in all unity versions yet.
-        static BuildTarget s_BuildTarget_VisionOS = (BuildTarget)(-1);
-
-        static internal BuildTarget tmp_BuildTarget_VisionOS {
-            get {
-                if (s_BuildTarget_VisionOS == (BuildTarget)(-1))
-                {
-                    try
-                    {
-                        s_BuildTarget_VisionOS = (BuildTarget)Enum.Parse(typeof(BuildTarget), "VisionOS");
-                    }
-                    catch (ArgumentException)
-                    {
-                        s_BuildTarget_VisionOS = BuildTarget.NoTarget; // -2
-                    }
-                }
-
-                return s_BuildTarget_VisionOS;
-            }
-        }
-
         public static bool IsPackageImmutable()
         {
             return Path.GetFullPath("Packages/com.unity.polyspatial.visionos").Contains("PackageCache");

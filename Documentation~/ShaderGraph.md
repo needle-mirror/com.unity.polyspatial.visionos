@@ -77,10 +77,15 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Object                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Scene Depth               | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Texture   | Sample Texture 2D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Texture   | Cubemap Asset             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Cubemap            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Reflected Cubemap  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 2D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D LOD     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 3D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                  |
   |           | Texture 2D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Texture 3D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture Size              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
 
 ### Math
@@ -108,6 +113,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Smoothstep             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 | Matrix        | Matrix Construction    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Matrix Determinant     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Matrix Split           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Matrix Transpose       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 | Range         | Clamp                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Fraction               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
@@ -122,12 +128,16 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Round                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sign                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Step                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Truncate               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 | Trigonometry  | Arccosine              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Arcsine                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Arctangent             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Arctangent2            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Cosine                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Degrees to Radians     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Hyperbolic Cosine      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Hyperbolic Sine        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Hyperbolic Tangent     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Radians to Degrees     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sine                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Tangent                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
@@ -135,7 +145,9 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Distance               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Dot Product            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Fresnel Effect         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Projection             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Reflection             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Rejection              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Rotate About Axis      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sphere Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Transform              | Some spaces are simulated and not covered in tests.                                                |
@@ -164,6 +176,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |         | Split LR             | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
 | Logic   | Branch               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 |         | Comparison           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Is Infinite          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Is NaN               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 |         | Or                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 
 ### UV

@@ -8,7 +8,7 @@ Make sure to switch the  build platform for visionOS (experimental)
 
 ## Fully Immersive Virtual Reality 
 
-Make sure you have the **xr.sdk.visionos** package installed
+Make sure you have the **com.unity.xr.visionos** package installed
 
 1. Select **Edit &gt; Project Settings**…
 2. Open the **XR Plug-in Manager** menu

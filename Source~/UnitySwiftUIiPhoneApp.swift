@@ -41,102 +41,63 @@ class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDeleg
 #else
 
 @main
-struct UnitySwiftUIiPhoneApp: App {
+struct UnitySwiftUIiPhoneApp: App, PolySpatialWindowManagerDelegate {
     @UIApplicationDelegateAdaptor
-    var swiftUIdelegate: UnitySwiftUIAppDelegate
+    var delegate: UnitySwiftUIAppDelegate
 
     @Environment(\.openWindow) var openWindow
     @Environment(\.dismissWindow) var dismissWindow
     @Environment(\.openImmersiveSpace) var openImmersiveSpace
-
-    @Environment(\.physicalMetrics) var physicalMetrics
-
-    var polyspatialObserver: PolySpatialVolumeCoordinator? = nil
+    @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
 
     init() {
-        polyspatialObserver = .init(openWindow)
+        PolySpatialWindowManagerAccess.delegate = self
     }
 
-    @SceneBuilder
-    var immersiveScene: some Scene {
-        WindowGroup(id: "LaunchWindow") {
-            Spacer()
-                .onAppear {
-                    Task { @MainActor in
-                        await openImmersiveSpace(id: "ImmersiveSpace")
-                        dismissWindow(id: "LaunchWindow")
-                    }
-                }
-        }
+    var body: some Scene {
+        mainScene
+    }
 
-        ImmersiveSpace(id: "ImmersiveSpace") {
-            PolySpatialRealityKitAccess.tmpOneAndOnlyVolume().view
+    func requestOpenWindow(_ config: String) {
+        Task {
+            if config == "Unbounded" {
+                await openImmersiveSpace(id: config)
+            } else {
+                openWindow(id: config)
+            }
+        }
+    }
+
+    func requestDismissWindow(_ window: PolySpatialWindow, _ session: UISceneSession?) {
+        // dismissWindow doesn't seem to function as expected; but the else
+        // code below should be what we can do and avoid all the SceneSession goop
+        #if true
+        UIApplication.shared.requestSceneSessionDestruction(session!, options: nil)
+        #else
+        let config = window.windowConfiguration
+        Task {
+            if config == "Unbounded" {
+                await dismissImmersiveSpace()
+            } else {
+                dismissWindow(value: window.uuid)
+            }
+        }
+        #endif
+    }
+
+    func onWindowAdded(_ window: PolySpatialWindow) {
+        if window.windowConfiguration == "Unbounded" {
+            // Hook to let ARKit know to set things up
             let unityClass = NSClassFromString("UnityVisionOSNativeBridge") as? NSObject.Type
             let _ = unityClass?.perform(Selector(("setImmersiveSpaceReady")))
         }
     }
 
-    @SceneBuilder
-    var volumeScene: some Scene {
-        WindowGroup {
-            PolySpatialRealityKitAccess.tmpOneAndOnlyVolume().view
-        }
-        .windowStyle(.volumetric)
-        .defaultSize(UnityVisionOSSettings.initialSize, in: .meters)
-    }
-
-    var body: some Scene {
-        realScene
-    }
-
-/*
-    Once issues are fixed, actually create presized volumetric windows
-    var body: some Scene {
-        WindowGroup(id: "SplashScreen") {
-            // empty, perhaps future splash screen location
-        }
-        .windowStyle(.volumetric)
-        .defaultSize(width: 1.0, height: 1.0, depth: 1.0)
-
-        WindowGroup(id: "UnityVolume-1x1x1", for: String.self) { volumeId in
-            if let id = volumeId.wrappedValue {
-                VStack {
-                    if let volume = PolySpatialVolume.with(identifier: id) {
-                        volume.view
-                    } else {
-                        Text("Failed to find volume with id: \(volumeId.wrappedValue!)")
-                            .padding()
-                            .background(Color.red)
-                            .foregroundStyle(Color.white)
-                    }
-                }
-            }
-        }
-        .windowStyle(.volumetric)
-        .defaultSize(width: 1.0, height: 1.0, depth: 1.0, in: .meters)
-    }
- */
-}
-
-class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDelegate {
-    @Published var volumes: [PolySpatialVolume] = []
-
-    var openWindow: OpenWindowAction
-
-    init(_ openWinAction: OpenWindowAction) {
-        openWindow = openWinAction
-
-        PolySpatialRealityKitAccess.addDelegate(self)
-    }
-
-    func on(volumeAdded: PolySpatialVolume) {
-        self.volumes.append(volumeAdded)
-        // ask app to open a window for the volume
-        // TODO -- actually pick appropriate size window
-        //openWindow(id: "UnityVolume-1x1x1", value: volumeAdded.id)
+    func onWindowRemoved(_ window: PolySpatialWindow) {
     }
 
     func reset() {
     }
 }
+
 #endif

@@ -17,7 +17,6 @@ namespace Unity.PolySpatial.Internals
         delegate void GenericFunctionDelegate();
 
         static GetPolySpatialNativeApiFn GetPolySpatialNativeAPI_dynamic;
-        static GenericFunctionDelegate StartRealityKitWindow_dynamic;
 
         static bool s_initDone;
         static IntPtr s_libHandle;
@@ -31,9 +30,6 @@ namespace Unity.PolySpatial.Internals
         [DllImport(kPluginName, EntryPoint = "GetPolySpatialNativeAPI")]
         private static extern void GetPolySpatialNativeAPI_static(out Platform.PolySpatialNativeAPI api);
 
-        [DllImport(kPluginName, EntryPoint = "StartRealityKitWindow")]
-        private static extern void StartRealityKitWindow_static();
-
         internal static void GetPolySpatialNativeAPI(out Platform.PolySpatialNativeAPI api)
         {
             SetupHandles();
@@ -41,15 +37,6 @@ namespace Unity.PolySpatial.Internals
                 GetPolySpatialNativeAPI_dynamic(out api);
             else
                 GetPolySpatialNativeAPI_static(out api);
-        }
-
-        internal static void StartRealityKitWindow()
-        {
-            SetupHandles();
-            if (StartRealityKitWindow_dynamic != null)
-                StartRealityKitWindow_dynamic();
-            else
-                StartRealityKitWindow_static();
         }
 
         internal static void SetupHandles()
@@ -107,16 +94,14 @@ namespace Unity.PolySpatial.Internals
             if (String.IsNullOrEmpty(libpath))
                 return;
 
+            // Call dlerror() to make sure it gets loaded before we need to call it.. otherwise
+            // it'll do a dlopen() itself on the first call and wipe away the error we want.
+            dlerror();
+
             s_libHandle = dlopen(libpath, RTLD_LOCAL | RTLD_FIRST);
             if (s_libHandle == IntPtr.Zero)
             {
-                var err = dlerror();
-                if (String.IsNullOrEmpty(err))
-                {
-                    err = "Is DYLD_FRAMEWORK_PATH set correctly, and is the macOS plugin signed? [No error from dlerror()]";
-                }
-
-                Debug.LogError($"Trying to dlopen(\"{libpath}\") failed with error:\n{err}");
+                Debug.LogError($"Trying to dlopen(\"{libpath}\") failed with error:\n{dlerror_string()}");
                 return;
             }
 
@@ -124,7 +109,7 @@ namespace Unity.PolySpatial.Internals
             if (!TryLoadFunctionPointers(s_libHandle))
             {
                 throw new InvalidOperationException(
-                    $"Couldn't find GetPolySpatialNativeAPI/StartRealityKitWindow symbols from library path {libpath}");
+                    $"Couldn't find GetPolySpatialNativeAPI symbols from library path {libpath}");
             }
 
 #if UNITY_EDITOR
@@ -146,15 +131,13 @@ namespace Unity.PolySpatial.Internals
         static bool TryLoadFunctionPointers(IntPtr libHandle)
         {
             var fn1 = dlsym(libHandle, "GetPolySpatialNativeAPI");
-            var fn2 = dlsym(libHandle, "StartRealityKitWindow");
 
-            if (fn1 == IntPtr.Zero || fn2 == IntPtr.Zero)
+            if (fn1 == IntPtr.Zero)
             {
                 return false;
             }
 
             GetPolySpatialNativeAPI_dynamic = Marshal.GetDelegateForFunctionPointer<GetPolySpatialNativeApiFn>(fn1);
-            StartRealityKitWindow_dynamic = Marshal.GetDelegateForFunctionPointer<GenericFunctionDelegate>(fn2);
             return true;
         }
 
@@ -177,10 +160,15 @@ namespace Unity.PolySpatial.Internals
         [DllImport(DYLD_LIB_NAME)]
         internal static extern IntPtr dlsym(IntPtr handle, string fname);
 
-        // Note: dlerror() doesn't seem to work here.  Works fine called from debugger,
-        // but from C# always returns null.  Can't even dlsym(dlerror).
         [DllImport(DYLD_LIB_NAME)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        internal static extern string dlerror();
+        internal static extern IntPtr dlerror();
+
+        static string dlerror_string()
+        {
+            var errp = dlerror();
+            if (errp == IntPtr.Zero)
+                return null;
+            return Marshal.PtrToStringAnsi(errp);
+        }
     }
 }

@@ -18,6 +18,9 @@ The output (`Out`) of the lighting node is a single color result.  Depending on 
 #### Baked Lighting
 The `Baked Lighting` setting has three options: `None` to omit baked lighting entirely, `Lightmap` to apply baked lightmaps, and `LightProbes` to obtain baked lighting from light probes.  Typically, static objects use lightmaps and dynamic objects use light probes.
 
+#### Reflection Probes
+The `Reflection Probes` setting has three options: `None` to omit contribution from reflection probes, `Simple` to use a single reflection probe, and `Blended` to blend the contributions of up to two reflection probes.
+
 #### Dynamic Lighting
 The `Dynamic Lighting` toggle determines whether dynamic point/spot/directional lights (that is, lights represented by non-baked [Light](https://docs.unity3d.com/ScriptReference/Light.html) components) affect the output.
 

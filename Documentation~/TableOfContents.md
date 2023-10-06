@@ -19,6 +19,7 @@
                 * [Custom Function Node Support](CustomFunctionNode.md)
                 * [PolySpatial Lighting](PolySpatialLighting.md)
     * [Input](Input.md)
+    * [Input Scripting](PolySpatialInput.md)
     * Custom PolySpatial Components
         * [VolumeCamera](VolumeCamera.md)
         * [PolySpatial Video Component](VideoComponent.md)

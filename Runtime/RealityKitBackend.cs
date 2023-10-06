@@ -86,10 +86,6 @@ namespace Unity.PolySpatial.Internals
             var sizes = stackalloc int[] { sizeof(IntPtr) };
             s_OldAPIPointers.SendClientCommand(PolySpatialCommand.SetSimulationHostAPI, 1, args, sizes);
 
-#if UNITY_STANDALONE_OSX
-            RKRuntimeFuncs.StartRealityKitWindow();
-#endif
-
             s_Instance = this;
 
 #if !UNITY_EDITOR && UNITY_VISIONOS

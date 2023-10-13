@@ -1,7 +1,6 @@
 #if UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX
 using System;
 using System.IO;
-using NUnit.Framework;
 using Unity.PolySpatial.Internals.Editor;
 using UnityEditor;
 using UnityEditor.Build;

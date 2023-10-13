@@ -13,6 +13,7 @@
     * [Sample Content](Samples.md)
 * Reference Documentation
     * [Supported Features & Components](SupportedFeatures.md)
+        * [Porting Unity Projects to PolySpatial XR](PortingUnityProjectsToPolySpatialXR.md)
     * [Asset Support](Assets.md)
         * [Materials](Materials.md)
             * [Shader Graph Support](ShaderGraph.md)
@@ -24,6 +25,7 @@
         * [VolumeCamera](VolumeCamera.md)
         * [PolySpatial Video Component](VideoComponent.md)
         * [Hover Effect](HoverEffect.md)
+        * [Sorting Group](SortingGroup.md)
     * [Tooling](Tooling.md)
 * [FAQ](FAQ.md)
 * [Glossary](Glossary.md)

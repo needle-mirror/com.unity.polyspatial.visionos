@@ -122,10 +122,15 @@ namespace Unity.PolySpatial.Internals
             return true;
         }
 
-        public bool TakeScreenshot(string path)
+        public bool ObsoleteTakeScreenshot(string path)
         {
             this.StringCommand(PolySpatialCommand.TakeScreenshot, path);
             return true;
+        }
+
+        public Texture2D TakeScreenshot(Camera camera, int width, int height)
+        {
+            throw new NotImplementedException();
         }
     }
 }

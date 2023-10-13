@@ -75,8 +75,8 @@ namespace Unity.PolySpatial.Internals.Editor
                 CopyDirectoryTo(Path.Combine(pluginSrcPath, $"PolySpatialRealityKit.swiftmodule"), pluginDstXcodePath);
             }
 
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnitySwiftUIAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnitySwiftUIiPhoneApp.swift", UNITY_RK_SRC_PATH, "MainApp");
+            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
+            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             if (buildTarget == BuildTarget.StandaloneOSX)

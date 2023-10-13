@@ -7,11 +7,25 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.3] - 2023-10-13
+
+## Fixed
+-- Slowdown in visionOS player introduced in 0.4.2 fixed.
+
+## [0.4.2] - 2023-10-12
+- Existing windows will now be reused if they are the correct configuration on scene load.
+
 ## [0.4.1] - 2023-10-06
 
 ### Added
 - Documentation for Volume Camera around configuration assets.
 
+## [0.4.0] - 2023-10-04
+
+## Added
+- Documentation for Volume Camera around configuration assets.
+- Build error if trying to build for Simulator SDK in Unity prior to 2022.3.11f1.
+ 
 ## [0.4.0] - 2023-10-04
 
 ### Added

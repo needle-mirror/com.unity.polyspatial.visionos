@@ -6,9 +6,9 @@ typealias Scene = SwiftUI.Scene
 #if !os(xrOS)
 
 @main
-struct UnitySwiftUIiPhoneApp: App {
+struct UnityPolySpatialApp: App {
     @UIApplicationDelegateAdaptor
-    var swiftUIdelegate: UnitySwiftUIAppDelegate
+    var swiftUIdelegate: UnityPolySpatialAppDelegate
 
     @ObservedObject
     var polyspatialObserver = PolySpatialVolumeCoordinator()
@@ -41,9 +41,9 @@ class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDeleg
 #else
 
 @main
-struct UnitySwiftUIiPhoneApp: App, PolySpatialWindowManagerDelegate {
+struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     @UIApplicationDelegateAdaptor
-    var delegate: UnitySwiftUIAppDelegate
+    var delegate: UnityPolySpatialAppDelegate
 
     @Environment(\.openWindow) var openWindow
     @Environment(\.dismissWindow) var dismissWindow

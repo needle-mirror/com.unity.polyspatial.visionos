@@ -1,4 +1,6 @@
 #if (UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX) && UNITY_EDITOR_OSX
+using System.Runtime;
+using System.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +32,13 @@ namespace Unity.PolySpatial.Internals.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
+#if UNITY_2022_3_9 || UNITY_2022_3_10
+            if (PlayerSettings.VisionOS.sdkVersion != VisionOSSdkVersion.Device)
+            {
+                throw new BuildFailedException("Unity versions prior to 2022.3.11f1 do not support a Target SDK of anything other than Device SDK. Please change the Target SDK setting in Player Settings to Device SDK.");
+            }
+#endif
+
             try
             {
                 SwiftAppShellProcessor.RestoreXcodeProject(report.summary.outputPath, k_XcodeProjName);
@@ -176,7 +185,7 @@ import Foundation
 import SwiftUI
 import PolySpatialRealityKit
 
-extension UnitySwiftUIiPhoneApp {{
+extension UnityPolySpatialApp {{
     func initialWindowName() -> String {{ return ""{NameForVolumeConfig(initialConfig)}"" }}
 
     @SceneBuilder

@@ -13,10 +13,12 @@ The `PolySpatialSortingGroup` component exposes the following properties:
 | **Property** | **Description** |
 | --- | --- |
 | **DepthPass** | Controls when depth is drawn with respect to color. |
-| **List of Renderers ** | A list of structs that reference the renderer to be sorted, and the sort order. |
+| **Renderers** | A list of structs that reference the renderer to be sorted, and the sort order. |
 
 Each renderer struct consists of the following properties.
 
+| **Property** | **Description** |
+| --- | --- |
 | **Order** | The order this renderer should be drawn, with respect to other renderers in the group. |
 | **Renderer** | A reference to the renderer's game object.|
 | **ApplyToDescendants** | When true, the sort order will be applied to all child renderers. It is important, if `ApplyToDescendants` is true, to be careful of nested sorting groups - any subsequent attempts to add a renderer that is already a member of a different sorting group will be ignored, and a warning will show. |

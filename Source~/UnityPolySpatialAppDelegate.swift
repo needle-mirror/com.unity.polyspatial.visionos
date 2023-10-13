@@ -6,10 +6,10 @@ import PolySpatialRealityKit
 @_silgen_name("SetPolySpatialNativeAPIImplementation")
 private func SetPolySpatialNativeAPIImplementation(_ api: UnsafeRawPointer, _ size: Int32)
 
-class UnitySwiftUIAppDelegate: NSObject, UIApplicationDelegate, ObservableObject
+class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableObject
 {
     var unity: UnityLibrary
-    
+
     @Published private(set) public var handsAuthorized: Bool = false
     @Published private(set) public var worldSensingAuthorized: Bool = false
 

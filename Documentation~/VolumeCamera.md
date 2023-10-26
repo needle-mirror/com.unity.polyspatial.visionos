@@ -14,7 +14,7 @@ Typically, this content is then displayed on a host platform by a corresponding 
 
 ## Volume Camera Configuration Assets
 
-The volume camera component uses specific volume camera assets to configure its setup. You can create these assets using the asset creation menu under `Create`->`PolySpatial`->`Volume Camera Configuration`. Make sure that you place/create these assets with a Resources folde so that they are part of the build and are available at runtime. The asset allows you to configure the bounded/unbounded state of the camera as well as the bounding scale (for bounded only). You can change the configuration of a Volume Camera instance at any time by assigning an instance of the asset to the `OutputConfiguration` property of the volume camera.
+The volume camera component uses specific volume camera assets to configure its setup. You can create these assets using the asset creation menu under `Create`->`PolySpatial`->`Volume Camera Configuration`. Make sure that you place/create these assets with a Resources folder so that they are part of the build and are available at runtime. The asset allows you to configure the bounded/unbounded state of the camera as well as the bounding scale (for bounded only). You can change the configuration of a Volume Camera instance at any time by assigning an instance of the asset to the `OutputConfiguration` property of the volume camera.
 
 
 ## Volume Camera Properties

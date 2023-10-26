@@ -7,6 +7,23 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2023-10-26
+
+### Added
+- **Particle System Modes**: Developers can now select between particle system modes under `Project Settings > PolySpatial > Particle Mode`. The available modes offer tradeoffs between performance and quality:
+  - **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Fixed an issue where projects with `com.unity.polyspatial.visionos` would fail to build when App Mode is set to Virtual Reality. Device builds were failing with the error `Undefined symbol: _GetPolySpatialNativeAPI`, and simulator builds failed to run with a similar error.
+
+### Security
+
 ## [0.4.3] - 2023-10-13
 
 ## Fixed
@@ -14,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.4.2] - 2023-10-12
 - Existing windows will now be reused if they are the correct configuration on scene load.
+- Added fixes for host-side cleanup needed for PlayToDevice
 
 ## [0.4.1] - 2023-10-06
 

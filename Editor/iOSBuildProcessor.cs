@@ -48,7 +48,7 @@ namespace Unity.PolySpatial.Internals.Editor
 
             if (!PolySpatialSettings.instance.EnablePolySpatialRuntime
 #if POLYSPATIAL_INTERNAL
-                && !PolySpatialSettings.instance.ForceLinkPolySpatialRuntime
+                && !PolySpatialSettings.instance.AlwaysLinkPolySpatialRuntime
 #endif
             )
             {

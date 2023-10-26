@@ -18,7 +18,7 @@ Unity supports several different application types on visionOS, each with their 
 ## Resources
 **New users** should find the [Getting Started](GettingStarted.md) page an ideal place for an introduction to visionOS and PolySpatial. It guides you through setup, prerequisites, iterating, previewing, building, and debugging with with [development and iteration](DevelopmentAndIteration.md) basics and building your first app for visionOS.
 
-**All developers** should familiarize themselves with [development and iteration](DevelopmentAndIteration.md) on this platform. This section covers the nuts and bolts of setting up PolySpatial for visionOS, iterating, previewing, building, and debugging. 
+**All developers** should familiarize themselves with [development and iteration](DevelopmentAndIteration.md) on this platform. This section covers the nuts and bolts of setting up PolySpatial for visionOS, iterating, [previewing](PlayToDevice.md), building, and debugging. 
 
 **Content Creators** should consult [PolySpatial XR Project Validation](PolySpatialXRProjectValidation.md), which offers an overview of the new project validation system introduced for visionOS and PolySpatial. This system provides helpful assistance on supported and unsupported features when developing Unity apps for visionOS and PolySpatial
 

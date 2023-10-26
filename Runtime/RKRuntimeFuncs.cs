@@ -70,23 +70,15 @@ namespace Unity.PolySpatial.Internals
                 if (TryLoadFunctionPointers(IntPtr.Zero))
                     return;
 
-                libpath = Path.Combine(Application.dataPath, "PlugIns", "PolySpatial-macOS.bundle", "Contents", "MacOS", "PolySpatial-macOS");
-                if (!File.Exists(libpath))
-                {
-                    Debug.LogError($"Expected mac plugin {libpath} doesn't exist");
-                    libpath = null;
-                }
-            }
-#endif
+                var newlibpath = Path.Combine(Application.dataPath, "PlugIns", "PolySpatial-macOSNew.bundle", "Contents", "MacOS", "PolySpatial-macOSNew");
+                var oldlibpath = Path.Combine(Application.dataPath, "PlugIns", "PolySpatial-macOS.bundle", "Contents", "MacOS", "PolySpatial-macOS");
+                libpath = File.Exists(newlibpath) ? newlibpath
+                    : File.Exists(oldlibpath) ? oldlibpath
+                    : null;
 
-#if UNITY_EDITOR_OSX
-            if (String.IsNullOrEmpty(libpath))
-            {
-                libpath = Path.GetFullPath("Packages/com.unity.polyspatial.visionos/Lib~/PolySpatial-macOS.bundle/Contents/MacOS/PolySpatial-macOS");
-                if (!File.Exists(libpath))
+                if (libpath == null)
                 {
-                    Debug.LogError($"Expected mac plugin {libpath} doesn't exist");
-                    libpath = null;
+                    Debug.LogError($"Expected mac plugin {newlibpath} or {oldlibpath} doesn't exist");
                 }
             }
 #endif

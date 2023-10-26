@@ -13,7 +13,7 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 | **Component**             | **Status**               |
 |---------------------------|--------------------------|
 | **Transform**             | Supported                |
-| **Audio**                 | No spatial audio support |
+| **Audio**                 | Not fully spatialized    |
 | **MeshFilter**            | Supported                |
 | **Animation / Animators** | Supported                |
 | **2D Physics**            | Supported                |
@@ -29,16 +29,16 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 
 | **Component**             | **Status**               |
 |---------------------------|--------------------------|
-| **MeshRenderer**          | No support for "Lighting" (shadows, GI)     No support for "Probes"     No support for this component in Immediate mode     No support for "Additional Settings" (dynamic occlusion, rendering layer) |
+| **MeshRenderer**          | Lighting must be set up via material      No support for this component in Immediate mode     No support for "Additional Settings" (dynamic occlusion, rendering layer) |
 | **SkinnedMeshRenderer**   |  Unoptimized animation only (the **Optimize Game Objects** option on the Rig tab of the Model Import inspector must be ticked off if it appears.) |
 | **Particle Systems**      | Partial support; see [Particle Systems](#particle-systems) below |
-| **Light**                 | Not supported |
+| **Trail Renderer**        | Partial support; see [Particle Systems](#particle-systems) below |
+| **Light**                 | Up to 4 dynamic lights only, and requires each affected material to include a PolySpatial Lighting Node in its shadergraph |
 | **Camera**                | Not supported |
 | **Halo**                  | Not supported |
 | **Lens Flare**            | Not supported |
 | **Line Rendering**        | Not supported |
 | **Projector**             | Not supported |
-| **Trail Renderer**        | Not supported |
 | **Visual Effects**        | Not supported |
 | **Lens Flare**            | Not supported |
 | **Level of Detail (LoD)** | Not supported |
@@ -63,7 +63,17 @@ Some of these features are not supported due to platforms constraints (for examp
 
 ### Particle systems
 <a name="particle-systems"></a>
-Support for particles in PolySpatial XR is an on-going work in progress. The table below indicates the status of support for specific modules and settings currently supported by Unity's [Particle system](https://docs.unity3d.com/Manual/class-ParticleSystem.html):
+Support for Unity's built-in particles under PolySpatial is actively being developed. Currently, it offers several alternate modes, each with its own set of quality and performance tradeoffs. You can configure these modes project-wide under `Project Settings > PolySpatial > Particle Mode`.
+
+### Supported Modes:
+- **Replicate Properties**: This mode aims to map Unity particle system properties to the native particle systems offered by RealityKit. While it offers relatively good performance, visual quality can vary significantly, especially for particles that utilize advanced features. Custom shaders are not supported in this mode.
+
+- **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.
+
+**Note:** VFXGraph is not currently supported in PolySpatial.
+
+#### Replicate Properties Support
+When using the "Replicate Properties" particle mode in PolySpatial, Particle System modules are supported to varying degrees, as summarized in the table below:
 
 | **Module**                       | **Status**          |
 |----------------------------------|---------------------|

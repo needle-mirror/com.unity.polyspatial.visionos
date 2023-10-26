@@ -19,47 +19,31 @@ namespace Unity.PolySpatial.Internals.Editor
         // must be early, but it doesn't affect the Unity build
         public int callbackOrder => 10;
 
-        static internal readonly string k_ExtraFrameworksPath = "/opt/UnitySrc/PolySpatialExtraFrameworks";
-
-        public static void XcodeBuildPolySpatialRealityKit(string args)
+        public static void DoPluginBuild(params string[] args)
         {
-            var buildArgs = "-project PolySpatialRealityKit.xcodeproj -quiet " + args;
-
-#if POLYSPATIAL_INTERNAL
-            if (Directory.Exists(k_ExtraFrameworksPath))
-            {
-                buildArgs += " FRAMEWORK_SEARCH_PATHS=" + k_ExtraFrameworksPath;
-            }
-#endif
-
-            Debug.Log($"Running xcodebuild {buildArgs}\nin: {Path.GetFullPath("Packages/com.unity.polyspatial.visionos/Source~/PolySpatialRealityKit")}");
-
-            var (success, output) = BuildUtils.RunCommandWithOutput("/usr/bin/xcodebuild", buildArgs,
-                Path.GetFullPath("Packages/com.unity.polyspatial.visionos/Source~/PolySpatialRealityKit"),
-                k_BuildTimeoutSeconds);
-
-            if (!success)
-            {
-                Debug.LogError(output);
-                throw new Exception($"xcodebuild failed, args: {buildArgs}.");
-            }
-        }
-
-        static void XcodeBuild(string scheme, params string[] destinations)
-        {
-            int totalSteps = Math.Max(1, destinations.Length);
+            int totalSteps = Math.Max(1, args.Length);
             for (int i = 0; i < totalSteps; i++)
             {
                 float progress = (float)i / totalSteps;
-                string progressText = destinations.Length == 0 ? $"Building" : $"Building for {destinations[i]}";
+                string progressText = $"Building PolySpatial plugin for {args[i]}";
 
-                EditorUtility.DisplayProgressBar($"Building {scheme}", progressText, progress);
+                EditorUtility.DisplayProgressBar($"Building {args[i]}", progressText, progress);
 
-                // only active arch hack for macOS
-                var destarg = destinations.Length == 0 ? "ONLY_ACTIVE_ARCH=NO" : $"-destination 'generic/platform={destinations[i]}'";
-                XcodeBuildPolySpatialRealityKit($"-scheme {scheme} {destarg} BUILD_FOR_DISTRIBUTION=YES");
+                var pkgPath = Path.GetFullPath("Packages/com.unity.polyspatial.visionos");
+                var repoRoot = Path.Combine(pkgPath, "../..");
+                var scriptPath = Path.GetFullPath(Path.Combine(repoRoot, "Tools/build-binary-plugins.sh"));
+                if (!File.Exists(scriptPath))
+                {
+                    throw new BuildFailedException($"{scriptPath} not found");
+                }
+
+                var (success, output) = BuildUtils.RunCommandWithOutput(scriptPath, args[i], repoRoot, k_BuildTimeoutSeconds);
+                if (!success)
+                {
+                    Debug.LogError(output);
+                    throw new Exception($"Command failed: {scriptPath} {args[i]}");
+                }
             }
-
         }
 
         // Note: if you make changes to these xcodebuild commands, make corresponding changes to
@@ -69,43 +53,56 @@ namespace Unity.PolySpatial.Internals.Editor
         /// Run an external build to create the Mac PolySpatial Plugin.
         /// </summary>
 #if POLYSPATIAL_INTERNAL
-        [MenuItem("Window/PolySpatial/Build Mac Plugin")]
+        [MenuItem("Tools/Build PolySpatial macOS Plugin", false, 100)]
 #endif
         public static void BuildMacPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
                 return;
 
-            XcodeBuild("PolySpatial-macOS");
+            DoPluginBuild("macos");
         }
 
+#if POLYSPATIAL_INTERNAL
+        [MenuItem("Tools/Build PolySpatial macOS Plugin (New RealityKit)", false, 100)]
+#endif
+        public static void BuildMacNewPlugin()
+        {
+            if (BuildUtils.IsPackageImmutable())
+                return;
 
+            DoPluginBuild("macos-new");
+        }
+
+        // iOS is currently not supported, hide the menu item
+#if false
         /// <summary>
         /// Run an external build to create an iOS PolySpatial Plugin.
         /// </summary>
 #if POLYSPATIAL_INTERNAL
-        [MenuItem("Window/PolySpatial/Build iOS Plugin")]
+        [MenuItem("Tools/Build PolySpatial iOS Plugin")]
+#endif
 #endif
         public static void BuildiOSPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
                 return;
 
-            XcodeBuild("PolySpatial-iOS", "iOS", "iOS Simulator");
+            DoPluginBuild("ios");
         }
 
         /// <summary>
         /// Run an external build to create an iOS PolySpatial Plugin.
         /// </summary>
 #if POLYSPATIAL_INTERNAL
-        [MenuItem("Window/PolySpatial/Build visionOS Plugin")]
+        [MenuItem("Tools/Build PolySpatial visionOS Plugin", false, 100)]
 #endif
         public static void BuildVisionOSPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
                 return;
 
-            XcodeBuild("PolySpatial-visionOS", "visionOS", "visionOS Simulator");
+            DoPluginBuild("visionos");
         }
 
         /// <inheritdoc/>
@@ -114,18 +111,14 @@ namespace Unity.PolySpatial.Internals.Editor
             if (!PolySpatialSettings.instance.EnablePolySpatialRuntime)
                 return;
 
-            var settings = VisionOSSettings.currentSettings;
-            if (settings.appMode == VisionOSSettings.AppMode.VR)
-                return;
-
             try
             {
-                bool shouldBuildPlugin = Directory.Exists("Packages/com.unity.polyspatial.visionos/Source~");
+                bool shouldBuildPlugin = Directory.Exists("Packages/com.unity.polyspatial.visionos/Source~/PolySpatialRealityKit");
 
                 if (shouldBuildPlugin)
                 {
 #if !POLYSPATIAL_INTERNAL
-                    Debug.LogWarning("Building PolySpatial plugin without POLYSPATIAL_INTERNAL because Source is available");
+                    Debug.LogWarning("Building PolySpatial plugin without POLYSPATIAL_INTERNAL because source is available");
 #endif
 
                     if (report.summary.platform == BuildTarget.iOS)
@@ -138,7 +131,14 @@ namespace Unity.PolySpatial.Internals.Editor
                     }
                     else if (report.summary.platform == BuildTarget.StandaloneOSX)
                     {
+#if POLYSPATIAL_INTERNAL
                         BuildMacPlugin();
+
+                        if (PolySpatialMacBuildProcessor.HasNewPlugin())
+                        {
+                            BuildMacNewPlugin();
+                        }
+#endif
                     }
                 }
             }

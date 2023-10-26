@@ -1,13 +1,13 @@
 {
   "name": "com.unity.polyspatial.visionos",
   "displayName": "PolySpatial visionOS",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "unity": "2022.3",
   "unityRelease": "9f1",
   "description": "Unity PolySpatial integration package to support shared and immersive mode rendering on Apple visionOS.",
   "dependencies": {
-    "com.unity.polyspatial": "0.4.3",
-    "com.unity.xr.visionos": "0.4.3",
+    "com.unity.polyspatial": "0.5.0",
+    "com.unity.xr.visionos": "0.5.0",
     "com.unity.xr.management": "4.4.0"
   },
   "versionDefines": [],
@@ -15,15 +15,15 @@
     "changelog": ""
   },
   "_upm": {
-    "changelog": "## Fixed\n-- Slowdown in visionOS player introduced in 0.4.2 fixed."
+    "changelog": "### Added\n- **Particle System Modes**: Developers can now select between particle system modes under `Project Settings > PolySpatial > Particle Mode`. The available modes offer tradeoffs between performance and quality:\n  - **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n- Fixed an issue where projects with `com.unity.polyspatial.visionos` would fail to build when App Mode is set to Virtual Reality. Device builds were failing with the error `Undefined symbol: _GetPolySpatialNativeAPI`, and simulator builds failed to run with a similar error.\n\n### Security"
   },
   "upmCi": {
-    "footprint": "ed0adce79b827ca84e98446a17a065ed511231fc"
+    "footprint": "eefde9c79487438327aa62657ff7c93b170ff256"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@0.4/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@0.5/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/quantum.git",
     "type": "git",
-    "revision": "0c7b27fe28631de8dddbbb4e6babb05fc0f8a85c"
+    "revision": "563b6ef49598724e6c4f624b194447d1cb537faf"
   }
 }

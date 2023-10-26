@@ -6,32 +6,42 @@ You can use the Unity Shader Graph to create custom materials for visionOS. Thes
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
-## Shader Graph Limitations in visionOS
+## Texture Limitations
+When sampling textures in shader graphs, note that the sampler state (filter, wrap modes) associated with the texture itself is ignored.  Instead, you must use the `Sampler State` node to control how the texture is sampled if you want to use a mode other than the default (linear filtering, repeat wrap mode).
+
+## Shader Graph Nodes
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
 
 If a node doesn't appear here it means that it's not currently supported. *Note that this list will be updated as we continue to add support for more nodes.*
 
 ### Artistic
 
-| Section       | Node                | Notes                                                                                                                         |
-|---------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| Adjustment    | Contrast            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Hue                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Invert Colors       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Saturation          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-| Blend         | Blend               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-| Normal        | Normal Blend        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Normal From Height  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Normal Reconstruct Z| <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Normal Strength     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-|               | Normal Unpack       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-| Utility       | Colorspace Conversion| Not consistent - linear conversions not implemented.                                                                         |
+| Section       | Node                  | Notes                                                                                                                         |
+|---------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| Adjustment    | Channel Mixer         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Contrast              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Hue                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Invert Colors         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Replace Color         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Saturation            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | White Balance         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Blend         | Blend                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Filter        | Fade Transition       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Mask          | Channel Mask          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Color Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Normal        | Normal Blend          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Normal From Height    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Normal Reconstruct Z  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Normal Strength       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Normal Unpack         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Utility       | Colorspace Conversion | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 
 ### Channel
 
 | Section   | Node       | Notes                                                                          |
 |-----------|------------|--------------------------------------------------------------------------------|
 | Channel   | Combine    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>       |
+|           | Flip       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>       |
 |           | Split      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>       |
 |           | Swizzle    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>       |
 

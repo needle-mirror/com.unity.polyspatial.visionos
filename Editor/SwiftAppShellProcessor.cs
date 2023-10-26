@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
+using UnityEditor.XR.VisionOS;
 using UnityEngine;
 using static Unity.PolySpatial.Internals.Editor.BuildUtils;
 
@@ -29,8 +30,10 @@ namespace Unity.PolySpatial.Internals.Editor
         private static readonly string ARM_WORKAROUND_REPLACEMENT = "--additional-defines=IL2CPP_LARGE_EXECUTABLE_ARM_WORKAROUND=1,IL2CPP_DEBUG=";
 
         public static void ConfigureXcodeProject(BuildTarget buildTarget, string path, string projectName,
+            VisionOSSettings.AppMode appMode = VisionOSSettings.AppMode.MR,
             bool il2cppArmWorkaround = false,
             string staticLibraryPluginName = null,
+
             // name in project -> actual filename. If actual filename is null, file is assumed to already be in
             // the right place in project structure. If filename is not-null, it's copied from there.
             // If the project path starts with MainApp, then it goes into the app target, otherwise to UnityFramework
@@ -42,9 +45,6 @@ namespace Unity.PolySpatial.Internals.Editor
             proj.ReadFromFile(xcodePath);
 
             var extraHeaders = new StringBuilder();
-            #pragma warning disable 0219
-            bool actuallyHasARKit = false;
-
             var unityFrameworkTarget = proj.GetUnityFrameworkTargetGuid();
             var swiftAppTarget = proj.GetUnityMainTargetGuid();
             var doAppend = false; // args.options & BuildOptions.AcceptExternalModificationsToPlayer
@@ -75,9 +75,12 @@ namespace Unity.PolySpatial.Internals.Editor
                 CopyDirectoryTo(Path.Combine(pluginSrcPath, $"PolySpatialRealityKit.swiftmodule"), pluginDstXcodePath);
             }
 
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+            if (appMode == VisionOSSettings.AppMode.MR)
+            {
+                CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
+                CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
+                CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+            }
 
             if (buildTarget == BuildTarget.StandaloneOSX)
                 CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
@@ -86,6 +89,7 @@ namespace Unity.PolySpatial.Internals.Editor
             {
                 // remove the input system iOS step counter implementation
                 RemoveFileFromProjectAndDelete("Libraries/com.unity.inputsystem/InputSystem/Plugins/iOS/iOSStepCounter.mm");
+
                 // and add a dummy one
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "iOSStepCounterDummy.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
@@ -94,18 +98,21 @@ namespace Unity.PolySpatial.Internals.Editor
             // we added our own Swift shell
             RemoveFileFromProjectAndDelete("MainApp/main.mm");
 
-            foreach (var item in extraSourceFiles)
+            if (extraSourceFiles != null)
             {
-                var filepathinproj = item.Key;
-
-                if (item.Value != null)
+                foreach (var item in extraSourceFiles)
                 {
-                    Directory.CreateDirectory(Path.Combine(path, Path.GetDirectoryName(filepathinproj)));
-                    FileUtil.CopyFileOrDirectory(item.Value, Path.Combine(path, filepathinproj));
-                }
+                    var filePathInProject = item.Key;
 
-                var target = item.Key.StartsWith("MainApp") ? swiftAppTarget : unityFrameworkTarget;
-                BuildUtils.AddFileToBuildTarget(proj, filepathinproj, target, filepathinproj);
+                    if (item.Value != null)
+                    {
+                        Directory.CreateDirectory(Path.Combine(path, Path.GetDirectoryName(filePathInProject)));
+                        FileUtil.CopyFileOrDirectory(item.Value, Path.Combine(path, filePathInProject));
+                    }
+
+                    var target = item.Key.StartsWith("MainApp") ? swiftAppTarget : unityFrameworkTarget;
+                    AddFileToBuildTarget(proj, filePathInProject, target, filePathInProject);
+                }
             }
 
             // Configure Unity Framework; add a modulemap file to allow access from Swift,

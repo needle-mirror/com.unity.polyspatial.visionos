@@ -72,13 +72,9 @@ namespace Unity.PolySpatial.Internals.Editor
             var outputPath = report.summary.outputPath;
             PatchIl2Cpp(outputPath);
 
-            var settings = VisionOSSettings.currentSettings;
-            if (settings.appMode == VisionOSSettings.AppMode.VR)
-                return;
-
             if (!PolySpatialSettings.instance.EnablePolySpatialRuntime
 #if POLYSPATIAL_INTERNAL
-                && !PolySpatialSettings.instance.ForceLinkPolySpatialRuntime
+                && !PolySpatialSettings.instance.AlwaysLinkPolySpatialRuntime
 #endif
                )
             {
@@ -95,14 +91,25 @@ namespace Unity.PolySpatial.Internals.Editor
 
                 WriteVisionOSSettings(outputPath);
 
-                SwiftAppShellProcessor.ConfigureXcodeProject(report.summary.platform, outputPath,
-                    VisionOSBuildPreProcessor.k_XcodeProjName,
-                    il2cppArmWorkaround: true,
-                    staticLibraryPluginName: isSimulator ? "libPolySpatial_xrsimulator.a" : "libPolySpatial_xros.a",
-                    extraSourceFiles: new Dictionary<string, string>()
+                var settings = VisionOSSettings.currentSettings;
+                var appMode = VisionOSSettings.AppMode.MR;
+                if (settings != null)
+                    appMode = settings.appMode;
+
+                Dictionary<string, string> extraSourceFiles = null;
+                if (appMode == VisionOSSettings.AppMode.MR)
+                {
+                    extraSourceFiles = new Dictionary<string, string>()
                     {
                         { "MainApp/UnityVisionOSSettings.swift", null }
-                    }
+                    };
+                }
+
+                SwiftAppShellProcessor.ConfigureXcodeProject(report.summary.platform, outputPath,
+                    VisionOSBuildPreProcessor.k_XcodeProjName, appMode,
+                    il2cppArmWorkaround: true,
+                    staticLibraryPluginName: isSimulator ? "libPolySpatial_xrsimulator.a" : "libPolySpatial_xros.a",
+                    extraSourceFiles: extraSourceFiles
                 );
 
                 FilterXcodeProj(outputPath, VisionOSBuildPreProcessor.k_XcodeProjName);
@@ -247,11 +254,6 @@ extension UnityPolySpatialApp {{
 
             var pbx = new PBXProject();
             pbx.ReadFromFile(xcodePbx);
-
-            //pbx.RemoveFile(pbx.FindFileGuidByProjectPath("LaunchScreen-iPhone.storyboard"));
-            //pbx.RemoveFile(pbx.FindFileGuidByProjectPath("LaunchScreen-iPad.storyboard"));
-            pbx.AddFrameworkToProject(pbx.GetUnityFrameworkTargetGuid(), "CompositorServices.framework", false);
-            pbx.AddFrameworkToProject(pbx.GetUnityFrameworkTargetGuid(), "ARKit.framework", false);
 
             // add in -ld argument, for object file compat
             foreach (var tgt in new[] { pbx.GetUnityFrameworkTargetGuid(), pbx.GetUnityMainTargetGuid() })

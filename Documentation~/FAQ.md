@@ -40,3 +40,5 @@ If one is not present a default one will be created that will include the bounds
 ## Q: My TextMeshPro text shows up as Pink glyph blocks or My TextMeshPro text is blurry**
 * Locate the shader graphs included in the visionOS Package (visionOS/Resources/Shaders) and right click -> Reimport. 
 
+## Q: My content is too dark in visionOS simulator**
+* In the visionOS simulator, try using Device -> Erase All Content and Settings and/or switching to a different environment (Museum (Day) versus Living Room (Day), for instance).

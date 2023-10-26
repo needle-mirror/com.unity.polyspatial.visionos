@@ -5,6 +5,7 @@
 import AVFoundation
 import Combine
 import CoreGraphics
+import CoreImage
 import Foundation
 import OSLog
 import RealityKit
@@ -17,10 +18,10 @@ import _RealityKit_SwiftUI
 import _StringProcessing
 import _SwiftConcurrencyShims
 import simd
-extension RealityFoundation.TextureResource : Swift.Hashable {
-  @_Concurrency.MainActor(unsafe) public static func == (lhs: RealityFoundation.TextureResource, rhs: RealityFoundation.TextureResource) -> Swift.Bool
-  @_Concurrency.MainActor(unsafe) public func hash(into hasher: inout Swift.Hasher)
-  nonisolated public var hashValue: Swift.Int {
+extension RealityFoundation.MaterialParameters.Handle : Swift.Hashable {
+  public static func == (lhs: RealityFoundation.MaterialParameters.Handle, rhs: RealityFoundation.MaterialParameters.Handle) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
     get
   }
 }
@@ -90,7 +91,6 @@ extension simd.simd_quatf {
   @objc deinit
 }
 public protocol PolySpatialRealityKitDelegate {
-  func reset()
   func on(volumeAdded: PolySpatialRealityKit.PolySpatialVolume)
   func on(volumeRemoved: PolySpatialRealityKit.PolySpatialVolume)
 }
@@ -100,6 +100,11 @@ public protocol PolySpatialRealityKitDelegate {
   public static func getApiSize() -> Swift.Int32
   public static func addDelegate(_ delegate: any PolySpatialRealityKit.PolySpatialRealityKitDelegate)
   @objc deinit
+}
+extension Swift.String : Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
 }
 public struct PolySpatialContentViewWrapper : SwiftUI.View {
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {

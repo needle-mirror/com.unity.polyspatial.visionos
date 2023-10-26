@@ -11,6 +11,7 @@
     * [Create a visionOS project from scratch](TutorialCreateFromScratch.md)
     * [Create a visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md)
     * [Sample Content](Samples.md)
+    * [Preview an application with the Play To Device feature](PlayToDevice.md)
 * Reference Documentation
     * [Supported Features & Components](SupportedFeatures.md)
         * [Porting Unity Projects to PolySpatial XR](PortingUnityProjectsToPolySpatialXR.md)

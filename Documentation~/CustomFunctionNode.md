@@ -25,7 +25,7 @@ Swizzling vector values is supported.  For example, `float3(1, 2, 3).xz` is equi
 ## Supported Functions
 
 ### HLSL Intrinsic Functions
-The parser supports a subset of HLSL's intrinsic functions: `abs`, `acos`, `all`, `any`, `asin`, `atan`, `atan2`, `ceil`, `clamp`, `cos`, `cosh`, `cross`, `degrees`, `distance`, `dot`, `exp`, `floor`, `fmod`, `frac`, `isinf`, `isnan`, `length`, `lerp`, `log`, `max`, `min`, `mul`, `normalize`, `pow`, `radians`, `rcp`, `reflect`, `round`, `rsqrt`, `saturate`, `sign`, `sin`, `sinh`, `smoothstep`, `sqrt`, `step`, `tan`, `tanh`, `transpose`, `trunc`
+The parser supports a subset of HLSL's intrinsic functions: `abs`, `acos`, `all`, `any`, `asin`, `atan`, `atan2`, `ceil`, `clamp`, `cos`, `cosh`, `cross`, `degrees`, `distance`, `dot`, `exp`, `floor`, `fmod`, `frac`, `isinf`, `isnan`, `length`, `lerp`, `log`, `max`, `min`, `mul`, `normalize`, `pow`, `radians`, `rcp`, `reflect`, `refract`, `round`, `rsqrt`, `saturate`, `sign`, `sin`, `sinh`, `smoothstep`, `sqrt`, `step`, `tan`, `tanh`, `transpose`, `trunc`
 
 ### PolySpatial-Specific Functions
 Additionally, the parser supports the custom `splitlr` function, which implements the splitlr function described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf):

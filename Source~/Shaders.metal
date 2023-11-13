@@ -65,3 +65,18 @@ void maskingShader(realitykit::surface_parameters params)
     else
         params.surface().set_opacity(textureColor.a * params.material_constants().opacity_scale());
 }
+
+[[visible]]
+void unlitBakedMeshParticleShader(realitykit::surface_parameters params)
+{
+    // UV is flipped; see docs at
+    // https://developer.apple.com/documentation/realitykit/modifying-realitykit-rendering-using-custom-materials#Write-a-Surface-Shader
+    float2 uv = params.geometry().uv0();
+    uv.y = 1.0 - uv.y;
+
+    constexpr sampler textureSampler(mag_filter::linear, min_filter::linear);
+    half4 color = (half4)params.geometry().color() * params.textures().base_color().sample(textureSampler, uv);
+
+    params.surface().set_emissive_color(color.rgb);
+    params.surface().set_opacity(color.a);
+}

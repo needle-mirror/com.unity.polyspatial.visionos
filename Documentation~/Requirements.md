@@ -29,6 +29,9 @@ Rendering on RealityKit will most likely have visual differences over in Unity r
 #### Render Pipeline
 Your project must use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline. URP is preferred; if you are considering migrating your project, this would be a good opportunity to do so. Migration documentation is available for moving to URP from the Built-in pipeline: [Move on over to the Universal Render Pipeline with our advanced guide | Unity Blog](https://blog.unity.com/technology/move-on-over-to-the-universal-render-pipeline-with-our-advanced-guide)
 
+#### Color Space
+Your project must use [Linear color space](https://docs.unity3d.com/Manual/LinearRendering-LinearOrGammaWorkflow.html).
+
 #### Shaders and Materials
 You can author custom shaders for visionOS using a subset of the Unity ShaderGraph. Behind the scenes, this is converted to MaterialX. ShaderLab and other custom coded shaders are not supported, as RealityKit for visionOS doesn't expose a low-level shading language. 
 

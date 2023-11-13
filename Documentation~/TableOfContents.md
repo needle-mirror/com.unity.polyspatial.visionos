@@ -26,6 +26,7 @@
         * [VolumeCamera](VolumeCamera.md)
         * [PolySpatial Video Component](VideoComponent.md)
         * [Hover Effect](HoverEffect.md)
+        * [Grounding Shadow](GroundingShadow.md)
         * [Sorting Group](SortingGroup.md)
     * [Tooling](Tooling.md)
 * [FAQ](FAQ.md)

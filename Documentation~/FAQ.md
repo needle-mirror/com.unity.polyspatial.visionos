@@ -42,3 +42,19 @@ If one is not present a default one will be created that will include the bounds
 
 ## Q: My content is too dark in visionOS simulator**
 * In the visionOS simulator, try using Device -> Erase All Content and Settings and/or switching to a different environment (Museum (Day) versus Living Room (Day), for instance).
+
+# Play to Device Host
+**I'm having trouble connecting to the Play to Device Host**
+
+- Make sure both the host machine and the mobile device are connected to the same WiFi network
+- Make sure your firewall is not blocking the connection. If it is, then you may have to temporarily disable it using the appropriate tool for your OS.
+
+**I'm observing lag, or my editor seems to hang.**
+
+In Unity Editor, try enabling `Run in Background` under `Project Settings > Player > Resolution and Presentation`. While this setting is not currently exposed under the visionOS platform, it is shared for all build targets. You can enable it under the Standalone build target tab.
+
+**My app doesn't seem to receive any input  once connected to the host.**
+
+If your app is not receiving input from the Play To Device host (especially when using the visionOS Simulator), you may need to change your input settings. The PolySpatial package contains a preset input asset in its Package Manager samples, but the important settings to check are:
+- `Background Behavior`: Ignore Focus
+- `Play Mode Input Behavior`: All Device Input Always Goes To Game View

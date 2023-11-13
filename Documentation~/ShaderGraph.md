@@ -9,6 +9,15 @@ For technical, security, and privacy reasons, visionOS does not allow Metal-base
 ## Texture Limitations
 When sampling textures in shader graphs, note that the sampler state (filter, wrap modes) associated with the texture itself is ignored.  Instead, you must use the `Sampler State` node to control how the texture is sampled if you want to use a mode other than the default (linear filtering, repeat wrap mode).
 
+## Coordinate Space Notes
+There are two caveats to be aware of when converting between coordinate spaces in shader graphs.  Because content is transformed according to the [Volume Camera](VolumeCamera.md), the "world space" geometry returned within a shader graph will not match that of the simulation scene.  Furthermore, visionOS is currently inconsistent with regards to the geometry it returns and the transformation matrices it supplies.
+
+### Retrieving the Geometry of the Source Scene
+To obtain positions, normals, tangents, or bitangents in the world space of the simulation scene, use the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes with `Space`: `World`, then transform them using the `PolySpatial Volume to World` node with a `Transform` appropriate to the type (typically `Position` for positions and `Direction` for the rest, which will be normalized after transformation).
+
+### Notes on Transform and Transformation Matrix Nodes in VisionOS
+The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
+
 ## Shader Graph Nodes
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
 
@@ -26,7 +35,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Saturation            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | White Balance         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Blend         | Blend                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
-| Filter        | Fade Transition       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+| Filter        | Dither                | Only default `Screen Position` is supported.                                                                                  |
+|               | Fade Transition       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Mask          | Channel Mask          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Color Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Normal        | Normal Blend          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
@@ -53,50 +63,50 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 * `UV1`: Vector2
 * `UserAttribute`: Vector4
 
-  | Section   | Node                      | Notes                                                                                                                  |
-  |-----------|---------------------------|------------------------------------------------------------------------------------------------------------------------|
-  | Basic     | Boolean                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Color                     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Constant                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Integer                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Slider                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Time                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Float                     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Vector2                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Vector3                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Vector4                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Geometry  | Bitangent Vector          | Tangent and View space options are not standard.                                                                       |
-  |           | Normal Vector             | Tangent and View space options are not standard.                                                                       |
-  |           | Position                  | Tangent and View space options are not standard.                                                                       |
-  |           | Screen Position           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Tangent Vector            | Tangent and View space options are not standard.                                                                       |
-  |           | UV                        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Vertex Color              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Vertex ID                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | View Direction            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Gradient  | Gradient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Gradient           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Lighting  | Main Light Direction      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Matrix    | Matrix 2x2                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Matrix 3x3                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Matrix 4x4                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Transformation Matrix     | Tangent and View space options are not standard.                                                                       |
-  | PBR       | Metal Reflectance         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Scene     | Camera                    | `Position` and `Direction` outputs supported (non-standard).                                                           |
-  |           | Eye Index                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
-  |           | Object                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Scene Depth               | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
-  |           | Screen                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Texture   | Cubemap Asset             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Cubemap            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Reflected Cubemap  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Texture 2D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Texture 2D LOD     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sample Texture 3D         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Sampler State             | `MirrorOnce` wrap mode not supported.                                                                                  |
-  |           | Texture 2D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Texture 3D Asset          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Texture Size              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Section   | Node                     | Notes                                                                                                                  |
+  |-----------|--------------------------|------------------------------------------------------------------------------------------------------------------------|
+  | Basic     | Boolean                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Color                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Constant                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Integer                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Slider                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Time                     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Float                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Vector2                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Vector3                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Vector4                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Geometry  | Bitangent Vector         | Tangent and View space options are not standard.                                                                       |
+  |           | Normal Vector            | Tangent and View space options are not standard.                                                                       |
+  |           | Position                 | Tangent and View space options are not standard.                                                                       |
+  |           | Screen Position          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Tangent Vector           | Tangent and View space options are not standard.                                                                       |
+  |           | UV                       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Vertex Color             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Vertex ID                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | View Direction           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Gradient  | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Gradient          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Lighting  | Main Light Direction     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Matrix    | Matrix 2x2               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Matrix 3x3               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Matrix 4x4               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Transformation Matrix    | Tangent and View space options are not standard.                                                                       |
+  | PBR       | Metal Reflectance        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Scene     | Camera                   | `Position` and `Direction` outputs supported (non-standard).                                                           |
+  |           | Eye Index                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
+  |           | Object                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Scene Depth              | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
+  |           | Screen                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Texture   | Cubemap Asset            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Cubemap           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Reflected Cubemap | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 2D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 2D LOD    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 3D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sampler State            | `MirrorOnce` wrap mode not supported.                                                                                  |
+  |           | Texture 2D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Texture 3D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Texture Size             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
 
 ### Math
 
@@ -157,6 +167,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Fresnel Effect         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Projection             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Reflection             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | Refract                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Rejection              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Rotate About Axis      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sphere Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |

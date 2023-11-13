@@ -2,37 +2,100 @@
 uid: psl-play-to-device
 ---
 
-# Preview an Application with the Play To Device App
+# Play to Device
+The Play to Device feature drastically improves iteration and debugging workflows. it enables you to:
 
-## The Play To Device App
+* Efficiently iterate and live preview your content across the Unity editor on the visionOS simulator or the Apple Vision Pro device
+* Deploy your content without rebuilding an Xcode project
+* Access Unity editor’s play mode features on the visionOS simulator and Apple Vision Pro device
 
-The Play To Device app is a downloadable application that helps with visionOS development. It connects your Apple's visionOS Simulator and/or Vision Pro device to the Unity Editor and displays the visual output from the Editor on the target's device screen. This speeds up iteration time by allowing you to see how a shared world application looks and feels on the target device without creating a build.
+This feature is delivered through the Play to Device Host application, which can be installed on the visionOS Simulator or an Apple Vision Pro device. With the Play to Device host running, you can press Play in the Unity Editor and see your content appear in the simulator or on device, rendered by RealityKit. No intermediate builds are required.
 
-### Requirements and compatibility 
+ Any changes you make in Unity Editor - such as creating game objects, modifying inspector values, updating and recompiling shader graphs, etc. - will be synchronized to the simulator/device in real time, and any interactions you perform on the host will be synchronized back to the editor.
 
-The Play To Device App supports the following platforms:
-- visionOS Simulator
-- Vision Pro device
+**NOTE**: Loading a scene during runtime is currently not supported on Play to Device.
 
-### Setting up the Play To Device feature
+## Version Compatibility Matrix
 
-To set up the Play To Device feature Open the Play to Device Window by clicking on **Window > PolySpatial > Play To Device** and make sure:
+The Play to Device Host must match your PolySpatial package version exactly. The table below provides links to the Xcode and device-specific hosts compatible with each PolySpatial release. 
 
-- The Play To Device application is installed from Test Flight App by selecting **Download The TestFlight App** link **(A)**.
-- Once installed, open the Play To Device App in either your visionPro or Apple's visionOS Simulator.
-- Make sure **Connect To Player On Play Mode** is toggled **on** in the Play To Device Editor Window **(B)**. 
-- Use the IP address displayed to manually input the IP in the Play To Device Editor Window in the Unity Editor **(C)**.
+<table>
+  <tr>
+   <td><strong>PolySpatial Version</strong>
+   </td>
+   <td>Supported Unity Versions
+   </td>
+   <td>Required Xcode Versions
+   </td>
+   <td>Required Firmware Version
+   </td>
+   <td>Xcode .App Link (Apple Silicon)
+   </td>
+   <td>Device TestFlight Link
+   </td>
+  </tr>
+  <tr>
+   <td>0.6.0
+   </td>
+   <td>2022.3.11f1 and higher
+   </td>
+   <td>Xcode 15.1 Beta 1 and higher 
+   </td>
+   <td>visionOS beta 4 (21N5259k) and higher
+   </td>
+   <td><a href="https://drive.google.com/drive/u/0/folders/11Ffgx3aZ-Hqx2mk2MtFb56c-q7b0ex88">Link</a> 
+   </td>
+   <td><a href="https://testflight.apple.com/join/FVMH8aiG">Link</a> 
+   </td>
+  </tr>
+</table>
+
+## First Time Setup - visionOS Simulator
+To install the host app for the visionOS simulator:
+
+1. Download the “**Play To Device Host.app.zip**” to your Apple Silicon Mac. See the Compatibility Matrix above to identify the right version given your PolySpatial version. 
+2. Extract the zip file revealing “**Play To Device Host.app**” in Finder.
+3. Start the visionOS simulator, either by going to **“Xcode > Open Developer Tool > Simulator**” within Xcode, or using Spotlight (command+space) and typing “simulator”.
+4. When the simulator is running, you can see the home screen with various app icons. Drag “**Play To Device Host.app**” from the Finder window into the simulator window.
+5. After a few seconds, you should see “**Play To Device Hos**t” appear as one of the app icons on the home screen. Note that you may have to scroll the app list to see it.
+
+
+## First Time Setup - visionOS Hardware
+To install the host app for an Apple Vision Pro device:
+
+1. Follow the TestFlight invite link on your computer or smartphone (or in Safari on the device). You should see an invite code. See the **Compatibility Matrix** above to access a link compatible with your PolySpatial version. 
+2. Open the TestFlight app on your Vision Pro device, signing into your Apple account if necessary.
+3. Tap “**Redeem Code**” in the TestFlight app.
+4. Enter the code you saw in your browser after following the invite link.
+5. Tap “**Download**” in the TestFlight app after reading the build information and release notes.
+6. After a few seconds, either tap “**Open**” from TestFlight or navigate to the Play To Device Host application that now appears on your home screen.
+
+
+## First Time Setup - Unity Editor
+Once you've installed a host app for device or simulator (see above):
+
+1. Make sure the host and development machine are on the same LAN.
+2. Launch the host app. 
+3. In Unity Editor, open the Play to Device Editor window by clicking on  \
+**Window > PolySpatial > Play to Device**
+4. Copy the IP address displayed within the Host app to the **“Host IP**” field of the Play to Device editor window.
+5. Enable **Connect to Player on Play Mode**
+6. Enter **Play mode** in the Unity Editor. The Unity Editor will connect to the host and begin streaming your experience to the host in real time. You can then view, play, or interact with your experience via either editor or device; changes and interactions will automatically stay in sync. 
+
+If you notice that your connection is timing out, you can increase the connection timeout in the Play To Device Editor Window. The default timeout is 5 seconds.
 
 ![Play To Device Window](images/PlayToDevice/PlayToDeviceWindow.png)
 
-### Troubleshooting Connection
+## Subsequent Usage
 
-- Make sure both the host machine and the mobile device are connected to the same WiFi network
-- Make sure your firewall is not blocking the connection. If it is, then you may have to temporarily disable it using the appropriate tool for your OS.
+After initial setup, your content will be synced to the host app each time you press play, as long as **Connect to Player on Play Mode** is enabled and the host remains live. 
 
-## Previewing a small cube in the Play To Device App
+## Troubleshooting
+For troubleshooting issues refer to the [Play to Device troubleshooting section in the FAQ](FAQ.md#play-to-device-host)
 
-To preview an application in the Play To Device App:
+# Tutorial: Previewing a cube
+
+To preview an application in the Play To Device host:
 
 1. Create a new volume camera configuration asset by right clicking in the project view and selecting **Create > PolySpatial > Volume Camera Configuration**.
 
@@ -51,13 +114,13 @@ To preview an application in the Play To Device App:
 
 ![CubeSetup](images/PlayToDevice/4.CreateContentInsideVolumeCamera.gif)
 
-5. Open the Play To Device App in either the visionOS Simulator or a Vision Pro device.
+5. Open the Play To Device host in either the visionOS Simulator or a Vision Pro device.
 
 ![PlayToDeviceApp](images/PlayToDevice/5.PlayToDeviceSimulator.png)
 
 6. Open the Play To Device _Editor Window_ and make sure **Connect To Player On Play Mode** is toggled on. To no longer stream to the Play To Device and return to Game View, simply turn off the **Connect To Player On Play Mode** property in the Play To Device Editor Window.
 
-7. With the Play To Device App open, click the Play button in the Editor to see the application appear in the app.
+7. With the Play To Device host open, click the Play button in the Editor. The application should begin running both within the editor and in the host app.
 
 ![PlayToDeviceStream](images/PlayToDevice/6.PlayToDeviceStream.gif)
 

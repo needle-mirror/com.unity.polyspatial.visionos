@@ -33,7 +33,7 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 | **SkinnedMeshRenderer**   |  Unoptimized animation only (the **Optimize Game Objects** option on the Rig tab of the Model Import inspector must be ticked off if it appears.) |
 | **Particle Systems**      | Partial support; see [Particle Systems](#particle-systems) below |
 | **Trail Renderer**        | Partial support; see [Particle Systems](#particle-systems) below |
-| **Light**                 | Up to 4 dynamic lights only, and requires each affected material to include a PolySpatial Lighting Node in its shadergraph |
+| **Light**                 | Up to 4 dynamic lights only, and requires each affected material to include a [PolySpatial Lighting Node](PolySpatialLighting.md) in its shadergraph |
 | **Camera**                | Not supported |
 | **Halo**                  | Not supported |
 | **Lens Flare**            | Not supported |
@@ -51,11 +51,11 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 | **Graphics Raycaster**    | Not supported |
 | **Shaderlab Shaders**     | Not supported |
 | **Post Processors**       | Not supported |
-| **Lightmapping**          | Requires manual support |
-| **Baked Lighting**        | Not supported |
+| **Lightmapping**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
+| **Baked Lighting**        | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
 | **Enlighten**             | Not supported |
-| **Light Probes**          | Requires manual support |
-| **Reflection Probes**     | Not supported |
+| **Light Probes**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
+| **Reflection Probes**     | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
 | **Trees**                 | Not supported |
 | **Fog**                   | Not supported |
 
@@ -103,14 +103,14 @@ When using the "Replicate Properties" particle mode in PolySpatial, Particle Sys
 ## User Interface (UI)
 [Unity UI](https://docs.unity3d.com/Manual/com.unity.ugui.html) works in world space, but screen space UI and advanced visual features like masking, shadowing, etc do not currently work. The table below summarizes the supprot status for other UI features:
 
-| **Component**       | **Status**                                                                |
-|---------------------|---------------------------------------------------------------------------|
-| **TextMesh**        | Supported                                                       |
-| **Canvas Renderer** | Partially Supported                                                       |
-| **Sprite Renderer** | Supported                                                       |
-| **TextMesh Pro**    | &#8226; Partially Supported<br/>&#8226; Raster only<br/> &#8226; No custom shaders |
-| **Rect Transform**  | No specific support for sizing                                            |  
-
+| **Component**        | **Status**                                                                         |
+|----------------------|------------------------------------------------------------------------------------|
+| **TextMesh**         | Supported                                                                          |
+| **Canvas Renderer**  | Partially Supported                                                                |
+| **Sprite Renderer**  | Supported                                                                          |
+| **TextMesh Pro**     | &#8226; Partially Supported<br/>&#8226; SDF only<br/> &#8226; No custom shaders |
+| **Rect Transform**   | No specific support for sizing                                                     |  
+| **Platform Text**    | See [Platform Text Rendering](PlatformText.md)                                     |
 # Final thoughts
 Unity has many more components, but the main parts of the average XR app were covered in this section. Generally speaking, your existing Unity projects will likely require work to port to PolySpatial XR.
 

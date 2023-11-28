@@ -7,6 +7,27 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.3] - 2023-11-28
+
+### Added
+- Added link from the Index page to the Requirements page for easier access to the required Unity versions for Polyspatial.
+- Added instructions for upgrading/downgrading Play to Device Host app on TestFlight.
+
+### Changed
+- Moved the PolySpatial Unity Version Support matrix from the Changelog to the Requirements page in the docs.
+- Play to device page no longer has a compatibility version matrix for each PolySpatial release but points to a google drive folder on where one can find the different Play To Device Host versions.
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Moving volume cameras will no longer recreate the window on every frame.
+- Fixed crash due when Raycast Target is enabled on UGUI elements.
+- Corrected docs for PolySpatial version in the Play To Device docs to 0.6.2 version (instead of 0.6.0).
+
+### Security
+
 ## [0.6.2] - 2023-11-13
 
 ### Added
@@ -40,20 +61,6 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 - [com.unity.polyspatial.xr](https://docs.unity3d.com/Packages/com.unity.polyspatial.xr@0.6/changelog/CHANGELOG.html)
 - [com.unity.xr.visionos](https://docs.unity3d.com/Packages/com.unity.xr.visionos@0.6/changelog/CHANGELOG.html)
 
-### Version Support Matrix
-
-|PolySpatial package versions|Unity Version|Xcode Version|Device seed version|
-|----------------------------|-------------|-------------|-------------------|
-|0.1.0|2022.3.5f1|15 beta 2|1|
-|0.1.0   |2022.3.5f1   |15 beta 2   |1|
-|0.1.2   |2022.3.5f1   |15 beta 2   |1|
-|0.2.2   |2022.3.5f1   |15 beta 5   |2 21N5207g|
-|0.3.2   |2022.3.9f1   |15 beta 8   |3 21N5233f|
-|0.3.3   |2022.3.9f1   |15 beta 8   |3 21N5233f|
-|0.4.1   |2022.3.9f1 and above   |15.1 beta   |4 21N5259k|
-|0.4.3   |2022.3.9f1 and above   |15.1 beta   |4 21N5259k|
-|0.5.0   |2022.3.11f1 and 2022.3.12f1   |15.1 beta   |4 21N5259k|
-|0.6.x|2022.3.11f1 to 2022.3.13f1   |15.1 beta   |4+ 21N5259k|
 
 ### Added
 

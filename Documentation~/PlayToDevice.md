@@ -15,40 +15,13 @@ This feature is delivered through the Play to Device Host application, which can
 
 **NOTE**: Loading a scene during runtime is currently not supported on Play to Device.
 
-## Version Compatibility Matrix
+## Requirements
+Depending on how you are running your application, you will need to install the Play to Device Host on either the visionOS Simulator or an Apple Vision Pro device. 
 
-The Play to Device Host must match your PolySpatial package version exactly. The table below provides links to the Xcode and device-specific hosts compatible with each PolySpatial release. 
+* For running the Play to Device Host on the _visionOS simulator_ you can find the Xcode .app files in the [Following link](https://drive.google.com/drive/u/0/folders/1ZmWoS6NhrrmvabYia79hlvbyPV1mUN2p).
+* For running the Play to Device Host on an _Apple Vision Pro device_ you can find the TestFlight link in the [Following link](https://testflight.apple.com/join/FVMH8aiG).
 
-<table>
-  <tr>
-   <td><strong>PolySpatial Version</strong>
-   </td>
-   <td>Supported Unity Versions
-   </td>
-   <td>Required Xcode Versions
-   </td>
-   <td>Required Firmware Version
-   </td>
-   <td>Xcode .App Link (Apple Silicon)
-   </td>
-   <td>Device TestFlight Link
-   </td>
-  </tr>
-  <tr>
-   <td>0.6.0
-   </td>
-   <td>2022.3.11f1 and higher
-   </td>
-   <td>Xcode 15.1 Beta 1 and higher 
-   </td>
-   <td>visionOS beta 4 (21N5259k) and higher
-   </td>
-   <td><a href="https://drive.google.com/drive/u/0/folders/11Ffgx3aZ-Hqx2mk2MtFb56c-q7b0ex88">Link</a> 
-   </td>
-   <td><a href="https://testflight.apple.com/join/FVMH8aiG">Link</a> 
-   </td>
-  </tr>
-</table>
+**It is important to note that the Play to Device Host must match your PolySpatial package version exactly.** Refer to the [Requirements page](Requirements.md#requirements) for more information about the specific editor versions supported depending on the PolySpatial package version you are running.
 
 ## First Time Setup - visionOS Simulator
 To install the host app for the visionOS simulator:
@@ -124,3 +97,13 @@ To preview an application in the Play To Device host:
 
 ![PlayToDeviceStream](images/PlayToDevice/6.PlayToDeviceStream.gif)
 
+# Upgrading/Downgrading TestFlight versions of PlayToDevice
+
+As explained above, you must use a version of the Play to Device Host app that matches the version of the PolySpatial packages used in the Editor. This means that you may need to upgrade/downgrade the version of the app on your device depending on the version of PolySpatial you have in your project. When using the link to install the app for the first time, the latest version will be installed.
+- To upgrade to the latest version, simply open the TestFlight app, find `Unity Play to Device Host` in the list, and tap `Upgrade`.
+- To downgrade or upgrade to any version other than the latest, tap the title of the `Unity Play to Device Host` app. This will bring you to a new view with more information.
+    - In the app details view, tap `Previous Builds`
+    - Tap the version number which corresponds to the version of PolySpatial in your project
+    - In the build details view, tap `Install`
+
+You can find more information about TestFlight and how to test previous builds in the [official documentation](https://testflight.apple.com/#testing-previous-builds)

@@ -18,6 +18,12 @@ To obtain positions, normals, tangents, or bitangents in the world space of the 
 ### Notes on Transform and Transformation Matrix Nodes in VisionOS
 The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
 
+## Input Properties
+Shader graph properties must be set to `Exposed` in order to be set on a per-instance basis.  Globals must *not* be `Exposed`, and global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).
+
+## Supported Targets
+The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types and the `Alpha Clipping` setting.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  Due to platform limitations, all materials will have `Front` render face, depth writes enabled, `LEqual` depth testing, and tangent space fragment normals.
+
 ## Shader Graph Nodes
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
 
@@ -41,6 +47,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Color Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 | Normal        | Normal Blend          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal From Height    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
+|               | Normal From Texture   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Reconstruct Z  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Strength       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
 |               | Normal Unpack         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                      |
@@ -84,14 +91,17 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Vertex Color             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex ID                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | View Direction           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Gradient  | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Gradient  | Blackbody                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  | Lighting  | Main Light Direction     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | Lighting  | Ambient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Main Light Direction     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Matrix    | Matrix 2x2               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 3x3               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 4x4               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Transformation Matrix    | Tangent and View space options are not standard.                                                                       |
-  | PBR       | Metal Reflectance        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  | PBR       | Dielectric Specular      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Metal Reflectance        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Scene     | Camera                   | `Position` and `Direction` outputs supported (non-standard).                                                           |
   |           | Eye Index                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
   |           | Object                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -179,27 +189,31 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 ### Procedural
 
-| Section | Node             | Notes                                                                                                                                                                 |
-|---------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Noise   | Gradient Noise   | - Can't be certain that target platform noise functions will behave the same. <br> - Frequency is currently off (scale is mapped to amplitude rather than frequency). |
-|         | Voronoi          | - Can't be certain that target platform noise functions will behave the same.                                                                                         |
-| Shapes  | Ellipse          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
-|         | Polygon          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
-|         | Rectangle        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+| Section    | Node              | Notes                                                                                                                                                                 |
+|------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Procedural | Checkerboard      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+| Noise      | Gradient Noise    | - Can't be certain that target platform noise functions will behave the same. <br> - Frequency is currently off (scale is mapped to amplitude rather than frequency). |
+|            | Voronoi           | - Can't be certain that target platform noise functions will behave the same.                                                                                         |
+| Shapes     | Ellipse           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Polygon           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Rectangle         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Rounded Polygon   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Rounded Rectangle | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 
 ### Utility
 
-| Section | Node                 | Notes                                                                                                                                                                                |
-|---------|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Utility | Custom Function      | See [custom function node conversion notes](CustomFunctionNode.md).                                                                                                                  |
-|         | PolySpatial Lighting | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
-|         | Preview              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Split LR             | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
-| Logic   | Branch               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Comparison           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Is Infinite          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Is NaN               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
-|         | Or                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+| Section | Node                             | Notes                                                                                                                                                                                |
+|---------|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Utility | Custom Function                  | See [custom function node conversion notes](CustomFunctionNode.md).                                                                                                                  |
+|         | PolySpatial Environment Radiance | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
+|         | PolySpatial Lighting             | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
+|         | Preview                          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Split LR                         | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
+| Logic   | Branch                           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Comparison                       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Is Infinite                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Is NaN                           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
+|         | Or                               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 
 ### UV
 

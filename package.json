@@ -1,13 +1,13 @@
 {
   "name": "com.unity.polyspatial.visionos",
   "displayName": "PolySpatial visionOS",
-  "version": "0.6.3",
+  "version": "0.7.1",
   "unity": "2022.3",
-  "unityRelease": "11f1",
+  "unityRelease": "15f1",
   "description": "Unity PolySpatial integration package to support shared and immersive mode rendering on Apple visionOS.\nUnity PolySpatial and visionOS support is only available to Unity Pro, Unity Enterprise, and Unity Industry users. Learn more about these plans at unity.com/pricing.",
   "dependencies": {
-    "com.unity.polyspatial": "0.6.3",
-    "com.unity.xr.visionos": "0.6.3",
+    "com.unity.polyspatial": "0.7.1",
+    "com.unity.xr.visionos": "0.7.1",
     "com.unity.xr.management": "4.4.0"
   },
   "versionDefines": [],
@@ -15,15 +15,15 @@
     "changelog": ""
   },
   "_upm": {
-    "changelog": "### Added\n- Added link from the Index page to the Requirements page for easier access to the required Unity versions for Polyspatial.\n- Added instructions for upgrading/downgrading Play to Device Host app on TestFlight.\n\n### Changed\n- Moved the PolySpatial Unity Version Support matrix from the Changelog to the Requirements page in the docs.\n- Play to device page no longer has a compatibility version matrix for each PolySpatial release but points to a google drive folder on where one can find the different Play To Device Host versions.\n\n### Deprecated\n\n### Removed\n\n### Fixed\n- Moving volume cameras will no longer recreate the window on every frame.\n- Fixed crash due when Raycast Target is enabled on UGUI elements.\n- Corrected docs for PolySpatial version in the Play To Device docs to 0.6.2 version (instead of 0.6.0).\n\n### Security"
+    "changelog": "### Added\n\n### Changed\n- All packages now require 2022.3.15f1 and later (rather than 2022.3.11f1 and later) to pick up fixes for various memory leaks made in 15f1.\n\n### Deprecated\n\n### Removed\n- Removed Statistics docs and Asset finder docs since the tooling is not available anymore\n- Support for Unity versions earlier than 2022.3.11f1.\n\n### Fixed\n\n### Security"
   },
   "upmCi": {
-    "footprint": "3299bf1a3fe6341acdce711383e5c2edb8b83071"
+    "footprint": "b2885195f9eb81106e8bec1e1440ee08f823b7b8"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@0.6/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@0.7/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/quantum.git",
     "type": "git",
-    "revision": "81e2894f340510275c7a62c85782cc27bfcd2142"
+    "revision": "9380fa90b9beccee80c464f367b54c02c71c3642"
   }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import UnityFramework
 
- class UnityLibrary: UIResponder, UIApplicationDelegate, UnityFrameworkListener {
+class UnityLibrary: UIResponder, UIApplicationDelegate, UnityFrameworkListener {
 
     public static var instance : UnityLibrary?
 
@@ -56,7 +56,6 @@ import UnityFramework
                 argv[i] = cp
             }
         }
-
         unityFramework.runEmbedded(withArgc: Int32(args.count), argv: argv, appLaunchOpts: nil)
     }
 
@@ -80,5 +79,19 @@ import UnityFramework
         UnityLibrary.instance = nil;
     }
 
+    public func didBecomeActive() {
+        unityFramework.appController().applicationDidBecomeActive(UIApplication.shared)
+    }
 
+    public func willResignActive() {
+        unityFramework.appController().applicationWillResignActive(UIApplication.shared)
+    }
+
+    public func didEnterBackground() {        
+        unityFramework.appController().applicationDidEnterBackground(UIApplication.shared)
+    }
+
+    public func willEnterForeground() {
+        unityFramework.appController().applicationWillEnterForeground(UIApplication.shared)
+    }
 }

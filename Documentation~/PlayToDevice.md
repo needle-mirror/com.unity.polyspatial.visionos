@@ -47,21 +47,25 @@ To install the host app for an Apple Vision Pro device:
 ## First Time Setup - Unity Editor
 Once you've installed a host app for device or simulator (see above):
 
-1. Make sure the host and development machine are on the same LAN.
-2. Launch the host app. 
-3. In Unity Editor, open the Play to Device Editor window by clicking on  \
-**Window > PolySpatial > Play to Device**
-4. Copy the IP address displayed within the Host app to the **“Host IP**” field of the Play to Device editor window.
-5. Enable **Connect to Player on Play Mode**
-6. Enter **Play mode** in the Unity Editor. The Unity Editor will connect to the host and begin streaming your experience to the host in real time. You can then view, play, or interact with your experience via either editor or device; changes and interactions will automatically stay in sync. 
+1. Launch the Play to Device host app in your device or the Apple VisionOS simulator.
+2. In the Unity Editor, open the Play to Device Editor window via the main menu under  \
+**Window > PolySpatial > Play to Device**.
+3. If the Play to Device host app is running on a device that shares the same LAN as your Unity Editor (or is running locally on the same machine), its connection will be automatically detected and you can jump to step **4**. Otherwise, follow the steps below to add a direct connection:
+   1. Open the **Direct Connection** section inside the **Advanced Settings** foldout.
+   2. Set a **Host Name** that uniquely identifies the host app for you.
+   3. Insert the IP address and port that maps to the host app launched at step **1**.
+   4. Click the **Add Device** button.
+4. Select the desired host app to connect by checking the **Connect** toggle in the **Available Connections** list.
+5. Make sure that **Connect on Play** is **enabled**.
+6. Enter **Play mode** in the Unity Editor. The Unity Editor will connect to the host and begin streaming your experience to the host in real time. You can then view, play, or interact with your experience via either editor or device; changes and interactions will automatically stay in sync.
 
-If you notice that your connection is timing out, you can increase the connection timeout in the Play To Device Editor Window. The default timeout is 5 seconds.
+If you notice that your connection is timing out, you can increase the connection timeout in the **Advanced Settings** of the Play To Device Editor Window. The default timeout is 5 seconds.
 
 ![Play To Device Window](images/PlayToDevice/PlayToDeviceWindow.png)
 
 ## Subsequent Usage
 
-After initial setup, your content will be synced to the host app each time you press play, as long as **Connect to Player on Play Mode** is enabled and the host remains live. 
+After initial setup, your content will be synced to the host app each time you press play, as long as the **Connect on Play** is **enabled**, and the host remains live. 
 
 ## Troubleshooting
 For troubleshooting issues refer to the [Play to Device troubleshooting section in the FAQ](FAQ.md#play-to-device-host)
@@ -91,7 +95,7 @@ To preview an application in the Play To Device host:
 
 ![PlayToDeviceApp](images/PlayToDevice/5.PlayToDeviceSimulator.png)
 
-6. Open the Play To Device _Editor Window_ and make sure **Connect To Player On Play Mode** is toggled on. To no longer stream to the Play To Device and return to Game View, simply turn off the **Connect To Player On Play Mode** property in the Play To Device Editor Window.
+6. Open the Play To Device _Editor Window_ and make sure **Connect on Play** is enabled. To no longer stream to the Play To Device and return to Game View, simply close the Play To Device Editor Window or disable the **Connect on Play** property.
 
 7. With the Play To Device host open, click the Play button in the Editor. The application should begin running both within the editor and in the host app.
 

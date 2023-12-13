@@ -46,7 +46,7 @@ If one is not present a default one will be created that will include the bounds
 # Play to Device Host
 **I'm having trouble connecting to the Play to Device Host**
 
-- Make sure both the host machine and the mobile device are connected to the same WiFi network
+- Make sure both the host machine and the mobile device are connected to the same LAN. If they are not on the same LAN, you can add a direction connection using **Advanced Settings** in the Play To Device Editor Window.
 - Make sure your firewall is not blocking the connection. If it is, then you may have to temporarily disable it using the appropriate tool for your OS.
 
 **I'm observing lag, or my editor seems to hang.**

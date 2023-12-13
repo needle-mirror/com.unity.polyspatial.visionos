@@ -18,3 +18,16 @@ The `PolySpatialVideoComponent` component exposes the following properties:
 | **PlayOnAwake** | Whether the video should start playing when `Awake()` is called.|
 | **Mute** | When true, audio playback is suppressed; when false, the volume value is respected. |
 | **Volume** | The current volume of audio playback for the clip, ranging between 0 and 1. |
+
+| **Method**                   | **Description** |
+|------------------------------| --- |
+| **GetState()**               | Get current state of the video player.|
+| **Play()**                   | Starts playback. |
+| **Stop()**                   | Stops the playback and sets the current time to 0. |
+| **Pause()**                  | Pauses the playback and leaves the current time intact. |
+| **GetDirectAudioMute()**     | Get the direct-output audio mute status for the specified track - note that currently only track index 0 works. |
+| **SetDirectAudioMute()**     | Set the direct-output audio mute status for the specified track - note that currently only track index 0 works. |
+| **GetDirectAudioVolume()**   | Get the direct-output audio volume for the specified track - note that currently only track index 0 works. |
+| **SetDirectAudioVolume()**   | Set the direct-output audio volume for the specified track - note that currently only track index 0 works. |
+
+

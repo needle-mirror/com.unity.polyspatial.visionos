@@ -25,23 +25,39 @@ namespace Unity.PolySpatial.Internals.Editor
             for (int i = 0; i < totalSteps; i++)
             {
                 float progress = (float)i / totalSteps;
-                string progressText = $"Building PolySpatial plugin for {args[i]}";
+                string plugin = args[i];
+                string progressText = $"Building PolySpatial plugin for {plugin}";
 
-                EditorUtility.DisplayProgressBar($"Building {args[i]}", progressText, progress);
+                EditorUtility.DisplayProgressBar($"Building {plugin}", progressText, progress);
 
-                var pkgPath = Path.GetFullPath("Packages/com.unity.polyspatial.visionos");
-                var repoRoot = Path.Combine(pkgPath, "../..");
-                var scriptPath = Path.GetFullPath(Path.Combine(repoRoot, "Tools/build-binary-plugins.sh"));
-                if (!File.Exists(scriptPath))
-                {
-                    throw new BuildFailedException($"{scriptPath} not found");
+                bool success;
+                string output;
+
+                if (plugin == "xr-visionos") {
+                    var xrSrcPath = Path.Combine(Path.GetFullPath("Packages/com.unity.xr.visionos"), "Source~");
+                    if (!Directory.Exists(xrSrcPath))
+                    {
+                        throw new BuildFailedException($"{xrSrcPath} not found");
+                    }
+
+                    (success, output) = BuildUtils.RunCommandWithOutput(Path.Combine(xrSrcPath, "bee"), null, xrSrcPath, k_BuildTimeoutSeconds,
+                            new () { ["XRSDK_USE_LOCAL_TOOLCHAIN"] = "1" });
+                } else {
+                    var pkgPath = Path.GetFullPath("Packages/com.unity.polyspatial.visionos");
+                    var repoRoot = Path.Combine(pkgPath, "../..");
+                    var scriptPath = Path.GetFullPath(Path.Combine(repoRoot, "Tools/build-binary-plugins.sh"));
+                    if (!File.Exists(scriptPath))
+                    {
+                        throw new BuildFailedException($"{scriptPath} not found");
+                    }
+
+                    (success, output) = BuildUtils.RunCommandWithOutput(scriptPath, plugin, repoRoot, k_BuildTimeoutSeconds);
                 }
 
-                var (success, output) = BuildUtils.RunCommandWithOutput(scriptPath, args[i], repoRoot, k_BuildTimeoutSeconds);
                 if (!success)
                 {
                     Debug.LogError(output);
-                    throw new Exception($"Command failed: {scriptPath} {args[i]}");
+                    throw new BuildFailedException($"Plugin command build for {plugin} failed");
                 }
             }
         }
@@ -103,6 +119,17 @@ namespace Unity.PolySpatial.Internals.Editor
                 return;
 
             DoPluginBuild("visionos");
+        }
+
+#if POLYSPATIAL_INTERNAL
+        [MenuItem("Tools/Build visionOS XR Plugin", false, 100)]
+#endif
+        public static void BuildVisionOSXRPlugin()
+        {
+            if (BuildUtils.IsPackageImmutable())
+                return;
+
+            DoPluginBuild("xr-visionos");
         }
 
         /// <inheritdoc/>

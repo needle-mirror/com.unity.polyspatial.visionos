@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.iOS.Xcode;
@@ -361,7 +362,7 @@ namespace Unity.PolySpatial.Internals.Editor
             }
         }
 
-        public static (bool success, string output) RunCommandWithOutput(string cmd, string args = null, string workingDirectory = null, int timeoutSec = 300)
+        public static (bool success, string output) RunCommandWithOutput(string cmd, string args = null, string workingDirectory = null, int timeoutSec = 300, Dictionary<string, string> env = null)
         {
             StringBuilder output = new();
 
@@ -380,6 +381,14 @@ namespace Unity.PolySpatial.Internals.Editor
                 WorkingDirectory = workingDirectory,
                 CreateNoWindow = true,
             };
+
+            if (env != null)
+            {
+                foreach (var (k,v) in env)
+                {
+                    startInfo.EnvironmentVariables[k] = v;
+                }
+            }
 
             using (var build = new Process() { StartInfo = startInfo })
             {

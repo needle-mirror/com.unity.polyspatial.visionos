@@ -7,6 +7,23 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2023-12-13
+
+### Added
+
+### Changed
+- All packages now require 2022.3.15f1 and later (rather than 2022.3.11f1 and later) to pick up fixes for various memory leaks made in 15f1.
+
+### Deprecated
+
+### Removed
+- Removed Statistics docs and Asset finder docs since the tooling is not available anymore
+- Support for Unity versions earlier than 2022.3.11f1.
+
+### Fixed
+
+### Security
+
 ## [0.6.3] - 2023-11-28
 
 ### Added
@@ -78,6 +95,7 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 
 ### Added
 - Particle property transfer render mode now supports StretchedBillboard->LengthScale, and has more accurate emitter shape representation.  
+- Added `PolySpatialWindowManagerAccess.entityForIdentifier` in Swift and `PolySpatialObjectUtils.GetPolySpatialIdentifier` to C#, to allow accessing the RealityKit Entity corresponding to a Unity GameObject from Swift code. No guarantees are made about whether there is a RealityKit Entity for any given GameObject, or about the lifetime of the Entity.
 
 ### Changed
 

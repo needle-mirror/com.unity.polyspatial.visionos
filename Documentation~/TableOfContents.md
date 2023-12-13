@@ -13,6 +13,7 @@
     * [Sample Content](Samples.md)
     * [Preview an application with the Play To Device feature](PlayToDevice.md)
 * Reference Documentation
+    * [PolySpatial Settings](PolySpatialSettings.md) 
     * [Supported Features & Components](SupportedFeatures.md)
         * [Porting Unity Projects to PolySpatial XR](PortingUnityProjectsToPolySpatialXR.md)
     * [Asset Support](Assets.md)
@@ -20,6 +21,7 @@
             * [Shader Graph Support](ShaderGraph.md)
                 * [Custom Function Node Support](CustomFunctionNode.md)
                 * [PolySpatial Lighting](PolySpatialLighting.md)
+        * [Render Textures](RenderTextures.md)
     * [Input](Input.md)
     * [Input Scripting](PolySpatialInput.md)
     * Custom PolySpatial Components
@@ -27,6 +29,7 @@
         * [PolySpatial Video Component](VideoComponent.md)
         * [Hover Effect](HoverEffect.md)
         * [Grounding Shadow](GroundingShadow.md)
+        * [Image Based Light](ImageBasedLight.md)
         * [Sorting Group](SortingGroup.md)
     * [Tooling](Tooling.md)
 * [FAQ](FAQ.md)

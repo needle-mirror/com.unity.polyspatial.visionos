@@ -15,7 +15,7 @@ ShaderLab, Metal, and other code-based shaders are not available, as RealityKit 
 ## Unlit Materials
 
 ### Universal Render Pipeline/Unlit
-For the URP unlit material, PolySpatial supports the `Base Map` color and texture properties as well as the `Opaque` and `Transparent` (with blending mode `Alpha`) surface types. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing).
+For the URP unlit material, PolySpatial supports the `Base Map` color and texture properties as well as the `Opaque` and `Transparent` (with blending mode `Alpha`) surface types. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing). If `Threshold` is equal to zero, the material will use [alpha-to-coverage](https://docs.unity3d.com/Manual/SL-AlphaToMask.html) mode on visionOS.
 
 ### Unlit/Color
 For the built-in renderer pipeline unlit color material, the `Main Color` property is supported.
@@ -36,7 +36,7 @@ When in the `Specular` workflow and `Specular Highlights` are enabled, PolySpati
 
 For both workflows, the `Smoothness` intensity is respected, but smoothness from texture channel (e.g., from `Metallic Alpha`) is not supported. `Normal Map`[^1] is supported, but the normal scale is not. Likewise, `Occlusion Map` is supported, but occlusion intensity is not. `Emission` color *or* texture may be specified; if they are both given, the color is reduced to grayscale and acts as a multiplier.
 
-The `Opaque` and `Transparent` (with `Alpha` blend mode) surface types are supported. In `Transparent` mode, the `Preserve Specular` flag is respected. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing). 
+The `Opaque` and `Transparent` (with `Alpha` blend mode) surface types are supported. In `Transparent` mode, the `Preserve Specular` flag is respected. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing). If `Threshold` is equal to zero, the material will use [alpha-to-coverage](https://docs.unity3d.com/Manual/SL-AlphaToMask.html) mode on visionOS. 
 
 ### Universal Render Pipeline/Simple Lit
 For the URP simple lit material, the options supported are the same as for the lit material, except that there are no `Metallic` properties and no `Occlusion Map`. 
@@ -72,3 +72,5 @@ The occlusion materials are converted to basic equivalents.
 ## Shader Graph materials
 Shader Graphs may use the Builtin or URP targets and the Unlit or Lit materials. All output blocks are supported. For more information about shader graph support, see the [shader graph conversion notes](ShaderGraph.md).
 
+## Fallback Materials
+If an unsupported shader is used PolySpatial will attempt to fallback to a basic Lit or Unlit shader. This behaviour can be toggled with the "Enable Fallback Shader Conversion" in the PolySpatial settings. If this is disabled unsupported shaders will be rendered as magenta on device.

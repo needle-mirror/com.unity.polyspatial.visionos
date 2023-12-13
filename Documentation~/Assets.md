@@ -21,10 +21,8 @@ RealityKit for visionOS does not support 3D textures or cubemaps, so PolySpatial
 * First, the height times the depth (where cube maps have a fixed depth of 6) must be less than or equal to visionOS's maximum texture height (currently 8192).  This means that cube maps with power-of-two dimensions must be sized 1024 or smaller, and 3D textures with equal power-of-two dimensions cannot be larger than 64.
 * Second, due to the way that 3D texture coordinates are mapped to slices within a 2D texture, artifacts may appear when displaying texture mipmap levels whose sizes are not evenly divisible by their compressed texture block size (e.g., 6 for ASTC6x6).  If this becomes apparent, consider switching to an uncompressed texture format.
 
-### Render Textures 
-Unity will replicate render targets to RealityKit in real time, but currently only a limited number of submissions can be made at rate. Introducing additional render targets may contend with Unity's own graphics buffer submission, hindering overall performance.
-
-Also note that you must manually mark RenderTextures as dirty after modifying them; currently, no such dirtying occurs automatically, and if the texture isn't dirtied it won't be replicated over to RealityKit.
+### Render Textures
+Please refer to [PolySpatial Render Texture Support](RenderTextures.md) for detailed information about support for render textures.
 
 ## Fonts
 Both rasterized and SDF fonts are supported on visionOS, but we highly recommend using SDF fonts to ensure sharpness at all viewing distances.

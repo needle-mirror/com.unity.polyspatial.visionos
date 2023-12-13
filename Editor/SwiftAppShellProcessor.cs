@@ -50,6 +50,13 @@ namespace Unity.PolySpatial.Internals.Editor
             var doAppend = false; // args.options & BuildOptions.AcceptExternalModificationsToPlayer
             var symlinkInsteadOfCopy = PlayerSettingsBridge.GetSymlinkTrampolineBuildSetting();
 
+            void CopyAndAddToProject(string fileName, string srcPath, string projectPath)
+            {
+                var projectFile = Path.Combine(projectPath, fileName);
+                CopyFileTo(fileName, srcPath, Path.Combine(path, projectPath), append: doAppend, symlinkInstead: symlinkInsteadOfCopy);
+                BuildUtils.AddFileToProject(proj, projectFile, projectFile);
+            }
+
             void CopyAndAddToBuildTarget(string targetGuid, string fileName, string srcPath, string projectPath)
             {
                 var projectFile = Path.Combine(projectPath, fileName);
@@ -82,8 +89,11 @@ namespace Unity.PolySpatial.Internals.Editor
                 CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
             }
 
-            if (buildTarget == BuildTarget.StandaloneOSX)
-                CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+            // VisionOS does not support surface shaders (CustomMaterial).
+            if (buildTarget != BuildTarget.VisionOS)
+                CopyAndAddToBuildTarget(swiftAppTarget, "SurfaceShaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+
+            CopyAndAddToBuildTarget(swiftAppTarget, "ComputeShaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             if (buildTarget == BuildTarget.VisionOS)
             {
@@ -93,6 +103,10 @@ namespace Unity.PolySpatial.Internals.Editor
                 // and add a dummy one
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "iOSStepCounterDummy.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+                CopyAndAddToBuildTarget(swiftAppTarget, "ScreenOverlay.usda", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+
+                CopyAndAddToProject("Unity-VisionOS-Bridging-Header.h", UNITY_RK_SRC_PATH, "");
+                proj.SetBuildProperty(swiftAppTarget, "SWIFT_OBJC_BRIDGING_HEADER", "Unity-VisionOS-Bridging-Header.h");
             }
 
             // we added our own Swift shell

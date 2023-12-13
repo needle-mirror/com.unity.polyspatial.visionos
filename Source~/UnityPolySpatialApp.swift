@@ -3,7 +3,7 @@ import PolySpatialRealityKit
 import RealityKit
 typealias Scene = SwiftUI.Scene
 
-#if !os(xrOS)
+#if !os(visionOS)
 
 @main
 struct UnityPolySpatialApp: App {
@@ -52,6 +52,12 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
 
     init() {
         PolySpatialWindowManagerAccess.delegate = self
+
+        let _ = UnityLibrary.GetInstance()
+        let unityClass = NSClassFromString("UnityVisionOS") as? NSObject.Type
+        var parameters = displayProviderParameters()
+        let value = NSValue(bytes: &parameters, objCType: DisplayProviderParametersObjCType())
+        unityClass?.perform(Selector(("setDisplayProviderParameters:")), with: value)
     }
 
     var body: some Scene {

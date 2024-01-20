@@ -1,4 +1,8 @@
-# Unity PolySpatial Input
+---
+uid: psl-vos-polyspatial-input
+---
+
+# PolySpatial Input
 The PolySpatial package adds a new input device `SpatialPointerDevice` that developers can use with Input System action maps and APIs.
 
 You can leverage the [Enhanced Touch API](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.7/api/UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.html) for polling touch phases.
@@ -13,7 +17,7 @@ The SpatialPointerDevice mirrors the [SpatialEventCollection](https://developer.
 The input is registered by the user looking at an object and peforming a pinch gesture with their index finger and thumb. This type of input will register as an `Indirect Pinch`. Input can also be performed with a direct poke (`Touch`) or direct pinch (`Direct Pinch`) on an object.
 * Up to two inputs can be registered at the same time. 
 * The object a user is looking at must have a collider on it to capture input.
-* The `devicePosition` and `deviceRotation` properties describe the pose of the input device controlling the interaction. Typically, this is based on the user's pinch (a point between their finger and thumb).
+* The `inputDevicePosition` and `inputDeviceRotation` properties describe the pose of the input device controlling the interaction. Typically, this is based on the user's pinch (a point between their finger and thumb).
 * By default, the Interaction Ray is based on the user's eye gaze.
 
 
@@ -23,8 +27,8 @@ The `SpatialPointerDevice` provides the following properties:
 * `.startInteractionPosition`: the starting position of the interaction. This will always be on a collider and will only be set when the input occurs.
 * `.startInteractionRayOrigin`: the ray origin based on the user's eye gaze. This is only available when an app is in unbounded mode and will only be available when the input occurs.
 * `.startInteractionRayDirection`: the ray direction based on the user's eye gaze. This is only available when an app is in unbounded mode and will only be available when the input occurs.
-* `.devicePosition`: the position of the user's pinch (between the user's thumb and index finger). This value will be updated while the input is maintained.
-* `.deviceRotation`: the rotation of the user's pinch (between the user's thumb and index finger). This value will be updated while the input is maintained.
+* `.inputDevicePosition`: the position of the user's pinch (between the user's thumb and index finger). This value will be updated while the input is maintained.
+* `.inputDeviceRotation`: the rotation of the user's pinch (between the user's thumb and index finger). This value will be updated while the input is maintained.
 * `.kind`: the interaction kind, Touch (poke), In Direct Pinch, Direct Pinch, Pointer, Stylus.
 * `.targetId`: the instance ID of the object being interacted with.
 * `.phase`: the spatial pointer touch phase of the current interaction.

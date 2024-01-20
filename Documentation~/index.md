@@ -7,7 +7,6 @@ uid: psl-vos-index
 visionOS enables 3D multi-tasking experiences that seamlessly integrate with the real world and coexist alongside other virtual content. This opens a world of new possibilities around personal productivity, lifestyle and entertainment applications and a whole new market for developers. However, it also introduces new challenges around multitasking and interactions with the physical. Unity PolySpatial is a collection of technologies targeted to address this new platforms and its unique challenges  
 
 ## Requirements
-
 Unity PolySpatial and visionOS support is only available to Unity Pro, Unity Enterprise, and Unity Industry users. [Learn more about these plans](https://unity.com/pricing).
 
 To learn about the requirements for visionOS and PolySpatial in Unity, see [visionOS PolySpatial Requirements & Limitations](Requirements.md).
@@ -32,3 +31,4 @@ To **find answers and workarounds**, please consult the [FAQ](FAQ.md), which pre
 
 The [Glossary](Glossary.md) can help clarify **technical terminology** introduced for visionOS and PolySpatial and used throughout this documentation.
 
+Refer to the [PolySpatial Scripting API](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/index.html) for code documentation.

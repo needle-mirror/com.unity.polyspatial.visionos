@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX
+#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -429,6 +429,28 @@ namespace Unity.PolySpatial.Internals.Editor
             }
 
             return (string)s_FindTargetGuidByNameMethod.Invoke(proj, new object[] { name });
+        }
+
+        public static void GetRuntimeFlagsForAuto(bool autoMeansEnabled, out bool runtimeEnabled, out bool runtimeLinked)
+        {
+            runtimeEnabled = false;
+            runtimeLinked = false;
+
+            if (PolySpatialSettings.RuntimeModeAuto)
+            {
+                if (!autoMeansEnabled)
+                {
+                    return;
+                }
+
+                runtimeLinked = true;
+                runtimeEnabled = true;
+            }
+            else
+            {
+                runtimeLinked = PolySpatialSettings.RuntimeModeForceLinked;
+                runtimeEnabled = PolySpatialSettings.RuntimeModeForceEnabled;
+            }
         }
     }
 }

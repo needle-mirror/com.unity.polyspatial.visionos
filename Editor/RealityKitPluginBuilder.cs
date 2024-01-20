@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX
+#if UNITY_EDITOR_OSX
 using System;
 using System.IO;
 using Unity.PolySpatial.Internals.Editor;
@@ -90,25 +90,8 @@ namespace Unity.PolySpatial.Internals.Editor
             DoPluginBuild("macos-new");
         }
 
-        // iOS is currently not supported, hide the menu item
-#if false
         /// <summary>
-        /// Run an external build to create an iOS PolySpatial Plugin.
-        /// </summary>
-#if POLYSPATIAL_INTERNAL
-        [MenuItem("Tools/Build PolySpatial iOS Plugin")]
-#endif
-#endif
-        public static void BuildiOSPlugin()
-        {
-            if (BuildUtils.IsPackageImmutable())
-                return;
-
-            DoPluginBuild("ios");
-        }
-
-        /// <summary>
-        /// Run an external build to create an iOS PolySpatial Plugin.
+        /// Run an external build to create an visionOS PolySpatial Plugin.
         /// </summary>
 #if POLYSPATIAL_INTERNAL
         [MenuItem("Tools/Build PolySpatial visionOS Plugin", false, 100)]
@@ -135,7 +118,7 @@ namespace Unity.PolySpatial.Internals.Editor
         /// <inheritdoc/>
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (!PolySpatialSettings.instance.EnablePolySpatialRuntime)
+            if (!PolySpatialRuntime.Enabled)
                 return;
 
             try
@@ -148,11 +131,7 @@ namespace Unity.PolySpatial.Internals.Editor
                     Debug.LogWarning("Building PolySpatial plugin without POLYSPATIAL_INTERNAL because source is available");
 #endif
 
-                    if (report.summary.platform == BuildTarget.iOS)
-                    {
-                        BuildiOSPlugin();
-                    }
-                    else if (report.summary.platform == BuildTarget.VisionOS)
+                    if (report.summary.platform == BuildTarget.VisionOS)
                     {
                         BuildVisionOSPlugin();
                     }

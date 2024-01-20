@@ -65,6 +65,12 @@ The UI default material is converted to an unlit material that respects the tint
 ### Universal Render Pipeline/Particles/Unlit
 The URP unlit particles material is converted to an unlit material that respects the `Base Map` texture and color and the `Surface Type`.
 
+### Universal Render Pipeline/Particles/Lit
+The URP lit particles material is converted to a lit material that respects the `Base Map` texture and color, the `Metallic Map` and intensity, the `Normal Map`, the `Smoothness` intensity, the `Normal` intensity, `Emission Map` texture and color, and the `Surface Type`.
+
+### Particles/Standard Surface
+The Built-in Render Pipeline lit particles material is converted to a lit material that respects the `Albedo` texture and color, the `Metallic Map` and intensity, the `Normal Map`, the `Smoothness` intensity, the `Normal` intensity, `Emission Map` texture and color, and the `Surface Type`.
+
 ### AR/Basic Occlusion
 ### AR/Occlusion
 The occlusion materials are converted to basic equivalents.

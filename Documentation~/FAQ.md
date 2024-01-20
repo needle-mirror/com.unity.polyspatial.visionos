@@ -15,7 +15,7 @@ Please check the Project conversion guide on the [getting started page](GettingS
 You can check for a Project conversion guide on the [getting started page](GettingStarted.md#porting-existing-projects)
 
 ## Q: I enter Play Mode and see no visual or execution difference in my project!
-This may indicate you haven't yet turned on support for the PolySpatial Runtime. To do so, go to **Project Settings &gt; PolySpatial** and make sure that **Enable PolySpatial Runtime** is toggled.
+Ensure that you have **visionOS** as your active build target, and that **Mixed Reality** is selected as the current **App Mode** in **Project Settings &gt; XR Plugin-in Management &gt; Apple visionOS**.
  
 ## Q: The runtime is enabled, but nothing shows up!
 * Ensure you have a Volume Camera in your scene. An Unbounded Volume Camera with its origin positioned in the middle of your scene is a good starting point.
@@ -42,6 +42,27 @@ If one is not present a default one will be created that will include the bounds
 
 ## Q: My content is too dark in visionOS simulator**
 * In the visionOS simulator, try using Device -> Erase All Content and Settings and/or switching to a different environment (Museum (Day) versus Living Room (Day), for instance).
+
+## Q: Objects that are supposed to face the camera (transform.LookAt) are not working
+* Head pose tracking on visionOS is provided via ARKit, and is only available when your application has an [ImmersiveSpace](https://developer.apple.com/documentation/swiftui/immersivespace) is open. In Unity, this is enabled by having a `VolumeCamera` active in `Unbounded` mode. You also need an `ARSession` component in your scene to start the ARKit session and enable head pose tracking. When these requirements are met, you can use a `TrackedPoseDriver` to update any transform based on head pose, and use that object as a `lookAt` target.
+
+## Q: Transparent objects, sprites, or canvas elements are flickering with inconsistent sorting
+* Flickering can occur in transparent objects, sprites, and canvas elements, especially when intermixed with each other. You can prevent this by explicitly setting the sorting order using a [VisionOSSortingGroup](SortingGroup.md) component.
+
+## Q: I have built an XCode Project, but there is no option to run on the simulator
+- Check that `Project Settings > Other > Target SDK` is set to `Simulator SDK`
+- You can only create VisionOS builds with the Unity editor for Apple Silicon. Check that the title bar in Unity does **not** contain "\<Rosetta>". If it does, use the Unity Hub to download the Apple Silicon version.
+- Make sure you have the VisionOS Simulator installed. In XCode, open `Window > Devices and Simulators`, and select the `Simulators` tab. If there is nothing listed, add one using the + button. If the `Device Type` menu has no Apple Vision Pro option available, you are likely using a non-beta version of XCode. Only beta versions currently support the VisionOS simulator.
+
+
+# Common Errors
+
+## Error: `xcrun: error: unable to find utility "actool", not a developer tool or in PATH`
+- Make sure you have XCode Beta installed
+- Open XCode, navigate to `Settings > Locations > Command Line Tools` and ensure XCode beta is selected. You may need to de-select and re-select the XCode version for the change to take effect.
+
+## Error: `Failed to find a suitable device for the type ...`
+- This sometimes happens after an XCode upgrade. Restarting your computer usually fixes it.
 
 # Play to Device Host
 **I'm having trouble connecting to the Play to Device Host**

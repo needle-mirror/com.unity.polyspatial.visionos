@@ -1,11 +1,11 @@
 ---
 uid: psl-vos-image-based-light
 ---
-# PolySpatial Image Based Light
+# Image Based Lighting
 
-This component provides a hint to the platform to set a custom image based light (IBL) texture.  In visionOS, this maps directly to the [ImageBasedLightComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightcomponent).
+The **VisionOSImageBasedLight** and **VisionOSImageBasedLightReceiver** components provides a hint to the platform to set a custom image based light (IBL) texture.  In visionOS, this maps directly to the [ImageBasedLightComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightcomponent).
 
-The `PolySpatial Image Based Light` component exposes the following properties:
+The `VisionOS Image Based Light` component defines the texture used as a light with the following properties:
 
 | **Property** | **Description** |
 | --- | --- |
@@ -17,12 +17,12 @@ The `PolySpatial Image Based Light` component exposes the following properties:
 
 The IBL textures may be either 2D equirectangular (latitude/longitude) or cube maps.  None, either, or both **First Source** and **Second Source** may be specified.  If both are specified, the two textures are blended together according to the **Blend** parameter: for example, a blend value of 0.25 would include 25% of the first source and 75% of the second.  Note that the blend value is not clamped to [0, 1]; similar to [LerpUnclamped](https://docs.unity3d.com/ScriptReference/Mathf.LerpUnclamped.html), values outside the range of [0, 1] will amplify the difference between the two sources.
 
-![PolySpatialImageBasedLight](images/ReferenceGuide/PolySpatialImageBasedLight.png)
+![VisionOSImageBasedLight](images/ReferenceGuide/VisionOSImageBasedLight.png)
 
-## PolySpatial Image Based Light Receiver
+## Image Based Light Receiver
 
-This component works in tandem with the `PolySpatial Image Based Light` component to customize the image based lighting on an object or tree of objects.  In visionOS, this maps directly to the [ImageBasedLightReceiverComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightreceivercomponent).
+This component works in tandem with the `VisionOS Image Based Light Receiver` component to customize the image based lighting on an object or tree of objects.  In visionOS, this maps directly to the [ImageBasedLightReceiverComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightreceivercomponent).
 
-Place this component on the GameObject you wish to be affected and set the `Image Based Light` property to an instance of `PolySpatial Image Based Light` within the scene.  All `MeshRenderer` instances on the GameObject and its descendants will use the referenced IBL.
+Place this component on the GameObject you wish to be affected and set the `Image Based Light` property to an instance of `VisionOS Image Based Light` within the scene.  All `MeshRenderer` instances on the GameObject and its descendants will use the referenced IBL.
 
-![PolySpatialImageBasedLightReceiver](images/ReferenceGuide/PolySpatialImageBasedLightReceiver.png)
+![VisionOSImageBasedLightReceiver](images/ReferenceGuide/VisionOSImageBasedLightReceiver.png)

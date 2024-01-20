@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using AOT;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Scripting;
@@ -14,6 +15,8 @@ namespace Unity.PolySpatial.Internals
     internal class RealityKitBackend : IPolySpatialCommandHandler, IPolySpatialHostCommandDispatcher,
         IPolySpatialLocalBackend, PolySpatialBackendExtraFeatures
     {
+        static readonly ProfilerMarker s_HandleCommandMarker = new("RealityKitBackend.HandleCommand");
+
         public IPolySpatialHostCommandHandler NextHostHandler { get; set; }
 
         static Platform.PolySpatialNativeAPI s_OldAPIPointers;
@@ -55,7 +58,7 @@ namespace Unity.PolySpatial.Internals
             {
                 return -1;
             }
-#elif !UNITY_EDITOR && (UNITY_VISIONOS || UNITY_IOS || UNITY_STANDALONE_OSX)
+#elif !UNITY_EDITOR && (UNITY_VISIONOS || UNITY_STANDALONE_OSX)
             if (!TryGetAPIPointers())
                 return -1;
 
@@ -109,7 +112,9 @@ namespace Unity.PolySpatial.Internals
             if (IgnoreSetCameraData && cmd == PolySpatialCommand.SetCameraData)
                 return;
 
+            s_HandleCommandMarker.Begin();
             s_OldAPIPointers.SendClientCommand(cmd, argCount, argValues, argSizes);
+            s_HandleCommandMarker.End();
         }
 
         public unsafe bool GetCameraPose(out Pose pose)

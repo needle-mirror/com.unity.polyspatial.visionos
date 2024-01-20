@@ -13,6 +13,12 @@ class UnityLibrary: UIResponder, UIApplicationDelegate, UnityFrameworkListener {
         }
     }
 
+    public var keyboardTextField: UITextField? {
+        get {
+            return self.unityFramework.keyboardTextField()
+        }
+    }
+
     public static func GetInstance() -> UnityLibrary? {
         if UnityLibrary.instance == nil {
             UnityLibrary.instance = UnityLibrary()

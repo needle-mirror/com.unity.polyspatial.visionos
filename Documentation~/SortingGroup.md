@@ -1,14 +1,19 @@
 ---
 uid: psl-vos-sorting-group
 ---
-# PolySpatial Sorting Group
-This component provides a way to leverage visionOS' sorting group capabilities. While 2D components (such as SpriteRenderers and CanvasRenderers) have their own sorting mechanism, it may be beneficial in certain situations to sort non-2D renderers such as `MeshRenderers`. By placing these renderers into the sorting group, a user can get fine-grained control over which renderer is drawn first. 
+# visionOS Sorting Groups
 
-This sort group is meant for sorting non-2D renderers with each other. Sorting non-2D renderers with 2D renderers may cause unexpected behavior - 2D renderers have their own sorting group. Each renderer can only belong to one sorting group at a time, and subsequent attempts to add a renderer to another sorting group will result in a warning.
+The **VisionOS Sorting Group** component provides a way to use the visionOS platform's native sorting group capabilities. By placing renderers in a sorting group, you can get fine-grained control over which render is drawn first. While 2D components (such as SpriteRenderers and CanvasRenderers) have their own sorting mechanism, in some situations, it might help to override their sorting, or to sort non-2D renderers such as `MeshRenderers`.
 
-Each game object can only have one `PolySpatialSortingGroup` and each component will correspond to a new and unique sorting group. It is advisable to set the component once - changing properties will effectively cause the component to be deleted and re-created, which could be an expensive operation if the `ApplyToDescendants` option was ticked. 
+A visionOS sorting group** can also be used to sort input on visionOS, in the same way renderers would be sorted. Game objects with colliders can be rearranged using a sorting group - colliders with higher order will capture input and block any lower order colliders from receiving input. Note that the physics of these colliders are not altered - the sorting group only affects the collider with respect to input resolution.
 
-The `PolySpatialSortingGroup` component exposes the following properties:
+Any 2D renderers included in the `VisionOSSortingGroup` will have their default (sprite/canvas) sorting overridden. Each renderer can only belong to one sorting group at a time, and subsequent attempts to add a renderer to another sorting group will result in a warning.
+
+To create a sorting group, add a **VisionOS Sorting Group** component to a GameObject in the scene. You can only add one **VisionOS Sorting Group** component per GameObject. You should avoid changing the component properties often -- changing these properties can be an expensive operation, especially if the **Apply To Descendants** option is enabled.
+
+Sorting groups have no effect on how renderers are sorted against objects outside the group. They only affect how objects inside the group are sorted relative to each other.
+
+The `VisionOSSortingGroup` component exposes the following properties:
 
 | **Property** | **Description** |
 | --- | --- |

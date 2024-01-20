@@ -26,6 +26,12 @@ For users who are looking to port existing VR titles looking to visionOS as a fu
 
 **Ensure depth-buffer for each pixel is non-zero** - on visionOS, the depth buffer is used for reprojection. To ensure visual effects like skyboxes and shaders are displayed beautifully, ensure that some value is written to the depth for each pixel.
 
+**Check Project Validation** - there are a number of settings and scene configuration details that you will need for your app to function properly. They will be listed under `Project Settings > XR Plug-in Management > Project Validation` under the visionOS platform tab. If you see any issues, you can click `Fix` or `Fix All` to automatically resolve them. Some specific issues to look out for:
+- The `Apple visionOS` loader must be enabled
+- Your scene needs an `ARSession` in addition to the normally required `TrackedPoseDriver` for head tracking to work
+- All cameras need a depth texture (you should enable `Depth Texture` in your URP settings)
+- The only supported `Depth Texture Mode` (setting on `UniversalRenderer`) is `AfterOpaques`
+
 ### 2. Adapt your controller-based interactions to hands 
 **Leverage the XR Interaction Toolkit (XRI)** - With visionOS, people will use their hands and eyes to interact with content. XRI provides a high-level interaction that abstracts implementation of hand-tracking and makes it easy to implement interactions like hover, grab and select in 3D space and in the UI for 3D spatial worlds. With XRI, you can also implement visual feedback for input, and its abstraction of input also makes it possible to author once, for multiple platforms.
 

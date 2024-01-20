@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace Unity.PolySpatial.Internal.Tests
+namespace Unity.PolySpatial.Internals.Tests
 {
     [TestFixture]
     public class ValidationOnlyTest

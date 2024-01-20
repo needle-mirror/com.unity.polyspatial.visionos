@@ -4,37 +4,38 @@ uid: psl-vos-development
 # Development & Iteration
 
 ## Prerequisites
-Please refer to [visionOS PolySpatial Requirements & Limitations](Requirements.md) for information about supported hardware, software, and Unity features.
+Please refer to [visionOS Mixed Reality Requirements & Limitations](Requirements.md) for information about supported hardware, software, and Unity features.
 
 <!-- TODO: ## Package Setup Instructions -->
 
-## Enable PolySpatial runtime
-visionOS support for Mixed Reality is provided by Unity PolySpatial, which can be toggled via the option **Edit &gt; Project Settings &gt; PolySpatial &gt; Enable PolySpatial Runtime**.
+## Enable Mixed Reality mode
+visionOS support for Mixed Reality is provided via Unity PolySpatial. When the active build target is visionOS and "Mixed Reality" is selected as the App Mode in **Edit &gt; Project Settings &gt; XR Plugin-in Management &gt; Apple visionOS &gt; App Mode**, PolySpatial is automatically enabled and configured for visionOS. If Mixed Reality is not selected as the App Mode, or on other platforms, PolySpatial is disabled.
 
 ## Iteration and Preview
-Unity provides several options for iterating and previewing content that targets visionOS. These options are on par with Unity's support for other non-desktop platforms.
+When targeting visionOS Mixed Reality, Unity's regular play mode and build workflows are used. Additionally, visionOS Mixed Reality supports "Play to Device" for rapid iteration on actual hardware via play mode.
 
 ### Play Mode
-The fastest way to preview content is to enter Play Mode within the Unity Editor. This provides the fastest iteration cycle, but uses Unity's rendering system rather than RealityKit. This mode is optimized for rapid iteration, such as iterating on game play or UX, but may not always provide a faithful representation of the visuals or performance characteristics of a target platform. Visuals, optimization, and similar tasks typically benefit from other preview options provided by Unity. In addition, Play Mode doesn't currently preview volumes or the new input modalities provided by visionOS.
+The fastest way to preview content is to enter Play Mode within the Unity Editor. When targeting visionOS Mixed Reality, entering play mode will enable PolySpatial in the editor. A parallel hierarchy of GameObjects is created that represent the objects that will be visible on the PolySpatial target. When previewing in play mode in the editor, Volume Cameras are ignored, and the preview is displayed from the viewpoint of the a regular Unity Camera. PolySpatial objects are created in the PolySpatial layer. To ensure you are viewing the end result objects, make sure the active camera's culling mask shows only PolySpatial objects. In the editor, PolySpatial will attempt to manage this for you directly, and will create and configure a mirror of the main camera.
 
-In order to better approximate the visionOS runtime, Play Mode for PolySpatial apps creates a parallel hierarchy of **backing** GameObjects  that are linked to your app's **simulation** GameObjects, but perform all the rendering. This means you will observe some differences based on the state of the `Enable PolySpatial Runtime` project setting. These differences are intentional, as they allow developers to better preview how their content will look on device.
+When playing in the editor, Unity's rendering system is used instead of RealityKit, as it would be on visionOS. As such, it will not be a faithful representation of visuals or performance characteristics of visionOS.
 
-### visionOS Player builds. 
-Choose visionOS from the Build Settings window to target your build for visionOS. Most options in build settings are analogous to those provided for iOS. visionOS player builds will generate an Xcode project that needs to be compiled on a Mac (currently, this must be a Mac with Apple silicon), but may target either the visionOS simulator or an Apple Vision Pro headset connected to your Mac. 
+### visionOS Player builds
+Most options in build settings are analogous to those provided for iOS. visionOS player builds will generate an Xcode project that needs to be compiled on an Apple Silicon Mac, and may target either the visionOS simulator or an Apple Vision Pro headset. You must select either the Device SDK or the Simulator SDK in Player Settings in order to target the appropriate environment.
 
-Note: unlike iOS, there is no need to switch to a different SDK in Project Settings to run your content in the simulator. Simply select the RealityDevice simulator target in Xcode.
+As with iOS, when building for a device, you must configure a valid provisioning profile and signing certificate in order to deploy the built application.
 
-For building to a development kit make sure you have setup a valid provisioning profile and signing certificate for Apple Development (that includes visionOS) platform. You will also need to make sure the device is correctly registered to your development account.
+### Play to Device
+Unity's visionOS Mixed Reality support includes **Play to Device**, a new workflow that allows you to enter Play Mode in the editor and instantly see your content on an attached device. You can inspect or make changes to your content live, and can provide input either via the device or the editor.
 
 ### Recording and Playback
-PolySpatial for visionOS supports a unique recording and playback workflow that allows you to record a session (including input commands) and then play it back within the Unity Editor. For more information, see information about [PolySpatial tooling](Tooling.md)
+PolySpatial-based platforms support a recording and playback workflow that allows you to record a session (including input commands) and then play it back within the Unity Editor. For more information, see information about [PolySpatial tooling](Tooling.md)
 
 ## Debugging Support
-The standard debugging workflow works normally when using PolySpatial. You enable Script Debugging in the build settings and optionally Wait for Managed Debugger. Then attach a managed debugger/IDE to your running application and debug your script code.
+The standard debugging workflow works normally on visionOS. Enable **Script Debugging** in the Build Settings and optionally **Wait for Managed Debugger**. Then attach a managed debugger/IDE to your running application and debug your script code. Note: at the moment, **Wait for Managed Debugger**  will wait for 30 seconds (printing a message in the Xcode debugger console). There is no window as there is on iOS.
 
 ## Project Validation
 
-PolySpatial provides a way to validate your visionOS project before building and deploying to a device. Unsupported scene objects will be indicated by a warning icon in the Hierarchy view, while the Inspector view provides helpful UIs to navigate between these objects and address the issues. For detailed information about the validation system, please refer to the [Project Validation](PolySpatialXRProjectValidation.md) page.
+Unity's visionOS Mixed Reality platform provides a way to validate your visionOS project before building and deploying to a device. Unsupported scene objects will be indicated by a warning icon in the Hierarchy view, while the Inspector view provides helpful UIs to navigate between these objects and address the issues. For detailed information about the validation system, please refer to the [Project Validation](PolySpatialXRProjectValidation.md) page.
 
 ## Building Blocks in PolySpatial XR
 

@@ -1,5 +1,7 @@
-#if POLYSPATIAL_INTERNAL && (UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX) && UNITY_EDITOR_OSX
+#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
+#if POLYSPATIAL_INTERNAL
 using System;
+using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using Unity.PolySpatial.Internals.Editor;
@@ -7,7 +9,8 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
-using UnityEngine;
+using UnityEditor.PolySpatial.Utilities;
+using Debug = UnityEngine.Debug;
 
 namespace Unity.PolySpatial.Internals.Editor
 {
@@ -41,13 +44,19 @@ namespace Unity.PolySpatial.Internals.Editor
             if (report.summary.platform != BuildTarget.StandaloneOSX)
                 return;
 
-            if (!PolySpatialSettings.instance.EnablePolySpatialRuntime
-#if POLYSPATIAL_INTERNAL
-                && !PolySpatialSettings.instance.AlwaysLinkPolySpatialRuntime
-#endif
-               )
+            var runtimeLinked = PolySpatialSettings.RuntimeModeForceLinked;
+            var runtimeEnabled = PolySpatialSettings.RuntimeModeForceEnabled;
+
+            if (!runtimeLinked)
             {
                 return;
+            }
+
+            if (runtimeEnabled)
+            {
+                var bootConfig = new BootConfigBuildUtility(report);
+                bootConfig.SetValue("polyspatial", "1");
+                bootConfig.Write();
             }
 
             m_isNewPlugin = HasNewPlugin();
@@ -68,7 +77,6 @@ namespace Unity.PolySpatial.Internals.Editor
             try
             {
                 CopyMacPlugin(report);
-                SetupBootConfig(report);
                 if (m_isNewPlugin)
                     AddEnvironmentForXcode15b8(report);
             }
@@ -161,6 +169,7 @@ namespace Unity.PolySpatial.Internals.Editor
                                            "Please install it and try again.");
         }
 
+        [Conditional("UNITY_EDITOR_OSX")]
         void AddEnvironmentForXcode15b8(BuildReport report)
         {
             var projectName = PlayerSettings.productName;
@@ -209,43 +218,7 @@ namespace Unity.PolySpatial.Internals.Editor
                 }
             }
         }
-
-        void SetupBootConfig(BuildReport report)
-        {
-            if (!PolySpatialSettings.instance.EnablePolySpatialRuntime)
-                return;
-
-            var projectName = PlayerSettings.productName;
-
-            var bootConfigInXcode =
-                Path.Combine(report.summary.outputPath, projectName, "Resources", "Data", "boot.config");
-            var bootConfigInApp =
-                Path.Combine(report.summary.outputPath, "Contents", "Resources", "Data", "boot.config");
-
-            string bootConfigPath;
-            if (File.Exists(bootConfigInApp))
-            {
-                bootConfigPath = bootConfigInApp;
-            }
-            else if (File.Exists(bootConfigInXcode))
-            {
-                bootConfigPath = bootConfigInXcode;
-            }
-            else
-            {
-                Debug.LogError(
-                    $"Couldn't find boot.config for player built in {report.summary.outputPath}, PolySpatial not enabled");
-                return;
-            }
-
-            var bootConfig = File.ReadAllText(bootConfigPath);
-            if (bootConfig.IndexOf("polyspatial=1") == -1)
-            {
-                Assert.AreEqual(bootConfig[bootConfig.Length - 1], '\n');
-                bootConfig += "polyspatial=1\n";
-                File.WriteAllText(bootConfigPath, bootConfig);
-            }
-        }
     }
 }
+#endif
 #endif

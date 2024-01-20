@@ -1,3 +1,7 @@
+---
+uid: psl-vos-polyspatial-lighting
+---
+
 # Unity PolySpatial Lighting Support
 Because visionOS itself supplies only image based lighting, PolySpatial includes a lighting solution available to shader graphs that provides a subset of the lighting features available in Unity.  The PolySpatial Lighting Node supports directional lightmaps, light probes, and up to four dynamic lights (point, spot, or directional).
 

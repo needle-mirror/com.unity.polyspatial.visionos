@@ -26,11 +26,11 @@ Depending on how you are running your application, you will need to install the 
 ## First Time Setup - visionOS Simulator
 To install the host app for the visionOS simulator:
 
-1. Download the “**Play To Device Host.app.zip**” to your Apple Silicon Mac. See the Compatibility Matrix above to identify the right version given your PolySpatial version. 
-2. Extract the zip file revealing “**Play To Device Host.app**” in Finder.
+1. Download the “**PlayToDeviceHost.app.zip**” to your Apple Silicon Mac. See the Compatibility Matrix above to identify the right version given your PolySpatial version. 
+2. Extract the zip file revealing “**PlayToDeviceHost.app**” in Finder.
 3. Start the visionOS simulator, either by going to **“Xcode > Open Developer Tool > Simulator**” within Xcode, or using Spotlight (command+space) and typing “simulator”.
-4. When the simulator is running, you can see the home screen with various app icons. Drag “**Play To Device Host.app**” from the Finder window into the simulator window.
-5. After a few seconds, you should see “**Play To Device Hos**t” appear as one of the app icons on the home screen. Note that you may have to scroll the app list to see it.
+4. When the simulator is running, you can see the home screen with various app icons. Drag “**PlayToDeviceHost.app**” from the Finder window into the simulator window.
+5. After a few seconds, you should see “**PlayToDeviceHost**” appear as one of the app icons on the home screen. Note that you may have to scroll the app list to see it.
 
 
 ## First Time Setup - visionOS Hardware
@@ -47,7 +47,7 @@ To install the host app for an Apple Vision Pro device:
 ## First Time Setup - Unity Editor
 Once you've installed a host app for device or simulator (see above):
 
-1. Launch the Play to Device host app in your device or the Apple VisionOS simulator.
+1. Launch the PlayToDeviceHost app in your device or the Apple VisionOS simulator.
 2. In the Unity Editor, open the Play to Device Editor window via the main menu under  \
 **Window > PolySpatial > Play to Device**.
 3. If the Play to Device host app is running on a device that shares the same LAN as your Unity Editor (or is running locally on the same machine), its connection will be automatically detected and you can jump to step **4**. Otherwise, follow the steps below to add a direct connection:
@@ -62,6 +62,8 @@ Once you've installed a host app for device or simulator (see above):
 If you notice that your connection is timing out, you can increase the connection timeout in the **Advanced Settings** of the Play To Device Editor Window. The default timeout is 5 seconds.
 
 ![Play To Device Window](images/PlayToDevice/PlayToDeviceWindow.png)
+
+**NOTE**: If you select multiple connections at once, content will be streamed to all selected hosts simultaneously.
 
 ## Subsequent Usage
 

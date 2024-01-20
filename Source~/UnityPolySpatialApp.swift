@@ -18,7 +18,7 @@ struct UnityPolySpatialApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ForEach(0..<polyspatialObserver.volumes.count, id: \.self) { i in polyspatialObserver.volumes[i].view }
+//            ForEach(0..<polyspatialObserver.volumes.count, id: \.self) { i in polyspatialObserver.volumes[i].view }
         }
     }
 }
@@ -32,6 +32,10 @@ class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDeleg
 
     func on(volumeAdded: PolySpatialVolume) {
         self.volumes.append(volumeAdded)
+    }
+
+    func on(volumeRemoved: PolySpatialVolume) {
+        self.volumes.removeAll(where: { $0 == volumeRemoved })
     }
 
     func reset() {
@@ -103,6 +107,20 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     }
 
     func reset() {
+    }
+}
+
+// Wrapper around TextField in UnityFramework which is used to pop up the keyboard.
+// This reference must be grabbed from UnityFramework and added into SwiftUI on
+// Vision OS in order for it to register and pop up the keyboard.
+struct KeyboardTextField: UIViewRepresentable {
+    func makeUIView(context: Context) -> UITextField {
+        let textField = UnityLibrary.GetInstance()!.keyboardTextField!
+        textField.isHidden = true;
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
     }
 }
 

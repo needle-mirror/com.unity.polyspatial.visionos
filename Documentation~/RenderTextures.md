@@ -33,4 +33,19 @@ public class BatchModeUpdateRenderer : MonoBehaviour
 ## Manual dirtying
 If you update a RenderTexture outside of a call to `Camera.Render` (for example, by setting [RenderTexture.active](https://docs.unity3d.com/ScriptReference/RenderTexture-active.html) and invoking immediate mode rendering commands), PolySpatial will not automatically transfer the RenderTexture's new contents.  Instead, you must manually dirty the RenderTexture using `Unity.PolySpatial.PolySpatialObjectUtils.MarkDirty(renderTexture)` each frame that it is updated.  This will cause PolySpatial to send the new contents of the RenderTexture to the host.
 
+```
+using UnityEngine;
+using Unity.PolySpatial;
+
+public class SetRenderTextureDirty : MonoBehaviour
+{
+    public RenderTexture texture;
+
+    void Update()
+    {
+        Unity.PolySpatial.PolySpatialObjectUtils.MarkDirty(texture);
+    }
+}
+```
+
 

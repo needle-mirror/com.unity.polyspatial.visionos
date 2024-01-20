@@ -1,7 +1,7 @@
 ---
 uid: psl-vos-shader-graph
 ---
-# Unity PolySpatial Shader Graph Support
+# Shader Graph Support
 You can use the Unity Shader Graph to create custom materials for visionOS. These will previewed in their compiled form within Unity, but converted to MaterialX for display in simulator and on device. While MaterialX is very expressive, some Shader Graph nodes have no analog in materialX. Within the Shader Graph editor, unsupported nodes will be indicated by the presence of a `#` symbol.
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
@@ -19,7 +19,10 @@ To obtain positions, normals, tangents, or bitangents in the world space of the 
 The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
 
 ## Input Properties
-Shader graph properties must be set to `Exposed` in order to be set on a per-instance basis.  Globals must *not* be `Exposed`, and global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).
+Shader graph properties must be set to `Exposed` in order to be set on a per-instance basis.  Globals must *not* be `Exposed`, and global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).  
+
+### Time-based Animation
+Note that visionOS materials do not support global properties natively, and thus PolySpatial must apply global properties separately to all material instances, which may affect performance.  For animation, consider using the `PolySpatial Time` node rather than the standard Unity shader graph `Time`.  While `PolySpatial Time` will not be exactly synchronized with [Time.time](https://docs.unity3d.com/ScriptReference/Time-time.html) (notably, it will not reflect changes to [Time.timeScale](https://docs.unity3d.com/ScriptReference/Time-timeScale.html)), it is supported natively in visionOS and does not require per-frame property updates.
 
 ## Supported Targets
 The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types and the `Alpha Clipping` setting.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  Due to platform limitations, all materials will have `Front` render face, depth writes enabled, `LEqual` depth testing, and tangent space fragment normals.
@@ -192,8 +195,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Section    | Node              | Notes                                                                                                                                                                 |
 |------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Procedural | Checkerboard      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
-| Noise      | Gradient Noise    | - Can't be certain that target platform noise functions will behave the same. <br> - Frequency is currently off (scale is mapped to amplitude rather than frequency). |
-|            | Voronoi           | - Can't be certain that target platform noise functions will behave the same.                                                                                         |
+| Noise      | Gradient Noise    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Voronoi           | `Cells` output not supported.                                                                                                                                         |
 | Shapes     | Ellipse           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 |            | Polygon           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 |            | Rectangle         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
@@ -207,6 +210,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Utility | Custom Function                  | See [custom function node conversion notes](CustomFunctionNode.md).                                                                                                                  |
 |         | PolySpatial Environment Radiance | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
 |         | PolySpatial Lighting             | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
+|         | PolySpatial Time                 | Non-standard shader graph node specific to PolySpatial. Implements the time function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf).    |
 |         | Preview                          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
 |         | Split LR                         | Non-standard shader graph node specific to PolySpatial. Implements the splitlr function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf). |
 | Logic   | Branch                           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
@@ -222,7 +226,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Polar Coordinates | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Radial Shear      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Rotate            | Only Degrees are supported.                                              |
+|         | Rotate            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Spherize          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Tiling and Offset | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Triplanar         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |

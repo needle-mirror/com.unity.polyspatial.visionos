@@ -1,3 +1,6 @@
+---
+uid: psl-vos-custom-function-node
+---
 # Unity PolySpatial Custom Function Node Support
 PolySpatial's shader graph conversion provides partial support for the [Custom Function Node](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Custom-Function-Node.html) (when using the `String` function type) by parsing a limited subset of HLSL and converting it into MaterialX nodes.  Note that this does *not* allow for any functionality beyond that which is possible by combining built-in shader graph nodes; it simply provides an alternate means of specification that may be more compact or convenient for some purposes.
 

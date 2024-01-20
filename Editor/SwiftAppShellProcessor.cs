@@ -1,4 +1,4 @@
-#if UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX
+#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +30,6 @@ namespace Unity.PolySpatial.Internals.Editor
         private static readonly string ARM_WORKAROUND_REPLACEMENT = "--additional-defines=IL2CPP_LARGE_EXECUTABLE_ARM_WORKAROUND=1,IL2CPP_DEBUG=";
 
         public static void ConfigureXcodeProject(BuildTarget buildTarget, string path, string projectName,
-            VisionOSSettings.AppMode appMode = VisionOSSettings.AppMode.MR,
             bool il2cppArmWorkaround = false,
             string staticLibraryPluginName = null,
 
@@ -82,16 +81,13 @@ namespace Unity.PolySpatial.Internals.Editor
                 CopyDirectoryTo(Path.Combine(pluginSrcPath, $"PolySpatialRealityKit.swiftmodule"), pluginDstXcodePath);
             }
 
-            if (appMode == VisionOSSettings.AppMode.MR)
-            {
-                CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
-                CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
-                CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
-            }
+            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
+            CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
+            CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             // VisionOS does not support surface shaders (CustomMaterial).
-            if (buildTarget != BuildTarget.VisionOS)
-                CopyAndAddToBuildTarget(swiftAppTarget, "SurfaceShaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
+            if (buildTarget == BuildTarget.StandaloneOSX)
+                CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             CopyAndAddToBuildTarget(swiftAppTarget, "ComputeShaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
@@ -101,12 +97,16 @@ namespace Unity.PolySpatial.Internals.Editor
                 RemoveFileFromProjectAndDelete("Libraries/com.unity.inputsystem/InputSystem/Plugins/iOS/iOSStepCounter.mm");
 
                 // and add a dummy one
-                CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(unityFrameworkTarget, "iOSStepCounterDummy.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(swiftAppTarget, "ScreenOverlay.usda", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
                 CopyAndAddToProject("Unity-VisionOS-Bridging-Header.h", UNITY_RK_SRC_PATH, "");
                 proj.SetBuildProperty(swiftAppTarget, "SWIFT_OBJC_BRIDGING_HEADER", "Unity-VisionOS-Bridging-Header.h");
+            }
+
+            if (buildTarget == BuildTarget.VisionOS)
+            {
+                CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
             }
 
             // we added our own Swift shell
@@ -148,7 +148,6 @@ namespace Unity.PolySpatial.Internals.Editor
             // fill them out in the iPhone project.
             // TODO fix this in new project generation
             if (buildTarget == BuildTarget.VisionOS) {
-#if UNITY_VISIONOS
                 var swiftAppConfigGuids = proj.BuildConfigNames()
                     .Select(name => proj.BuildConfigByName(swiftAppTarget, name))
                     .Where(p => !String.IsNullOrEmpty(p)).ToArray();
@@ -157,9 +156,6 @@ namespace Unity.PolySpatial.Internals.Editor
                 var bundleVersion = String.IsNullOrEmpty(PlayerSettings.bundleVersion) ? "1.0" : PlayerSettings.bundleVersion;
                 proj.AddBuildPropertyForConfig(swiftAppConfigGuids, "CURRENT_PROJECT_VERSION", buildNumber);
                 proj.AddBuildPropertyForConfig(swiftAppConfigGuids, "MARKETING_VERSION", bundleVersion);
-#else
-                throw new BuildFailedException("Didn't step into visionOS specific code when expected to");
-#endif
             }
 
             var xcodePlatformName = GetXcodePlatformName(buildTarget);
@@ -221,18 +217,59 @@ namespace Unity.PolySpatial.Internals.Editor
 
         public static bool IsSimulator()
         {
-            return PlayerSettings.iOS.sdkVersion != iOSSdkVersion.DeviceSDK;
+            return PlayerSettings.VisionOS.sdkVersion != VisionOSSdkVersion.Device;
         }
 
         public static string GetXcodePlatformName(BuildTarget target)
         {
-            if (target == BuildTarget.iOS)
-                return IsSimulator() ? "iphonesimulator" : "iphoneos";
-
             if (target == BuildTarget.VisionOS)
                 return IsSimulator() ? "xrsimulator" : "xros";
 
             throw new InvalidOperationException("Unknown build target");
+        }
+
+        // Can't be verbatim string. See https://github.com/dotnet/csharpstandard/issues/292
+        // Seems that the code analyzer in current Unity will barf on the #define in the verbatim
+        // string thinking that it's a real define. This is regardless of the fact that it's in a
+        // define that should lock it out of compilation on Windows. The analyzers process all c# code
+        // in the project regardless of compilation restrictions.
+        //
+        // This only seems to happen on Windows, not on Mac.
+        static readonly string DUMMY_SUPPORT_FILE ="\n" +
+"// WARNING: THIS FILE IS GENERATED. DO NOT MODIFY.\n" +
+"\n" +
+"#import <Foundation/Foundation.h>\n" +
+"\n" +
+"// This actually won't do anything, because it seems like if you use -exported_symbols on\n" +
+"// the linker command line, it overrides _all_ visibility attributes (not just on those\n" +
+"// symbols).\n" +
+"#define EXPORTED_SYMBOL __attribute__((visibility(\"default\")))  __attribute__((__used__))\n" +
+"\n" +
+"extern \"C\" {\n" +
+"\n" +
+"void EXPORTED_SYMBOL SetPolySpatialNativeAPIImplementation(const void* lightweightApi, int size)\n" +
+"{\n" +
+"}\n" +
+"\n" +
+"void EXPORTED_SYMBOL GetPolySpatialNativeAPI(void* lightweightApi)\n" +
+"{\n" +
+"}\n" +
+"\n" +
+"} // extern \"C\"\n";
+
+        internal static void WriteDummySupportFile(string projectPath, string projectName)
+        {
+            var xcodePath = Path.Combine(projectPath, projectName, "project.pbxproj");
+
+            var proj = new PBXProject();
+            proj.ReadFromFile(xcodePath);
+
+            var unityFrameworkTarget = proj.GetUnityFrameworkTargetGuid();
+
+            var projectFile = Path.Combine(projectPath, "UnityFramework", "PolySpatialPlatformAPI.mm");
+            File.WriteAllText(projectFile, DUMMY_SUPPORT_FILE);
+            BuildUtils.AddFileToBuildTarget(proj, projectFile, unityFrameworkTarget, projectFile);
+            proj.WriteToFile(xcodePath);
         }
     }
 }

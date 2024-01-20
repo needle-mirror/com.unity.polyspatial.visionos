@@ -1,4 +1,4 @@
-#if (UNITY_IOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX) && UNITY_EDITOR_OSX
+#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
 using System.Runtime;
 using System.ComponentModel;
 using System;
@@ -12,6 +12,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.iOS.Xcode;
+using UnityEditor.PolySpatial.Utilities;
 using UnityEditor.UnityLinker;
 using UnityEditor.XR.VisionOS;
 using UnityEngine;
@@ -28,8 +29,30 @@ namespace Unity.PolySpatial.Internals.Editor
 
         public void OnPreprocessBuild(BuildReport report)
         {
-#if POLYSPATIAL_INTERNAL
-            RealityKitPluginBuilder.BuildVisionOSXRPlugin();
+            DoPreprocessBuild(report);
+        }
+
+        [Conditional("UNITY_VISIONOS")]
+        public void DoPreprocessBuild(BuildReport report)
+        {
+            if (report.summary.platform != BuildTarget.VisionOS)
+                return;
+
+            var xrSettings = VisionOSSettings.currentSettings;
+            var autoMeansEnabled = xrSettings != null && xrSettings.appMode == VisionOSSettings.AppMode.MR;
+
+            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out var runtimeEnabled, out var runtimeLinked);
+
+            if (!runtimeLinked)
+            {
+                return;
+            }
+
+#if POLYSPATIAL_INTERNAL && UNITY_EDITOR_OSX
+            if (runtimeLinked)
+            {
+                RealityKitPluginBuilder.BuildVisionOSXRPlugin();
+            }
 #endif
 
             try
@@ -67,14 +90,21 @@ namespace Unity.PolySpatial.Internals.Editor
 
         public void OnPostprocessBuild(BuildReport report)
         {
+            DoPostprocessBuild(report);
+        }
+
+        [Conditional("UNITY_VISIONOS")]
+        public void DoPostprocessBuild(BuildReport report)
+        {
             if (report.summary.platform != BuildTarget.VisionOS)
                 return;
 
-            if (!PolySpatialSettings.instance.EnablePolySpatialRuntime
-#if POLYSPATIAL_INTERNAL
-                && !PolySpatialSettings.instance.AlwaysLinkPolySpatialRuntime
-#endif
-               )
+            var xrSettings = VisionOSSettings.currentSettings;
+            var autoMeansEnabled = xrSettings != null && xrSettings.appMode == VisionOSSettings.AppMode.MR;
+
+            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out var runtimeEnabled, out var runtimeLinked);
+
+            if (!runtimeLinked)
             {
                 return;
             }
@@ -84,22 +114,20 @@ namespace Unity.PolySpatial.Internals.Editor
                 var outputPath = report.summary.outputPath;
                 WriteVisionOSSettings(outputPath);
 
-                var settings = VisionOSSettings.currentSettings;
-                var appMode = VisionOSSettings.AppMode.MR;
-                if (settings != null)
-                    appMode = settings.appMode;
-
-                Dictionary<string, string> extraSourceFiles = null;
-                if (appMode == VisionOSSettings.AppMode.MR)
+                if (runtimeEnabled)
                 {
-                    extraSourceFiles = new Dictionary<string, string>()
-                    {
-                        { "MainApp/UnityVisionOSSettings.swift", null }
-                    };
+                    var bootConfig = new BootConfigBuildUtility(report);
+                    bootConfig.SetValue("polyspatial", "1");
+                    bootConfig.Write();
                 }
 
+                Dictionary<string, string> extraSourceFiles = new Dictionary<string, string>()
+                {
+                    { "MainApp/UnityVisionOSSettings.swift", null }
+                };
+
                 SwiftAppShellProcessor.ConfigureXcodeProject(report.summary.platform, outputPath,
-                    VisionOSBuildPreProcessor.k_XcodeProjName, appMode,
+                    VisionOSBuildPreProcessor.k_XcodeProjName,
                     il2cppArmWorkaround: true,
                     staticLibraryPluginName: isSimulator ? "libPolySpatial_xrsimulator.a" : "libPolySpatial_xros.a",
                     extraSourceFiles: extraSourceFiles
@@ -154,6 +182,8 @@ namespace Unity.PolySpatial.Internals.Editor
         {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
             PolySpatialContentViewWrapper()
                 .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                    KeyboardTextField()
+                .frame(width: 0, height: 0)
         }} defaultValue: {{ UUID() }} {windowStyle}";
         }
 
@@ -409,9 +439,15 @@ extension UnityPolySpatialApp {{
                     // TODO: remove this from the template (sets to YES)
                     pbx.SetBuildPropertyForConfig(cfguid, "INFOPLIST_KEY_UIApplicationSceneManifest_Generation", "NO");
 
+                    var cflags = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS") ?? "";
+
                     // Add TARGET_OS_XR define which was renamed to TARGET_OS_VISION in visionOS beta 2 (Xcode beta 5)
-                    existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS") ?? "";
-                    pbx.SetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS", $"-DTARGET_OS_XR=1 {existing}");
+                    cflags = $"-DTARGET_OS_XR=1 {cflags}";
+
+                    // Add UNITY_POLYSPATIAL for stub
+                    cflags = $"-DUNITY_POLYSPATIAL=1 {cflags}";
+
+                    pbx.SetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS", cflags);
                 }
             }
 

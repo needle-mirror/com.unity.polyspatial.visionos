@@ -2,20 +2,49 @@
 uid: psl-vos-tutorial-new-project
 ---
 # Starting a new visionOS project from scratch
+
+This page describes how to start a project from scratch using one or more of the available modes.
+
+# Requirements
+
+Before starting, ensure you meet the [Hardware and Software Requirements](Requirements.md).
+
 <a name="starting-a-new-visionos-mr-project-from-scratch"></a>
 
-Make sure to switch the  build platform for visionOS (experimental)
 
-## Fully Immersive Virtual Reality 
+## Windowed App
 
-Make sure you have the **com.unity.xr.visionos** package installed
+1. Open the **Build Settings** window (menu: **File &gt; Build Settings**).
+2. Select the **visionOS** platform.
+3. If necessary, click **Switch Platform** to change to the visionOS platform.
+4. Add and select any Scenes you want to include in the build. (For example, SampleScene.)
+5. Click the **Build** button.
 
-1. Select **Edit &gt; Project Settings**…
-2. Open the **XR Plug-in Manager** menu
-3. Check the vision OS check box <!-- #{Placeholder insert pic about Platform SDK}# -->
-4. Select **File &gt; Build Settings**…
-	1. Add Scenes (SampleScene)
-	2. Select **Build**.
+By default, Unity builds that target visionOS will be set up to run in windowed mode. If you install XR or PolySpatial support (by following steps 1-8 from **Fully Immersive Virtual Reality** below), you need to manually configure your App Mode in order to build and deploy a 2D windowed application:
+
+1. Open Project Settings.
+2. Change the app mode under `XR Plug-in Management > Apple visionOS > App Mode` to `Windowed - 2D Window`.
+
+
+Windowed Apps use Unity's own rendering pipeline, such as the Built-in Render Pipeline or Universal Render Pipeline. See [Windowed Apps](WindowedApps.md) for details.
+
+## Fully Immersive Virtual Reality
+
+1. Open the **Project Settings** window (menu:**Edit &gt; Project Settings**).
+2. Select the **XR Plug-in Management** section.
+3. If necessary, click the button to **Install XR Plug-in Management**.
+4. Select the tab for the **visionOS** target build platform.
+5. Enable the **Apple visionOS** Plug-in Provider.
+6. Select the **Apple visionOS** settings section under **XR Plug-in Management**.
+7. Set the **App Mode** to **Virtual Reality - Fully Immersive Space**.
+8. Set the **Target SDK** to run on the device or simulator.
+    1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**) and select the **Player** section.
+    2. Under **Other Settings &gt; Configuration**, set **Target SDK** to **Device SDK** to run on the Apple Vision Pro device or **Simulator SDK** to run on the simulator.
+9. Open the **Build Settings** window (menu: **File &gt; Build Settings**).
+    1. Select the **visionOS** platform.
+    2. If necessary, click **Switch Platform** to change to the visionOS platform.
+    3. Add and select any Scenes you want to include in the build. (For example, SampleScene.)
+    4. Click the **Build** button.
 
 Your app will render a full immersive space and you should see the Unity skybox (or your app) running in the Apple Vision Pro simulator.
 
@@ -23,26 +52,28 @@ Refer to [Fully Immersive VR](VRApps.md) docs for more information
 
 ## Mixed Reality and Shared Space
 
-Make sure you have the **com.unity.polyspatial**, **com.unity.polyspatial.visionos**, and **com.unity.polyspatial.xr** packages installed
+For bounded apps, your app can exist alongside other apps in the shared space. For unbounded apps, your app will be the only content visible.
 
-1. Create a Volume Camera in your scene
-	</br> 1. Open the scene tooling / XR Building Blocks Menu and click **Volume Camera**
-	</br> 2. Create an empty GameObject and add a **Volume Camera** component
-2. Configure the volume camera for bounded or unbounded mode and adjust the dimensions
-	</br> 1. Dimensions will adjust the rendering scale of your content
-	</br> 2.. For bounded apps make sure something is visible within the dimensions of the volume camera
-3. Open **Project Settings > PolySpatial**...
-	1. check the Enable PolySpatial Runtime box
+1. Follow steps 1-8 from above, this time setting **App Mode** to **Mixed Reality - Volume or Immersive Space**.
+    
+    This should automatically install the required packages, **com.unity.polyspatial**, **com.unity.polyspatial.visionos**, and **com.unity.polyspatial.xr**.
+2. Create a Volume Camera in your scene.
+    1. From the **GameObject &gt; XR &gt; Setup** menu or the **XR Building Blocks** overlay, click **Volume Camera**.
+    2. Add a **VolumeCameraWindowConfiguration** asset to your project with **Create &gt; PolySpatial &gt; Volume Camera Window Configuration**. You must store this asset in one of your project's **Resources** folders. (Refer to [Special Folders](xref:SpecialFolders) for more information about **Resources** folders.)
+    3. Assign the volume camera window configuration to the **Volume Window Configuration** of the volume camera.
+3. Configure the volume camera for bounded or unbounded mode and adjust the dimensions (if bounded).
+    - Dimensions adjust the rendering scale of your content.
+    - For bounded apps, make sure something is visible within the dimensions of the volume camera.
+4. Open the **Build Settings** window (menu: **File &gt; Build Settings**).
+    1. Select the **visionOS** platform.
+    2. If necessary, click **Switch Platform** to change to the visionOS platform.
+    3. Add and select any Scenes you want to include in the build. (For example, SampleScene.)
+    4. Click the **Build** button.
 
-**Unbounded apps** </br>
-For unbounded apps that want to use ARKit features you will need to enable visionOS in the XR Plug-in Management settings and make sure you have the **AR Foundation package** in your project. For ARKit Hands make sure you have **XR Hands package** in your project.
+**Unbounded apps**
+For unbounded apps that use ARKit features, add the **com.unity.xr.arfoundation** package to your project. To use skeletal hand tracking data, add the **com.unity.xr.hands** package to your project. Refer to [XR packages](xref:xr-support-packages) for more information about Unity's XR packages.
 
-4. Select **File &gt; Build Settings**…
-	1. Add Scenes (SampleScene)
-	2. Select **Build**.
-
-For bounded apps your app can exist alongside other apps in the shared space, for unbounded apps your app will be the only content visible. 
-
-Note: the Apple Vision Pro simulator does not provide any ARKit data so planes, meshes, tracked hands, etc will not work. 
+> [!NOTE]
+> The Apple Vision Pro simulator does not provide any ARKit data, so planes, meshes, tracked hands, etc. do not work in the simulator.
 
 Refer to [PolySpatial MR Apps](PolySpatialMRApps.md) docs for more information

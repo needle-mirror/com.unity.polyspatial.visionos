@@ -7,6 +7,30 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
+
+## [1.0.3] - 2024-01-20
+
+### Added
+
+### Changed
+- Updated documentation to address package version and Unity Editor version requirements.
+- In the editor, PolySpatial preview and builds will only be enabled on platforms where it is supported (currently, visionOS MR).
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- PolySpatial will only be enabled for the visionOS Mixed Reality build configuration.
+- Fixed issue with not restarting ARSession when switching scenes.
+- Fixed issue with incorrect transforms on volumes when Display -> Appearance -> Window Zoom setting was changed.
+- Fixed issue with incorrect transforms on volumes when using a bounded Default Volume Camera Window Configuration.
+- Fixed issue when certain skinned meshes would not show up when connecting to PlayToDevice.
+- Fixed issues with building for visionOS MR on non-macOS editor platforms.
+
+### Security
+
 ## [0.7.1] - 2023-12-13
 
 ### Added
@@ -21,6 +45,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for Unity versions earlier than 2022.3.11f1.
 
 ### Fixed
+- Fixed interaction ray direction on pointer events.
+- Updated a note in the documentation about choosing Target SDK in Player Settings. Previously, the note explained that choosing the SDK was _not_ required, but now it is.
 
 ### Security
 

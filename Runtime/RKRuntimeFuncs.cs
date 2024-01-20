@@ -21,7 +21,7 @@ namespace Unity.PolySpatial.Internals
         static bool s_initDone;
         static IntPtr s_libHandle;
 
-#if UNITY_IOS || UNITY_VISIONOS
+#if UNITY_VISIONOS
         const string kPluginName = "__Internal"; // on iOS, it's a static library linked with the il2cpp code
 #else
         const string kPluginName = "PolySpatialNotSupportedStaticDllImportPlatform";

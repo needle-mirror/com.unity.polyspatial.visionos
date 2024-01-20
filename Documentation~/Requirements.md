@@ -4,22 +4,20 @@ uid: psl-vos-requirements
 # visionOS PolySpatial Requirements & Limitations
 
 ## Requirements
-### Unity Version Support Matrix
-Depending on the package version you are using, you will need to use a specific version of Unity. The following table shows the supported Unity versions for each PolySpatial package version.
+### Unity Version Support 
+The current version of this package has been tested for Unity 2022.3.18f1 or higher.
 
-| PolySpatial package versions | Unity Version                | Xcode Version | Device seed version |
-|------------------------------|------------------------------|---------------|---------------------|
-| 0.6.x                        | 2022.3.11f1 to 2022.3.13f1   | 15.1 beta     | 4+ 21N5259k         |
+Your Unity install must include the **visionOS Build Support** module. You can download this module from the Unity Hub.
 
-***IMPORTANT!:*** Versions of Unity before 2022.3 aren't supported.
-
-A developer can get started without the PolySpatial beta with an existing project by bringing it up to 2022.3 before starting to work on a visionOS port.
+> [!NOTE]
+> Versions of Unity before 2022.3 aren't supported.
 
 ### Hardware, OS, and Xcode
-- Compiling for visionOS currently requires Xcode 15.1 beta 1.
-- You must currently use an Apple Silicon (M1/M2) Mac in order to compile for visionOS. 
-- Make sure **visionOS Build Support (experimental)** and **iOS Build Support** are both installed.
+- Compiling for visionOS currently requires Xcode 15.2 
+- You must currently use an Apple to compile for visionOS, and can only use the visionOS Simulator on Apple Silicon (M1, M2, etc.) Mac.
+- Make sure **visionOS Build Support** and **iOS Build Support** are both installed.
 - Currently support visionOS beta 4 `21N5259k`
+- If you don't have visionOS hardware, you can use the simulator built into XCode.
 
 For more information about development setup, refer to [Development & Iteration](DevelopmentAndIteration.md)
 

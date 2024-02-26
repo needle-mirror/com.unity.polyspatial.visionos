@@ -43,14 +43,43 @@ At runtime, you cannot change the dimensions of a bounded volume window directly
 
 ## Volume camera events
 
-The **VolumeCamera** has the following events that can be subscribed to:
+The **VolumeCamera** has one event that can be subscribed to:
 
-| **Event**             | **Description**        |
-| :-------------------- | :--------------------- |
-| **On Window Opened**  | An event that is triggered when this volume camera's window is opened. The first argument is the actual dimensions of the window in world space, or `Vector3.zero` if the volume is unbounded. The second argument is the actual dimensions of the content, which may be different due to aspect ratio mapping, in world space, or `Vector3.zero` if the volume is unbounded. The third argument is the output mode the window was opened in. Any of these may be different from DesiredOutputDimensions or DesiredOutputMode, as determined by visionOS at the time the window is opened. |
-| **On Window Closed**  | An event that is triggered when a window that is showing this volume camera is closed (by the user or via code).                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| **On Window Resized** | An event that is triggered when this volume camera's window is resized. The first argument is the actual dimensions of the window in world space, or `Vector3.zero` if the volume is unbounded. The second argument is the actual dimensions of the content, which may be different due to aspect ratio mapping, in world space, or `Vector3.zero` if the volume is unbounded. The third argument is the output mode the window was opened in.                                                                                                        |
-| **On Window Focused** | An event that is triggered when this volume camera's window gains or loses focus, as defined by the OS. The first argument is a boolean indicating if the window has focus or not.                                                                                                                                                                                                                                                                                                                                                                |
+`OnWindowEvent` An event that is triggered when this volume camera's window changes state - in other words, it is triggered whenever the window is opened, closed, resized, receives focus, or loses focus. When a change has occurred, the event will supply a `WindowState` struct that encapsulates information on the window's state change.
+
+> [!NOTE]
+> All volume camera events besides `OnWindowEvent` are obsolete, and will be removed in later versions. `OnWindowEvent` will supply all the information the other OnWindow events would normally supply.
+
+The `WindowState` struct has the following properties:
+
+| **Property**                           | **Description**      |
+|:---------------------------------------| :------------------- |
+| **WindowEvent**                        | The change in state that just occurred for this window. |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Opened*       | The volume camera window was opened. |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Resized*      | The volume camera window was resized. See the `OutputDimensions` and `ContentDimensions` to figure out what the volume camera window was resized to.|
+| &nbsp;&nbsp;&nbsp;&nbsp;*Focused*      | The volume camera window either received focus or lost focus.|
+| &nbsp;&nbsp;&nbsp;&nbsp;*Backgrounded* | The volume camera window was closed due to being backgrounded.|
+| &nbsp;&nbsp;&nbsp;&nbsp;*Closed*       | The volume camera window was closed due to being dismissed.|
+| **OutputDimensions**                   | The actual dimensions of the window in world space, or `Vector3.zero` if the volume is unbounded. |
+| **ContentDimensions**                  | The actual dimensions of the content, which may be different due to aspect ratio mapping, in world space, or `Vector3.zero` if the volume is unbounded. |
+| **Mode**                               | The mode this volume camera will display its content in, Bounded or Unbounded. |
+| **IsFocused**                               | When windowEvent is set to `WindowEvent.Focused`, this will indicate whether it has received focus or lost it. |
+
+The following table provides examples of the sequence in which `OnWindowEvent` is called when a volume window changes state because of a User or OS action. For example, when the OS opens a window while launching an app, `OnWindowEvent` is invoked twice, once with `WindowEvent.Opened`, and once with `WindowEvent.Resized`.
+
+Note that these events may differ from backend to backend. The events listed below are when running an app on Vision OS. When running an app on the Unity editor, there are no `UnityEvent.Focused` events triggered, nor are there `UnityEvent.Backgrounded` events. 
+
+Additionally, some of the ordering may be subject to change in the future, particularly **Changing the Volume Window Configuration**.
+
+| **User / OS Actions**                             | **OnWindowEvents triggered (in order)**   |
+|:--------------------------------------------------|:------------------------------------------|
+| **Opening the app for the first time**            | WindowEvent.Opened |
+| **Changing the `Volume Window Configuration`**     | WindowEvent.Closed<br>WindowEvent.Opened<br>WindowEvent.Resized                        |
+| **Opening the Vision Pro's home view**            | WindowEvent.Focused, IsFocused = false    |
+| **Bringing the app back into focus**              | WindowEvent.Focused, IsFocused = true     |
+| **Tapping the `x` button next to the window bar** | WindowEvent.Focused, IsFocused = false<br>WindowEvent.Backgrounded                  |
+| **Reopening the app from the home view**          | WindowEvent.Opened<br>WindowEvent.Focused, IsFocused = true     |
+
 <a id="volume-camera-window-configuration-assets"></a>
 ## Volume Camera Window Configuration assets
 
@@ -66,7 +95,7 @@ Volume Camera Window Configuration assets support the following properties:
 | **Output Dimensions**                | For **Bounded** volumes, determines the size of the displayed volume in meters. For example, if you set the output dimensions to 3x3x3, the Volume Window opened in the app is a cube measuring 3 meters on each side. The content within the volume camera's bounding box is scaled to fill the Volume Window(Ignored for **Unbounded** volumes). |
 
 > [!NOTE]
-> The visionOS operating system is free to set the volume window dimensions as it sees fit. The actual window dimensions are reported in the [OnWindowOpened event](#volume-camera-events). 
+> The visionOS operating system is free to set the volume window dimensions as it sees fit. The actual window dimensions are reported in [OnWindowEvent](#volume-camera-events) when `WindowEvent` is Opened. 
  
 Create volume camera configuration assets using the **Create** menu: **Assets &gt; Create &gt; PolySpatial &gt; Volume Camera Window Configuration**. You must store these assets within a folder named `Resources` and they must exist when you start the build -- they cannot be added as a build process or post-process. Refer to [Special Folder names](xref:SpecialFolders) for more information about `Resources` folders in Unity. All volume camera configuration assets that you intend to use must be included in the build. You cannot create them dynamically at runtime.
 
@@ -83,7 +112,7 @@ The general [PolySpatial Settings](PolySpatialSettings.md) include the following
 
 | **Setting**                             | **Description**                                                                                                                                            |
 | :-------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Default Volume Camera Configuration** | Defines the default **Volume Camera Configuration** asset that a volume camera uses to open its volume window if you have not assigned a configuration asset to the volume camera. If you do not identify a default configuration, any volume camera without a configuration attempts to open its volume window in **Unbounded** mode. |
+| **Default Volume Camera Configuration** | Defines the default **Volume Camera Configuration** asset that a volume camera uses to open its volume window if you have not assigned a configuration asset to the volume camera. If you do not identify a default configuration, any volume camera without a configuration attempts to open its volume window in **Unbounded** mode. This also determines the start-up scene for the application. For example, a project with the default Unbounded Volume Camera Window Configuration will start with an `ImmersiveSpace`, hiding other applications and the virtual environment. |
 | **Auto-Create Volume Camera**           | When enabled, PolySpatial creates a volume camera automatically if there is no volume camera after scene load. Disable this property if you create the initial volume camera from a script after the scene loads. |
 
 Access these settings in the **PolySpatial** section of your **Project Settings** (menu: **Edit &gt; Project Settings**).

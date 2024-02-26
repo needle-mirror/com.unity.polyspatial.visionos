@@ -89,9 +89,10 @@ extension simd.simd_quatf {
 @objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class PolySpatialSceneDelegate : ObjectiveC.NSObject, UIKit.UISceneDelegate, Foundation.ObservableObject {
   @_Concurrency.MainActor(unsafe) @objc public func scene(_ scene: UIKit.UIScene, willConnectTo session: UIKit.UISceneSession, options connectionOptions: UIKit.UIScene.ConnectionOptions)
   @_Concurrency.MainActor(unsafe) @objc public func sceneWillEnterForeground(_ scene: UIKit.UIScene)
-  @_Concurrency.MainActor(unsafe) @objc public func sceneDidBecomeActive(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor(unsafe) @objc public func sceneDidEnterBackground(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor(unsafe) @objc public func sceneDidDisconnect(_ scene: UIKit.UIScene)
+  @_Concurrency.MainActor(unsafe) @objc public func sceneDidBecomeActive(_ scene: UIKit.UIScene)
+  @_Concurrency.MainActor(unsafe) @objc public func sceneWillResignActive(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init()
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit

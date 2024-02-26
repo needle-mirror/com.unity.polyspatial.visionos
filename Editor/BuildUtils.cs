@@ -23,6 +23,13 @@ namespace Unity.PolySpatial.Internals.Editor
         static MD5 md5Hasher = MD5.Create();
 
         /// <summary>
+        /// Converts \ characters in the passed in string to /.
+        /// </summary>
+        /// <param name="path">Path string to convert</param>
+        /// <returns>Converted string.</returns>
+        public static string PathToUnixPath(string path) => path?.Replace('\\', '/');
+
+        /// <summary>
         /// Copy a file from one location to another. Depending on options we may or may not do the copy.
         /// By default, we check if the files are different and if not, skip copying.
         /// .meta files and files starting with '.' are ignored.

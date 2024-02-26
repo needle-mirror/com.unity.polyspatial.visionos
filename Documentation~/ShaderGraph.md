@@ -1,33 +1,34 @@
 ---
 uid: psl-vos-shader-graph
 ---
-# Shader Graph Support
+# Shader Graph support
 You can use the Unity Shader Graph to create custom materials for visionOS. These will previewed in their compiled form within Unity, but converted to MaterialX for display in simulator and on device. While MaterialX is very expressive, some Shader Graph nodes have no analog in materialX. Within the Shader Graph editor, unsupported nodes will be indicated by the presence of a `#` symbol.
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
-## Texture Limitations
+## Texture limitations
 When sampling textures in shader graphs, note that the sampler state (filter, wrap modes) associated with the texture itself is ignored.  Instead, you must use the `Sampler State` node to control how the texture is sampled if you want to use a mode other than the default (linear filtering, repeat wrap mode).
 
-## Coordinate Space Notes
+<a id="coordinate-space-notes"></a>
+## Coordinate space notes
 There are two caveats to be aware of when converting between coordinate spaces in shader graphs.  Because content is transformed according to the [Volume Camera](VolumeCamera.md), the "world space" geometry returned within a shader graph will not match that of the simulation scene.  Furthermore, visionOS is currently inconsistent with regards to the geometry it returns and the transformation matrices it supplies.
 
-### Retrieving the Geometry of the Source Scene
+### Retrieving the geometry of the source scene
 To obtain positions, normals, tangents, or bitangents in the world space of the simulation scene, use the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes with `Space`: `World`, then transform them using the `PolySpatial Volume to World` node with a `Transform` appropriate to the type (typically `Position` for positions and `Direction` for the rest, which will be normalized after transformation).
 
-### Notes on Transform and Transformation Matrix Nodes in VisionOS
+### Notes on Transform and Transformation Matrix nodes in VisionOS
 The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
 
-## Input Properties
+## Input properties
 Shader graph properties must be set to `Exposed` in order to be set on a per-instance basis.  Globals must *not* be `Exposed`, and global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).  
 
-### Time-based Animation
+### Time-based animation
 Note that visionOS materials do not support global properties natively, and thus PolySpatial must apply global properties separately to all material instances, which may affect performance.  For animation, consider using the `PolySpatial Time` node rather than the standard Unity shader graph `Time`.  While `PolySpatial Time` will not be exactly synchronized with [Time.time](https://docs.unity3d.com/ScriptReference/Time-time.html) (notably, it will not reflect changes to [Time.timeScale](https://docs.unity3d.com/ScriptReference/Time-timeScale.html)), it is supported natively in visionOS and does not require per-frame property updates.
 
-## Supported Targets
+## Supported targets
 The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types and the `Alpha Clipping` setting.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  Due to platform limitations, all materials will have `Front` render face, depth writes enabled, `LEqual` depth testing, and tangent space fragment normals.
 
-## Shader Graph Nodes
+## Shader Graph nodes
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
 
 If a node doesn't appear here it means that it's not currently supported. *Note that this list will be updated as we continue to add support for more nodes.*
@@ -117,6 +118,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Sample Texture 2D LOD    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 3D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sampler State            | `MirrorOnce` wrap mode not supported.                                                                                  |
+  |           | Split Texture Transform  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture 2D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture 3D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture Size             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -184,7 +186,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Rejection              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Rotate About Axis      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sphere Mask            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
-|               | Transform              | Some spaces are simulated and not covered in tests.                                                |
+|               | Transform              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>  Refer to [Coordinate Space Notes](#coordinate-space-notes) for information about using this node. |
 | Wave          | Noise Sine Wave        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Sawtooth Wave          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Square Wave            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |

@@ -42,23 +42,27 @@ void maskingShader(realitykit::surface_parameters params)
     float maskOperation = customParameter[0];
     float alphaCutoff = customParameter[1];
     
-    // Because we only get a single vec4 for custom parameters, we have to pack the relevant
-    // part of our uvTransform matrix into all the material properties we aren't using.
-    float4x4 uvTransform;
-    uvTransform[0][0] = customParameter[2];
-    uvTransform[0][1] = customParameter[3];
-    uvTransform[1][0] = params.material_constants().clearcoat_scale();
-    uvTransform[1][1] = params.material_constants().clearcoat_roughness_scale();
-    uvTransform[2][0] = params.material_constants().opacity_threshold();
-    uvTransform[2][1] = params.material_constants().roughness_scale();
-    uvTransform[3][0] = params.material_constants().metallic_scale();
-    uvTransform[3][1] = params.material_constants().specular_scale();
-    
-    float4 uvPos = uvTransform * float4(params.geometry().model_position(), 1.0);
-    
-    half alpha = params.textures().custom().sample(textureSampler, saturate(uvPos.xy)).a;
-    if (maskOperation)
-        alpha = 1.0 - alpha;
+    half alpha = 1.0;
+    if (maskOperation != 0.0)
+    {
+        // Because we only get a single vec4 for custom parameters, we have to pack the relevant
+        // part of our uvTransform matrix into all the material properties we aren't using.
+        float4x4 uvTransform;
+        uvTransform[0][0] = customParameter[2];
+        uvTransform[0][1] = customParameter[3];
+        uvTransform[1][0] = params.material_constants().clearcoat_scale();
+        uvTransform[1][1] = params.material_constants().clearcoat_roughness_scale();
+        uvTransform[2][0] = params.material_constants().opacity_threshold();
+        uvTransform[2][1] = params.material_constants().roughness_scale();
+        uvTransform[3][0] = params.material_constants().metallic_scale();
+        uvTransform[3][1] = params.material_constants().specular_scale();
+        
+        float4 uvPos = uvTransform * float4(params.geometry().model_position(), 1.0);
+        
+        alpha = params.textures().custom().sample(textureSampler, saturate(uvPos.xy)).a;
+        if (maskOperation == 2.0)
+            alpha = 1.0 - alpha;
+    }
     
     if (alpha < alphaCutoff)
         params.surface().set_opacity(0.0);

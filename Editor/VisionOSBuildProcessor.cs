@@ -21,71 +21,15 @@ using Debug = UnityEngine.Debug;
 
 namespace Unity.PolySpatial.Internals.Editor
 {
-    internal class VisionOSBuildPreProcessor : IPreprocessBuildWithReport
+    internal class VisionOSBuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
         internal const string k_XcodeProjName = "Unity-VisionOS.xcodeproj";
 
-        public int callbackOrder => 0;
+        public int callbackOrder => 150; // 150 is after the plugin builder (?)
 
         public void OnPreprocessBuild(BuildReport report)
         {
             DoPreprocessBuild(report);
-        }
-
-        [Conditional("UNITY_VISIONOS")]
-        public void DoPreprocessBuild(BuildReport report)
-        {
-            if (report.summary.platform != BuildTarget.VisionOS)
-                return;
-
-            var xrSettings = VisionOSSettings.currentSettings;
-            var autoMeansEnabled = xrSettings != null && xrSettings.appMode == VisionOSSettings.AppMode.MR;
-
-            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out var runtimeEnabled, out var runtimeLinked);
-
-            if (!runtimeLinked)
-            {
-                return;
-            }
-
-#if POLYSPATIAL_INTERNAL && UNITY_EDITOR_OSX
-            if (runtimeLinked)
-            {
-                RealityKitPluginBuilder.BuildVisionOSXRPlugin();
-            }
-#endif
-
-            try
-            {
-                SwiftAppShellProcessor.RestoreXcodeProject(report.summary.outputPath, k_XcodeProjName);
-            }
-            catch (Exception e)
-            {
-                throw new BuildFailedException(e);
-            }
-        }
-    }
-
-    static class PListElementDictExtensions
-    {
-        internal static PlistElementDict GetOrCreateDict(this PlistElementDict dict, string key)
-        {
-            if (dict.values.ContainsKey(key))
-                return dict[key].AsDict();
-            return dict.CreateDict(key);
-        }
-    }
-
-    internal class VisionOSBuildPostProcessor : IPostprocessBuildWithReport
-    {
-        public int callbackOrder => 150; // after the plugin builder
-
-        public static bool isSimulator
-        {
-            get
-            {
-                return PlayerSettings.VisionOS.sdkVersion == VisionOSSdkVersion.Simulator;
-            }
         }
 
         public void OnPostprocessBuild(BuildReport report)
@@ -93,26 +37,80 @@ namespace Unity.PolySpatial.Internals.Editor
             DoPostprocessBuild(report);
         }
 
-        [Conditional("UNITY_VISIONOS")]
-        public void DoPostprocessBuild(BuildReport report)
+        static bool ShouldProcessWithRuntime(BuildReport report, out bool runtimeEnabled)
         {
             if (report.summary.platform != BuildTarget.VisionOS)
-                return;
+            {
+                runtimeEnabled = false;
+                return false;
+            }
 
             var xrSettings = VisionOSSettings.currentSettings;
             var autoMeansEnabled = xrSettings != null && xrSettings.appMode == VisionOSSettings.AppMode.MR;
 
-            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out var runtimeEnabled, out var runtimeLinked);
+            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out runtimeEnabled, out var runtimeLinked);
 
-            if (!runtimeLinked)
-            {
+            return runtimeLinked;
+        }
+
+        List<string> m_InjectedScenePaths = new();
+        List<string> m_swiftAppSupportPaths = new();
+
+        [Conditional("UNITY_VISIONOS")]
+        public void DoPreprocessBuild(BuildReport report)
+        {
+            if (!ShouldProcessWithRuntime(report, out var _))
                 return;
+
+#if POLYSPATIAL_INTERNAL && UNITY_EDITOR_OSX
+            if (!File.Exists("Packages/com.unity.xr.visionos/Runtime/Plugins/visionos/Device/arm64/libUnityVisionOS.a"))
+            {
+                Debug.LogWarning($"visionOS XR provider library not built; building.");
+                RealityKitPluginBuilder.BuildVisionOSXRPlugin();
             }
+#endif
+
+            m_InjectedScenePaths.Clear();
+            m_swiftAppSupportPaths.Clear();
+
+            // Capture .swift files that we need to move around later on
+            var allPlugImporters = PluginImporter.GetAllImporters();
+            foreach (var importer in allPlugImporters)
+            {
+                if (!importer.GetCompatibleWithPlatform(BuildTarget.VisionOS) || !importer.ShouldIncludeInBuild())
+                    continue;
+
+                if (importer.assetPath.EndsWith("InjectedScene.swift"))
+                {
+                    m_InjectedScenePaths.Add(importer.assetPath);
+                }
+
+                if (importer.assetPath.Contains("/SwiftAppSupport/"))
+                {
+                    m_swiftAppSupportPaths.Add(importer.assetPath);
+                }
+            }
+        }
+
+        public static bool isSimulator => PlayerSettings.VisionOS.sdkVersion == VisionOSSdkVersion.Simulator;
+
+        [Conditional("UNITY_VISIONOS")]
+        public void DoPostprocessBuild(BuildReport report)
+        {
+            if (!ShouldProcessWithRuntime(report, out var runtimeEnabled))
+                return;
 
             try
             {
+                var InjectedSceneTypeNames = Array.Empty<string>();
+
+                if (m_InjectedScenePaths.Count > 0)
+                {
+                    InjectedSceneTypeNames = m_InjectedScenePaths.Select(Path.GetFileNameWithoutExtension).ToArray();
+                }
+
                 var outputPath = report.summary.outputPath;
-                WriteVisionOSSettings(outputPath);
+                WriteVisionOSSettings(outputPath, InjectedSceneTypeNames);
 
                 if (runtimeEnabled)
                 {
@@ -127,13 +125,13 @@ namespace Unity.PolySpatial.Internals.Editor
                 };
 
                 SwiftAppShellProcessor.ConfigureXcodeProject(report.summary.platform, outputPath,
-                    VisionOSBuildPreProcessor.k_XcodeProjName,
-                    il2cppArmWorkaround: true,
+                    k_XcodeProjName,
                     staticLibraryPluginName: isSimulator ? "libPolySpatial_xrsimulator.a" : "libPolySpatial_xros.a",
-                    extraSourceFiles: extraSourceFiles
+                    extraSourceFiles: extraSourceFiles,
+                    pathsToMoveToSwiftApp: m_InjectedScenePaths.Concat(m_swiftAppSupportPaths).Distinct().ToArray()
                 );
 
-                FilterXcodeProj(outputPath, VisionOSBuildPreProcessor.k_XcodeProjName);
+                FilterXcodeProj(outputPath, k_XcodeProjName);
                 FilterPlist(outputPath);
             }
             catch (Exception e)
@@ -163,15 +161,19 @@ namespace Unity.PolySpatial.Internals.Editor
 
             var windowType = "";
             var windowStyle = "";
+            var upperLimbVisibility = "";
+
             switch (mode)
             {
                 case VolumeCamera.PolySpatialVolumeCameraMode.Bounded:
                     windowType = "WindowGroup";
                     windowStyle = $".windowStyle(.volumetric).defaultSize({dimsSizeParams})";
+                    upperLimbVisibility = "";
                     break;
                 case VolumeCamera.PolySpatialVolumeCameraMode.Unbounded:
                     windowType = "ImmersiveSpace";
                     windowStyle = "";
+                    upperLimbVisibility = $".upperLimbVisibility({(VisionOSSettings.currentSettings.upperLimbVisibility ? ".visible" : ".hidden")})";
                     break;
                 default:
                     throw new InvalidOperationException($"Unexpected VolumeCameraConfiguration mode {mode}");
@@ -182,52 +184,12 @@ namespace Unity.PolySpatial.Internals.Editor
         {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
             PolySpatialContentViewWrapper()
                 .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
-                    KeyboardTextField()
-                .frame(width: 0, height: 0)
-        }} defaultValue: {{ UUID() }} {windowStyle}";
+            KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
+        }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}";
         }
 
-        // Create a scene that encapsulates ImmersiveSpace/WindowGroup entries for a given list of volume camera configurations.
-        static string CreateWindowConfigurationScene(
-            Vector3[] dims,
-            string sceneName,
-            out string listOfConfigs,
-            out string listMatchableConfigs)
-        {
-            var configEntries = new StringBuilder();
-            var delineator = "";
-            listOfConfigs = "";
-            listMatchableConfigs = "";
-
-            for (var i = 0; i < dims.Length; i++)
-            {
-                // Create an entry for this in both the list for all volume cameras
-                // and the list for the the matchable volume cameras.
-                var dim = dims[i];
-                DimensionsToSwiftStrings(dim, out var _, out var _, out var configName);
-
-                listOfConfigs += delineator + $"\"{configName}\"";
-                listMatchableConfigs += delineator + $".init{dim.ToString("f3")}";
-                delineator = ", ";
-
-                // Create an entry for this bounded volume camera.
-                var swift = CreateWindowConfigurationEntry(dim, VolumeCamera.PolySpatialVolumeCameraMode.Bounded, configName);
-                configEntries.Insert(configEntries.Length, swift);
-            }
-
-            return $"@SceneBuilder\n" +
-                   $"    var {sceneName}: some Scene {{\n" +
-                   $"{configEntries.ToString()}\n" +
-                   $"    }}";
-        }
-
-#if PLAY_TO_DEVICE
-        static String CreatePlayToDeviceConfigurationScene(
-            String sceneName,
-            ref String allConfigs,
-            String allConfigDelineator,
-            ref String matchableConfigs,
-            String matchableConfigDelineator)
+        [Conditional("PLAY_TO_DEVICE")]
+        static void ConfigurePlayToDevice(List<string> allAvailableConfigs, List<string> availableConfigsForMatch, List<string> sceneContent)
         {
             // TODO LXR-2979: hardcoded for now, will be moved somewhere else.
             Vector3[] possibleDimValues = {
@@ -243,20 +205,22 @@ namespace Unity.PolySpatial.Internals.Editor
                 new Vector3(1.0f, 1.0f, 1.41f), // 1:1:1.41
             };
 
-            var scene = CreateWindowConfigurationScene(
-                possibleDimValues,
-                sceneName,
-                out var listOfConfigs,
-                out var listMatchableConfigs);
+            foreach (var dim in possibleDimValues)
+            {
+                // Create an entry for this in both the list for all volume cameras
+                // and the list for the the matchable volume cameras.
+                DimensionsToSwiftStrings(dim, out var swiftVec3, out var _, out var configName);
 
-            matchableConfigs += matchableConfigDelineator + listMatchableConfigs;
-            allConfigs += allConfigDelineator + listOfConfigs;
+                allAvailableConfigs.Add(configName);
+                availableConfigsForMatch.Add(swiftVec3);
 
-            return scene;
+                // Create an entry for this bounded volume camera.
+                var swift = CreateWindowConfigurationEntry(dim, VolumeCamera.PolySpatialVolumeCameraMode.Bounded, configName);
+                sceneContent.Add(swift);
+            }
         }
-#endif
 
-        static void WriteVisionOSSettings(string outputPath)
+        static void WriteVisionOSSettings(string outputPath, IEnumerable<string> extraWindowGroups)
         {
             List<VolumeCameraWindowConfiguration> configurations = new();
 
@@ -270,13 +234,22 @@ namespace Unity.PolySpatial.Internals.Editor
                 configurations.Add(initialConfig);
             }
 
-            StringBuilder sceneContent = new();
-            // Scene name encapsulating all window configurations that were found in Resources/
-            var windowConfigurationsScene = "windowConfigurations";
-            var allScenes = windowConfigurationsScene;
+            // Make sure only one Unbounded configuration remains, but if it's also the initial config then make sure
+            // that's the one that stays. This is all to avoid multiple ImmersiveSpace scene elements.
+            var unbounded =
+                    initialConfig.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ?
+                    initialConfig :
+                    configurations.FirstOrDefault((cfg) => cfg.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded);
+            if (unbounded != null)
+            {
+                // remove any but this first one we found
+                configurations.RemoveAll((cfg) =>
+                    cfg.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded &&
+                    cfg != unbounded);
+            }
 
-            var allAvailableConfigs = "";
-            var delineator = "";
+            List<string> sceneContent = new();
+            List<string> allAvailableConfigs = new();
 
             foreach (var config in configurations)
             {
@@ -288,31 +261,64 @@ namespace Unity.PolySpatial.Internals.Editor
 
                 // The default/initial configuration needs to be first in the Scene list,
                 // because this is what the OS will open on launch. Otherwise just append to the string.
-                sceneContent.Insert(config == initialConfig ? 0 : sceneContent.Length, swift);
+                if (config == initialConfig)
+                    sceneContent.Insert(0, swift);
+                else
+                    sceneContent.Add(swift);
 
-                allAvailableConfigs += delineator + $"\"{configName}\"";
-                delineator = ", ";
+                allAvailableConfigs.Add(configName);
             }
 
-            var ptdWindowConfigScene = "";
-            var availableConfigsForMatch = "";
-#if PLAY_TO_DEVICE
+            List<string> availableConfigsForMatch = new();
+
+            ConfigurePlayToDevice(allAvailableConfigs, availableConfigsForMatch, sceneContent);
+
+            // For every Swift plugin that ends in "InjectedScene.swift", add it to the
+            // scene content and move it to the SwiftApp in the xcode project. This allows
+            // developers to add their own SwiftUI or other windows to the app.
+            foreach (var InjectedScenePath in extraWindowGroups)
             {
-                var ptdBoundedSceneName = "ptdWindowConfigurations";
-                ptdWindowConfigScene += CreatePlayToDeviceConfigurationScene(
-                    ptdBoundedSceneName,
-                    ref allAvailableConfigs,
-                    delineator,
-                    ref availableConfigsForMatch,
-                    "");
-
-                allScenes += $"\n        {ptdBoundedSceneName}";
+                var name = Path.GetFileNameWithoutExtension(InjectedScenePath);
+                sceneContent.Add($"\n       {name}.scene");
             }
-#endif
 
             var parameters = isSimulator ?
                 PolySpatialSettings.instance.SimulatorDisplayProviderParameters :
                 PolySpatialSettings.instance.DeviceDisplayProviderParameters;
+
+            var displayProviderParametersInit = GetDisplayProviderParamametersInitString(parameters);
+
+            StringBuilder mainSceneDeclaration = new();
+
+            if (sceneContent.Count > 100)
+            {
+                throw new BuildFailedException("Too many volume camera or injected window configurations. The maximum is 100.");
+            }
+
+            // a SceneBuilder can take a max of 10 args (declarations), but they can be nested.
+            // Split up the declaration into chunks of 10, giving us a max of 100.
+            int mainSceneCount = 0;
+            for (int i = 0; i < sceneContent.Count; i += 10)
+            {
+                var sceneContentSlice = sceneContent.Skip(i).Take(10);
+                mainSceneDeclaration.Append($@"
+    @SceneBuilder
+    var mainScenePart{mainSceneCount}: some Scene {{
+{String.Join("", sceneContentSlice)}
+    }}
+");
+                mainSceneCount++;
+            }
+
+            mainSceneDeclaration.AppendLine($@"
+    @SceneBuilder
+    var mainScene: some Scene {{");
+            for (int i = 0; i < mainSceneCount; i++)
+            {
+                mainSceneDeclaration.AppendLine($"        mainScenePart{i}");
+            }
+
+            mainSceneDeclaration.AppendLine("    }");
 
 // ==============================
 // the template of the entire file.
@@ -320,59 +326,51 @@ namespace Unity.PolySpatial.Internals.Editor
 import Foundation
 import SwiftUI
 import PolySpatialRealityKit
+import UnityFramework
 
 extension UnityPolySpatialApp {{
     func initialWindowName() -> String {{ return ""{NameForVolumeConfig(initialConfig)}"" }}
 
-    func getAllAvailableWindows() -> [String] {{ return [{allAvailableConfigs}] }}
+    func getAllAvailableWindows() -> [String] {{ return [{String.Join(", ", allAvailableConfigs.Select(s => $"\"{s}\""))}] }}
 
-    func getAvailableWindowsForMatch() -> [simd_float3] {{ return [{availableConfigsForMatch}] }}
+    func getAvailableWindowsForMatch() -> [simd_float3] {{ return [{String.Join(", ", availableConfigsForMatch)}] }}
 
-    func displayProviderParameters() -> DisplayProviderParameters {{
-        return .init(
-            framebufferWidth: {parameters.framebufferWidth},
-            framebufferHeight: {parameters.framebufferHeight},
-            leftEyePose: .init(position: .init(x: {parameters.leftEyePose.position.x},
-                                               y: {parameters.leftEyePose.position.y},
-                                               z: {parameters.leftEyePose.position.z}),
-                               rotation: .init(x: {parameters.leftEyePose.rotation.x},
-                                               y: {parameters.leftEyePose.rotation.y},
-                                               z: {parameters.leftEyePose.rotation.z},
-                                               w: {parameters.leftEyePose.rotation.w})),
-            rightEyePose: .init(position: .init(x: {parameters.rightEyePose.position.x},
-                                                y: {parameters.rightEyePose.position.y},
-                                                z: {parameters.rightEyePose.position.z}),
-                                rotation: .init(x: {parameters.rightEyePose.rotation.x},
-                                                y: {parameters.rightEyePose.rotation.y},
-                                                z: {parameters.rightEyePose.rotation.z},
-                                                w: {parameters.rightEyePose.rotation.w})),
-            leftProjectionHalfAngles: .init(left: {parameters.leftProjectionHalfAngles.left},
-                                            right: {parameters.leftProjectionHalfAngles.right},
-                                            top: {parameters.leftProjectionHalfAngles.top},
-                                            bottom: {parameters.leftProjectionHalfAngles.bottom}),
-            rightProjectionHalfAngles: .init(left: {parameters.rightProjectionHalfAngles.left},
-                                             right: {parameters.rightProjectionHalfAngles.right},
-                                             top: {parameters.rightProjectionHalfAngles.top},
-                                             bottom: {parameters.rightProjectionHalfAngles.bottom})
-        )
-    }}
+    func displayProviderParameters() -> DisplayProviderParameters {{ return {displayProviderParametersInit} }}
 
-    @SceneBuilder
-    var {windowConfigurationsScene}: some Scene {{
-{sceneContent.ToString()}
-    }}
+    {mainSceneDeclaration}
 
-    {ptdWindowConfigScene}
-
-    @SceneBuilder
-    var mainScene: some Scene {{
-        {allScenes}
+    struct LifeCycleHandlerModifier: ViewModifier {{
+        func body(content: Content) -> some View {{
+            content
+                .onOpenURL(perform: {{ url in
+                    UnityLibrary.instance?.setAbsoluteUrl(url.absoluteString)
+                }})
+        }}
     }}
 }}
 ";
 // ==============================
 
             File.WriteAllText(Path.Combine(outputPath, "MainApp", "UnityVisionOSSettings.swift"), content);
+        }
+
+        static string ToSwift(Vector3 pos) { return $".init(x: {pos.x}, y: {pos.y}, z: {pos.z})"; }
+        static string ToSwift(Quaternion quat) { return $".init(x: {quat.x}, y: {quat.y}, z: {quat.z}, w: {quat.w})"; }
+        static string ToSwift(PolySpatialSettings.ProjectionHalfAngles angles) { return $".init(left: {angles.left}, right: {angles.right}, top: {angles.top}, bottom: {angles.bottom})"; }
+
+        static string GetDisplayProviderParamametersInitString(PolySpatialSettings.DisplayProviderParameters parameters)
+        {
+            return $@".init(
+            framebufferWidth: {parameters.framebufferWidth},
+            framebufferHeight: {parameters.framebufferHeight},
+            leftEyePose: .init(position: {ToSwift(parameters.leftEyePose.position)},
+                               rotation: {ToSwift(parameters.leftEyePose.rotation)}),
+            rightEyePose: .init(position: {ToSwift(parameters.rightEyePose.position)},
+                                rotation: {ToSwift(parameters.rightEyePose.rotation)}),
+            leftProjectionHalfAngles: {ToSwift(parameters.leftProjectionHalfAngles)},
+            rightProjectionHalfAngles: {ToSwift(parameters.rightProjectionHalfAngles)}
+        )
+   ";
         }
 
         static VolumeCameraWindowConfiguration GetDefaultVolumeConfig()
@@ -433,8 +431,22 @@ extension UnityPolySpatialApp {{
                     if (cfguid == null)
                         continue;
 
-                    var existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS") ?? "";
-                    pbx.SetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS", $"-ld_classic -Wl,-exported_symbol,_SetPolySpatialNativeAPIImplementation {existing}");
+                    // We have lots of exported-symbol goop in the UnityFramework target for the simulator.
+                    // It's not necessary, and actually causes problems because it requires all exported
+                    // symbols to be specified that way. Remove these here until we get rid of them in the
+                    // template.
+                    var existing = pbx.GetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS") ?? null;
+                    if (existing != null)
+                    {
+                        if (!existing.Contains("-exported_symbol"))
+                            continue;
+                        // This split is not 100% correct, individual elements may be "" quoted. But
+                        // we re-join with a " " at the end, and we don't handle backslash-escapes,
+                        // so this should be fine in 99.99999999% of cases
+                        var items = existing.Split(" ");
+                        items = items.Where(s => !s.Contains("-exported_symbol")).ToArray();
+                        pbx.SetBuildPropertyForConfig(cfguid, "OTHER_LDFLAGS", string.Join(" ", items));
+                    }
 
                     // TODO: remove this from the template (sets to YES)
                     pbx.SetBuildPropertyForConfig(cfguid, "INFOPLIST_KEY_UIApplicationSceneManifest_Generation", "NO");
@@ -519,6 +531,16 @@ extension UnityPolySpatialApp {{
             }
 
             plist.WriteToFile(plistPath);
+        }
+    }
+
+    static class PListElementDictExtensions
+    {
+        internal static PlistElementDict GetOrCreateDict(this PlistElementDict dict, string key)
+        {
+            if (dict.values.ContainsKey(key))
+                return dict[key].AsDict();
+            return dict.CreateDict(key);
         }
     }
 }

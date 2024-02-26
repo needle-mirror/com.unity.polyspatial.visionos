@@ -85,6 +85,17 @@ class UnityLibrary: UIResponder, UIApplicationDelegate, UnityFrameworkListener {
         UnityLibrary.instance = nil;
     }
 
+    public func setAbsoluteUrl(_ url: String) {
+        let selector = Selector(("setAbsoluteURL:"))
+        if (unityFramework.responds(to: selector)) {
+            url.withCString({
+              let methodIMP : IMP! = unityFramework.method(for: selector)
+                 unsafeBitCast(methodIMP, to:(@convention(c)(Any?, Selector, UnsafeRawPointer)->Void).self)(unityFramework, selector, $0)
+            })
+        }
+    }
+
+
     public func didBecomeActive() {
         unityFramework.appController().applicationDidBecomeActive(UIApplication.shared)
     }

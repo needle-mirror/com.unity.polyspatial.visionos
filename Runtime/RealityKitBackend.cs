@@ -35,14 +35,22 @@ namespace Unity.PolySpatial.Internals
                 RKRuntimeFuncs.GetPolySpatialNativeAPI(out s_OldAPIPointers);
                 if (s_OldAPIPointers.SendClientCommand == null)
                 {
-                    Debug.LogError(
-                        $"Failed to get function pointers for PolySpatial RealityKit, disabling!");
+                    Debug.LogError($"Failed to get function pointers for PolySpatial RealityKit, disabling!");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                if (e is DllNotFoundException)
+                {
+                    Debug.LogWarning($"Failed to find PolySpatial RealityKit plugin, disabling");
+                }
+                else
+                {
+                    Debug.LogException(e);
+                }
+
+                return false;
             }
 
             // higher than default Unity

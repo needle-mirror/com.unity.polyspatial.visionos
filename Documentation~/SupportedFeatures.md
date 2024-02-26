@@ -68,6 +68,8 @@ Support for Unity's built-in particles under PolySpatial is actively being devel
 ### Supported Modes:
 - **Replicate Properties**: This mode aims to map Unity particle system properties to the native particle systems offered by RealityKit. While it offers relatively good performance, visual quality can vary significantly, especially for particles that utilize advanced features. Custom shaders are not supported in this mode.
 
+**Note:** The size of particle systems may differ in RealityKit since RealityKit specifies particle properties like speed and size in meters. Additionally, particle systems in RealityKit inherit scale from its GameObject and all its parents. 
+
 - **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.
 
 **Note:** Baked Mesh billboard particles only face the camera if there's an unbounded volume camera and ARSession in the scene. You can add an ARSession to the scene by right-clicking in the Editor **Hierarchy** window and selecting **XR &gt; AR Session** from the context menu.

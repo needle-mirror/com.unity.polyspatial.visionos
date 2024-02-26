@@ -29,6 +29,8 @@ Unity supports several different application types on visionOS, each with their 
 
 To **find answers and workarounds**, please consult the [FAQ](FAQ.md), which presents answers to many common questions about design, implementation, and use of the PolySpatial XR package.
 
+It is possible to **use SwiftUI alongside Unity content**. Please consult the [Interop with SwiftUI](InteropWithSwift.md) for more information.
+
 The [Glossary](Glossary.md) can help clarify **technical terminology** introduced for visionOS and PolySpatial and used throughout this documentation.
 
 Refer to the [PolySpatial Scripting API](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/index.html) for code documentation.

@@ -9,6 +9,72 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [1.1.4] - 2024-02-26
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.3] - 2024-02-22
+
+### Added
+
+### Changed
+- Update min Unity version to 2022.3.19f1
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.2] - 2024-02-21
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.1.1] - 2024-02-15
+
+### Added
+- Added installation instructions to the documentation.
+- Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused. 
+
+### Changed
+- Improved documentation about samples.
+
+### Deprecated
+- Volume camera events other than OnWindowEvent are now obsolete and will be removed in later releases. OnWindowEvent will supply all the information the other OnWindow events would normally supply. 
+
+### Removed
+
+### Fixed
+- Updated ReplicateProperty Particle mode to better reflect opacity when using startColor or colorOverLifetime particle modules. Setting opacity to 0 at the start of a gradient or/and at the end will cause different opacityCurves to be applied to the RealityKit particle system. 
+- Updated ReplicateProperty Particle mode to better reflect startSize and sizeOverLifetime module.
+- Corrected a few documentation errors.
+- Fixed a crash that could occur if a game object that was being used as a bone in a skinned mesh renderer was deleted during runtime.
+- Fixed VolumeCamera's OnWindowFocused and OnWindowResized event handlers not invoking.
+
+### Security
+
 ## [1.0.3] - 2024-01-20
 
 ### Added

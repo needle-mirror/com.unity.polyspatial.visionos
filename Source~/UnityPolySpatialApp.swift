@@ -44,6 +44,9 @@ class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDeleg
 
 #else
 
+@_silgen_name("UnityVisionOS_SetIsImmersiveSpaceReady")
+private func UnityVisionOS_SetIsImmersiveSpaceReady(_ immersiveSpaceReady: Bool)
+
 @main
 struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     @UIApplicationDelegateAdaptor
@@ -98,8 +101,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     func onWindowAdded(_ window: PolySpatialWindow) {
         if window.windowConfiguration == "Unbounded" {
             // Hook to let ARKit know to set things up
-            let unityClass = NSClassFromString("UnityVisionOSNativeBridge") as? NSObject.Type
-            let _ = unityClass?.perform(Selector(("setImmersiveSpaceReady")))
+            UnityVisionOS_SetIsImmersiveSpaceReady(true)
         }
     }
 
@@ -116,7 +118,8 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
 struct KeyboardTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
         let textField = UnityLibrary.GetInstance()!.keyboardTextField!
-        textField.isHidden = true;
+        textField.isHidden = true
+        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }
 

@@ -7,7 +7,7 @@ PolySpatial's shader graph conversion provides partial support for the [Custom F
 The parser used for custom function nodes is primitive compared to a full HLSL implementation, and is under active development.
 
 ## Function Body Format
-Custom function bodies should consist of a series of assignment statements for either temporary variables or outputs.  Variables may not be reassigned.
+Custom function bodies should consist of a series of assignment statements for either temporary variables or outputs.  Variables may be reassigned using the `=` or compound assignment operators.
 
 ### Example
 The following shows an example of a supported function body.  Note that the body consists only of assignment statements, assigning one temporary variable and using it to set the value of an output.
@@ -20,10 +20,10 @@ Out = float3(xy, max(1.0e-16, sqrt(1.0 - saturate(dot(xy, xy)))));
 The parser recognizes scalar, vector, and matrix floating point types: `float`, `float2`, `float3`, `float4`, `float2x2`, `float3x3`, `float4x4`
 
 ## Supported Operators
-The parser supports basic arithmetic operators (`+`, `-`, `*`, `/`, `%`) for `float`, vector, and matrix values and logic/comparison operators (`!`, `&&`, `||`, `==`, `!=`, `>`, `<`, `>=`, `<=`) for `float` values.  The conditional operator (`?:`) is supported for `float` conditions and `float` or vector values.
+The parser supports basic arithmetic operators (`+`, `-`, `*`, `/`, `%`) for `float`, vector, and matrix values and logic/comparison operators (`!`, `&&`, `||`, `==`, `!=`, `>`, `<`, `>=`, `<=`) for `float` values.  The conditional operator (`?:`) is supported for `float` conditions and `float` or vector values.  The `=` operator is supported for assignment/reassignment, and the arithmetic compound assignment operators (`+=`, `-=`, `*=`, `/=`, `%=`, `++`, `--`) are supported for reassignment.
 
 ## Swizzling
-Swizzling vector values is supported.  For example, `float3(1, 2, 3).xz` is equivalent to `float2(1, 3)`.
+Swizzling vector values is supported.  For example, `float3(1, 2, 3).xz` is equivalent to `float2(1, 3)`.  Swizzling is also supported for reassignment.  For example, if `foo` is a `float3`, then `foo.xy = float2(1, 3)` is equivalent to `foo = float3(1, 3, foo.z)`.
 
 ## Supported Functions
 

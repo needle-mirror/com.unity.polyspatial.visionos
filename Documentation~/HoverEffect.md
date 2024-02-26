@@ -7,10 +7,13 @@ The **VisionOSHoverEffect** component provides a hint to the platform to apply a
 
 For privacy reasons, visionOS does not permit apps access to user gaze directly. However, it is often helpful to visually highlight objects at which the user is gazing in order to hint which object will receive input if the user performs a pinch gesture. To this end, Unity PolySpatial provides a `VisionOSHoverEffect` component for visionOS, which can be added to GameObjects that might receive input via gaze. The presence of this component instructs the host platform (RealityKit) to apply a coloration effect to `GameObject`'s `MeshRenderer` any time the user's gaze ray intersects its corresponding collider(s). 
 
-Three components must be present on a GameObject to achieve the hover effect: 
+Three components must be present to achieve the hover effect: 
 
-* A `VisionOSHoverEffect` component indicates that the `GameObject` should display an effect when hovered.
-* A `Collider` component defines the collision shape against which the gaze ray is cast.
-* A `MeshRenderer` provides the mesh and geometry on which the coloration affect is applied.
+* A `VisionOSHoverEffect` component indicates that the `GameObject` and its descendants should display an effect when hovered.
+* A `Collider` component on the same `GameObject` as the `VisionOSHoverEffect` defines the collision shape against which the gaze ray is cast.
+* A `MeshRenderer` provides the mesh and geometry on which the coloration affect is applied.  The `MeshRenderer` may be on the `GameObject` containing the `VisionOSHoverEffect` and `Collider` components or on any of its descendants.
+
+## Skinned Mesh Renderers
+To display a hover effect on `SkinnedMeshRenderer` components, the `VisionOSHoverEffect` and `Collider` components must be present on the parent of the root bone (or any of its ancestors).
 
 ![VisionOSHoverEffect](images/ReferenceGuide/VisionOSHoverEffect.png)

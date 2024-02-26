@@ -19,24 +19,23 @@ namespace Unity.PolySpatial.Internals.Editor
     {
         private static readonly string MODULE_MAP = "UnityFramework.modulemap";
 
-        private static readonly string UNITY_RK_PACKAGE_PATH = Path.GetFullPath(Path.Combine("Packages", "com.unity.polyspatial.visionos"));
-        private static readonly string UNITY_RK_SRC_PATH = Path.Combine(UNITY_RK_PACKAGE_PATH, "Source~");
+        private static readonly string UNITY_RK_PACKAGE_PATH = BuildUtils.PathToUnixPath(Path.GetFullPath(Path.Combine("Packages", "com.unity.polyspatial.visionos")));
+        private static readonly string UNITY_RK_SRC_PATH = BuildUtils.PathToUnixPath(Path.Combine(UNITY_RK_PACKAGE_PATH, "Source~"));
 
         // Paths both on disk relative to project file, and logical inside relevant xcode projects
-        private static readonly string XCODE_POLYSPATIAL_RK_PATH = Path.Combine("Libraries", "com.unity.polyspatial.visionos");
-        private static readonly string XCODE_POLYSPATIAL_RK_PLUGIN_PATH = Path.Combine("Libraries", "com.unity.polyspatial.visionos", "Plugins");
-
-        private static readonly string ARM_WORKAROUND_ORIGINAL = "--additional-defines=IL2CPP_DEBUG=";
-        private static readonly string ARM_WORKAROUND_REPLACEMENT = "--additional-defines=IL2CPP_LARGE_EXECUTABLE_ARM_WORKAROUND=1,IL2CPP_DEBUG=";
+        private static readonly string XCODE_POLYSPATIAL_RK_PATH = BuildUtils.PathToUnixPath(Path.Combine("Libraries", "com.unity.polyspatial.visionos"));
+        private static readonly string XCODE_POLYSPATIAL_RK_PLUGIN_PATH = BuildUtils.PathToUnixPath(Path.Combine("Libraries", "com.unity.polyspatial.visionos", "Plugins"));
 
         public static void ConfigureXcodeProject(BuildTarget buildTarget, string path, string projectName,
-            bool il2cppArmWorkaround = false,
             string staticLibraryPluginName = null,
-
             // name in project -> actual filename. If actual filename is null, file is assumed to already be in
             // the right place in project structure. If filename is not-null, it's copied from there.
             // If the project path starts with MainApp, then it goes into the app target, otherwise to UnityFramework
-            Dictionary<string, string> extraSourceFiles = null)
+            Dictionary<string, string> extraSourceFiles = null,
+            // these are files that are already in the xcode project, but should be moved to the Swift app target from
+            // UnityFramework target. The paths are plugin paths, so they need some massaging to turn into Xcode paths.
+            string[] pathsToMoveToSwiftApp = null
+        )
         {
             var xcodePath = Path.Combine(path, projectName, "project.pbxproj");
 
@@ -69,6 +68,18 @@ namespace Unity.PolySpatial.Internals.Editor
                 var filePath = Path.Combine(path, projectFileName);
                 if (File.Exists(filePath))
                     File.Delete(filePath);
+            }
+
+            void MoveProjectFileToTarget(string projPath, string oldTargetGuid, string newTargetGuid)
+            {
+                var fileGuid = proj.FindFileGuidByProjectPath(projPath);
+                if (fileGuid == null)
+                {
+                    throw new BuildFailedException($"File {projPath} is expected to be in the generated Xcode project, but it is missing");
+                }
+
+                proj.RemoveFileFromBuild(oldTargetGuid, fileGuid);
+                proj.AddFileToBuild(newTargetGuid, fileGuid);
             }
 
             if (staticLibraryPluginName != null)
@@ -104,11 +115,6 @@ namespace Unity.PolySpatial.Internals.Editor
                 proj.SetBuildProperty(swiftAppTarget, "SWIFT_OBJC_BRIDGING_HEADER", "Unity-VisionOS-Bridging-Header.h");
             }
 
-            if (buildTarget == BuildTarget.VisionOS)
-            {
-                CopyAndAddToBuildTarget(unityFrameworkTarget, "PolySpatialPlatformAPI.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
-            }
-
             // we added our own Swift shell
             RemoveFileFromProjectAndDelete("MainApp/main.mm");
 
@@ -129,6 +135,17 @@ namespace Unity.PolySpatial.Internals.Editor
                 }
             }
 
+            if (pathsToMoveToSwiftApp != null)
+            {
+                foreach (var item in pathsToMoveToSwiftApp)
+                {
+                    // these paths will be in Unity's filesystem namespace, i.e. "Assets/..." or "Packages/...".
+                    // These get put into "Libraries/ARM64/..." in the Xcode project.
+                    var projectPath = "Libraries/ARM64/" + item;
+                    MoveProjectFileToTarget(projectPath, unityFrameworkTarget, swiftAppTarget);
+                }
+            }
+
             // Configure Unity Framework; add a modulemap file to allow access from Swift,
             // and tweak build settings.
             {
@@ -137,7 +154,7 @@ namespace Unity.PolySpatial.Internals.Editor
                 WriteTextIfChanged(moduleFileDestPath,
                     File.ReadAllText(Path.Combine(UNITY_RK_SRC_PATH, MODULE_MAP))
                         .Replace("__EXTRA_HEADERS__", extraHeaders.ToString()));
-                proj.AddFile(moduleFileDestPath, moduleProjectPath);
+                var fileGuid = proj.AddFile(moduleProjectPath, moduleProjectPath);
 
                 proj.AddBuildProperty(unityFrameworkTarget, "MODULEMAP_FILE", "$(SRCROOT)/" + moduleProjectPath);
                 proj.SetBuildProperty(unityFrameworkTarget, "DEFINES_MODULE", "YES");
@@ -163,33 +180,6 @@ namespace Unity.PolySpatial.Internals.Editor
             ConfigureMainAppTarget(proj, swiftAppTarget, xcodePlatformName);
 
             var projContents = proj.WriteToString();
-
-            if (il2cppArmWorkaround)
-            {
-                projContents = projContents.Replace(ARM_WORKAROUND_ORIGINAL, ARM_WORKAROUND_REPLACEMENT)
-                // A full-debug (i.e. non-optimized) IL2CPP build is very prone to trigger the "ARM64 branch out of range" link error
-                // Here we force basic optimizations (-O1) for Debug builds, and keep the usual full-opt (-O3) for Release builds.
-                //    .Replace("IL2CPP_CONFIG=\\\"Debug\\\"", "IL2CPP_CONFIG=\\\"Debug\\\" IL2CPP_OPTIM=\\\"-O1\\\"")
-                //    .Replace("IL2CPP_CONFIG=\\\"Release\\\"", "IL2CPP_CONFIG=\\\"Release\\\" IL2CPP_OPTIM=\\\"-O3\\\"")
-                //    .Replace("--configuration=\\\"$IL2CPP_CONFIG\\\"", "--configuration=\\\"$IL2CPP_CONFIG\\\" --compiler-flags=\\\"$IL2CPP_OPTIM\\\"")
-                    ;
-            }
-
-            File.WriteAllText(xcodePath, projContents);
-        }
-
-        public static void RestoreXcodeProject(string path, string projectName)
-        {
-            // For append builds, we need to restore the original command line so that the Unity
-            // build process doesn't see it as missing and add a duplicate to replace it.
-            var xcodePath = Path.Combine(path, projectName, "project.pbxproj");
-            if (!File.Exists(xcodePath))
-                return;
-
-            var projContents = File.ReadAllText(xcodePath);
-
-            projContents = projContents.Replace(ARM_WORKAROUND_REPLACEMENT, ARM_WORKAROUND_ORIGINAL);
-
             File.WriteAllText(xcodePath, projContents);
         }
 

@@ -29,7 +29,15 @@ The `Reflection Probes` setting has three options: `None` to omit contribution f
 The `Dynamic Lighting` toggle determines whether dynamic point/spot/directional lights (that is, lights represented by non-baked [Light](https://docs.unity3d.com/ScriptReference/Light.html) components) affect the output.
 
 ### Light Selection
-The [Render Mode](https://docs.unity3d.com/ScriptReference/Light-renderMode.html) property of Light components may be used to control which dynamic lights are applied.  Lights marked [Not Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForceVertex.html) will never be included in the four lights used by the PolySpatial Lighting Node.  Lights marked [Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForcePixel.html) will be prioritized over lights marked [Auto](https://docs.unity3d.com/ScriptReference/LightRenderMode.Auto.html) (the default).
+The [Render Mode](https://docs.unity3d.com/ScriptReference/Light-renderMode.html) property of Light components may be used to control which dynamic lights are applied.  Lights marked [Not Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForceVertex.html) will never be included in the four lights used by the PolySpatial Lighting Node.  Other lights will be sorted by the following criteria, in descending order of precedence:
+
+* Directional lights take priority over point/spot lights.
+* Shadow casting lights take priority over non-shadow-casting lights.
+* Lights marked [Important](https://docs.unity3d.com/ScriptReference/LightRenderMode.ForcePixel.html) take priority over lights marked [Auto](https://docs.unity3d.com/ScriptReference/LightRenderMode.Auto.html) (the default).
+* Lights with positive instance IDs (typically loaded from scenes) take priority over lights with negative instance IDs (typically created at runtime).
+* Lights with lower instance ID absolute values take priority over ones with higher absolute values (typically, this means lights created earlier take priority).
+
+After sorting, the first four lights will be selected for use as dynamic lights.
 
 ## PolySpatial Environment Radiance Node
 To access visionOS's image based lighting (in either `Lit` or `Unlit` shader graphs), create an instance of the `PolySpatial Environment Radiance Node`.  This accepts surface parameters (`BaseColor`, `Roughness`, `Specular`, `Metallic`, and `Normal`) and outputs `Diffuse Radiance` and `Specular Radiance` colors representing the lighting results.  For example, to get an approximation of the ambient light level, use a `BaseColor` of white, `Roughness` of 1.0, `Specular` and `Metallic` of 0.0, and the default `Normal`.  The `Diffuse Radiance` output will be approximately equal to the ambient light level.  Note that the output of `PolySpatial Enviroment Radiance` is entirely separate from the lighting applied to `Lit` targets; for instance, if you add the `Diffuse Radiance` and `Specular Radiance` outputs together and connect them to the `Emission` output of a `Lit` target, you will end up with twice the overall brightness.

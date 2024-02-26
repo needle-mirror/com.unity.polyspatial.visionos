@@ -12,6 +12,12 @@ Shaders and materials can be authored for visionOS via the Unity Shader Graph. B
 
 ShaderLab, Metal, and other code-based shaders are not available, as RealityKit for visionOS does not currently expose a low level shading language.
 
+## Custom UGUI Materials
+The default shaders for UGUI components (`UI/Default` for `Image` and `RawImage`; `TextMeshPro/Mobile/Distance Field` for `TextMeshProUGUI`; `TextMeshPro/Sprite` for `TMP_SubMeshUI`) are mapped to shader graphs that are included with PolySpatial (`Shader Graphs/Masking Shader` for images and `Shader Graphs/Text SDF Smoothstep` for text).  If you wish to customize UGUI component rendering, you may copy these shader graphs from `Packages/PolySpatial/Resources/Shaders` into your project's `Assets` folder, change their names, and modify them to suit your needs.  You may then use them in custom materials, for example, by assigning a material using the shader graph to the `Material` property in an `Image` or `RawImage` component, or by assigning the custom shader graph to the `Shader` property of the material contained within a font asset.
+
+# Custom Sprite Materials
+Similar to UGUI images, the default sprite shader (`Sprites/Default`) maps to `Shader Graphs/Masking Shader`.  To customize sprite rendering, you may copy that shader and use it directly in a material referenced by a `SpriteRenderer`.
+
 ## Unlit Materials
 
 ### Universal Render Pipeline/Unlit

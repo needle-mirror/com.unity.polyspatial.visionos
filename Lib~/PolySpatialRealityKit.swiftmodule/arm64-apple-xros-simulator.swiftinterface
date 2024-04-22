@@ -2,6 +2,7 @@
 // swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
 // swift-module-flags: -target arm64-apple-xros1.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PolySpatialRealityKit
 // swift-module-flags-ignorable: -enable-bare-slash-regex
+import ARKit
 import AVFoundation
 import Combine
 import CoreGraphics
@@ -56,12 +57,9 @@ extension SwiftUI.EnvironmentValues {
     set
   }
 }
-@_hasMissingDesignatedInitializers public class PolySpatialVolume : Foundation.ObservableObject, Swift.Identifiable, Swift.Equatable, Swift.Hashable {
+@_hasMissingDesignatedInitializers public class PolySpatialVolume : Foundation.ObservableObject, Swift.Equatable, Swift.Hashable {
   public var assignedWindowUUID: Foundation.UUID?
   public var description: Swift.String {
-    get
-  }
-  public var id: PolySpatialRealityKit.PackedIdentifier {
     get
   }
   public func getOutputDimension() -> simd.simd_float3
@@ -72,7 +70,6 @@ extension SwiftUI.EnvironmentValues {
   public func windowDismissed()
   public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
-  public typealias ID = Swift.ObjectIdentifier
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
   public var hashValue: Swift.Int {
@@ -113,18 +110,6 @@ extension Swift.String : Foundation.LocalizedError {
     get
   }
 }
-public struct PackedIdentifier : Swift.CustomStringConvertible {
-  public init(id0: Swift.UInt64, id1: Swift.UInt64)
-  public var description: Swift.String {
-    get
-  }
-  public var id0: Swift.UInt64 {
-    get
-  }
-  public var id1: Swift.UInt64 {
-    get
-  }
-}
 public struct PolySpatialContentViewWrapper : SwiftUI.View {
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
@@ -142,7 +127,5 @@ public protocol PolySpatialWindowManagerDelegate {
 }
 @_hasMissingDesignatedInitializers public class PolySpatialWindowManagerAccess {
   public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
-  public static func entityForIdentifier(id: PolySpatialRealityKit.PackedIdentifier) -> RealityFoundation.Entity?
-  public static func identifierForEntity(entity: RealityFoundation.Entity) -> PolySpatialRealityKit.PackedIdentifier?
   @objc deinit
 }

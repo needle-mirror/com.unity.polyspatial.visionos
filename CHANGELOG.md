@@ -9,23 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [1.2.3] - 2024-04-23
-
-## [1.2.2] - 2024-04-22
-
-## [1.2.1] - 2024-04-22
-
-## [1.2.0] - 2024-04-19
+## [2.0.0-pre.3] - 2024-04-22
 
 ### Added
 
 - Added a loading screen during initial Play To Device loading
 - Added support for procedural skinned meshes. Updating a skinned mesh will now notify all skinned mesh renderers using that mesh to update.
 
+### Changed
+
+### Deprecated
+
+### Removed
+
 ### Fixed
 - Fix compilation issues when targeting tvOS.
 
-## [1.1.6] - 2024-03-12
+### Security
 
 ## [1.1.4] - 2024-02-26
 

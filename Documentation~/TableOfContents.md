@@ -32,6 +32,7 @@
         * [Grounding Shadows](GroundingShadow.md)
         * [Image Based Lights](ImageBasedLight.md)
         * [Sorting Groups](SortingGroup.md)
+        * [Static Batch Elements](StaticBatchElement.md)
         * [Platform Text](PlatformText.md)
     * [Tooling](Tooling.md)
 * [visionOS Samples](Samples.md)

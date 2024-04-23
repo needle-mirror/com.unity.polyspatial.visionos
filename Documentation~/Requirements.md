@@ -8,7 +8,7 @@ uid: psl-vos-requirements
 ### Unity Version Support 
 
 This package is compatible with Unity 2022 LTS for Apple Silicon (2022.3.18f1 or newer).
-> Unity visionOS Support is not compatible with earlier LTS versions of Unity. 
+Unity visionOS Support is not compatible with earlier LTS versions of Unity. 
 
 Please ensure that the **visionOS Build Support** module is installed. 
 

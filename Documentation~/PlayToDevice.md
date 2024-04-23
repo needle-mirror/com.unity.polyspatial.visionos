@@ -66,9 +66,16 @@ If you notice that your connection is timing out, you can increase the connectio
 
 ## Subsequent Usage
 
-After initial setup, your content will be synced to the host app each time you press play, as long as the **Connect on Play** is **enabled**, and the host remains live. 
+After initial setup, your content will be synced to the host app each time you press play, as long as the **Connect on Play** is **enabled**, and the host remains live.
 
-Additionally, the PlayToDevice UI will appear in the last used **VolumeCameraWindowConfiguration**. If an application has just disconnected from the PlayToDevice host app and the application was using an unbounded **VolumeCameraWindowConfiguration**, the PlayToDevice UI will also appear in an unbounded **VolumeCameraWindowConfiguration** for consistency. 
+Additionally, the PlayToDevice UI will appear in the last used **VolumeCameraWindowConfiguration** when using a bounded configuration, allowing the application's volume to maintain the same position. When using an unbounded **VolumeCameraWindowConfiguration**, the PlayToDevice UI will appear in the initial bounded **VolumeCameraWindowConfiguration**, positioned in front of the user.
+
+## AR visualization in editor
+
+You can visualize AR planes and hand data from your device in your editor when using the Play To Device feature.  To enable this functionality go to `Project Settings` > `XR Plug-in Management`.
+Under the Standalone target look for  `Plug-in Providers` turn on `PolySpatial XR`.  Make sure to disable `XR Simulation` if it is on.
+
+![XRPluginManagementP2D.png](images/PlayToDevice/XRPluginManagementP2D.png)
 
 ## Troubleshooting
 For troubleshooting issues refer to the [Play to Device troubleshooting section in the FAQ](FAQ.md#play-to-device-host).

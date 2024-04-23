@@ -94,7 +94,6 @@ namespace Unity.PolySpatial.Internals.Editor
 
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
-            CopyAndAddToBuildTarget(swiftAppTarget, "UnityLibrary.swift", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             // VisionOS does not support surface shaders (CustomMaterial).
             if (buildTarget == BuildTarget.StandaloneOSX)
@@ -104,11 +103,6 @@ namespace Unity.PolySpatial.Internals.Editor
 
             if (buildTarget == BuildTarget.VisionOS)
             {
-                // remove the input system iOS step counter implementation
-                RemoveFileFromProjectAndDelete("Libraries/com.unity.inputsystem/InputSystem/Plugins/iOS/iOSStepCounter.mm");
-
-                // and add a dummy one
-                CopyAndAddToBuildTarget(unityFrameworkTarget, "iOSStepCounterDummy.mm", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
                 CopyAndAddToBuildTarget(swiftAppTarget, "ScreenOverlay.usda", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
                 CopyAndAddToProject("Unity-VisionOS-Bridging-Header.h", UNITY_RK_SRC_PATH, "");
@@ -195,7 +189,6 @@ namespace Unity.PolySpatial.Internals.Editor
             proj.AddFileToBuildSection(mainAppTarget, resourcesBuildPhase, proj.FindFileGuidByProjectPath("LaunchScreen-iPhone.storyboard"));
             proj.AddFileToBuildSection(mainAppTarget, resourcesBuildPhase, proj.FindFileGuidByProjectPath("LaunchScreen-iPad.storyboard"));
             proj.SetBuildProperty(mainAppTarget, "ENABLE_BITCODE", "NO");
-            proj.SetBuildProperty(mainAppTarget, "SWIFT_VERSION", "5.0");
             proj.SetBuildProperty(mainAppTarget, "CLANG_ENABLE_MODULES", "YES");
             proj.SetBuildProperty(mainAppTarget, "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "YES");
             proj.SetBuildProperty(mainAppTarget, "GENERATE_INFOPLIST_FILE", "YES");
@@ -216,50 +209,6 @@ namespace Unity.PolySpatial.Internals.Editor
                 return IsSimulator() ? "xrsimulator" : "xros";
 
             throw new InvalidOperationException("Unknown build target");
-        }
-
-        // Can't be verbatim string. See https://github.com/dotnet/csharpstandard/issues/292
-        // Seems that the code analyzer in current Unity will barf on the #define in the verbatim
-        // string thinking that it's a real define. This is regardless of the fact that it's in a
-        // define that should lock it out of compilation on Windows. The analyzers process all c# code
-        // in the project regardless of compilation restrictions.
-        //
-        // This only seems to happen on Windows, not on Mac.
-        static readonly string DUMMY_SUPPORT_FILE ="\n" +
-"// WARNING: THIS FILE IS GENERATED. DO NOT MODIFY.\n" +
-"\n" +
-"#import <Foundation/Foundation.h>\n" +
-"\n" +
-"// This actually won't do anything, because it seems like if you use -exported_symbols on\n" +
-"// the linker command line, it overrides _all_ visibility attributes (not just on those\n" +
-"// symbols).\n" +
-"#define EXPORTED_SYMBOL __attribute__((visibility(\"default\")))  __attribute__((__used__))\n" +
-"\n" +
-"extern \"C\" {\n" +
-"\n" +
-"void EXPORTED_SYMBOL SetPolySpatialNativeAPIImplementation(const void* lightweightApi, int size)\n" +
-"{\n" +
-"}\n" +
-"\n" +
-"void EXPORTED_SYMBOL GetPolySpatialNativeAPI(void* lightweightApi)\n" +
-"{\n" +
-"}\n" +
-"\n" +
-"} // extern \"C\"\n";
-
-        internal static void WriteDummySupportFile(string projectPath, string projectName)
-        {
-            var xcodePath = Path.Combine(projectPath, projectName, "project.pbxproj");
-
-            var proj = new PBXProject();
-            proj.ReadFromFile(xcodePath);
-
-            var unityFrameworkTarget = proj.GetUnityFrameworkTargetGuid();
-
-            var projectFile = Path.Combine(projectPath, "UnityFramework", "PolySpatialPlatformAPI.mm");
-            File.WriteAllText(projectFile, DUMMY_SUPPORT_FILE);
-            BuildUtils.AddFileToBuildTarget(proj, projectFile, unityFrameworkTarget, projectFile);
-            proj.WriteToFile(xcodePath);
         }
     }
 }

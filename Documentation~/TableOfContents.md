@@ -22,6 +22,7 @@
                 * [Custom Function Node Support](CustomFunctionNode.md)
                 * [PolySpatial Lighting](PolySpatialLighting.md)
         * [Render Textures](RenderTextures.md)
+        * [WebCam Textures](WebCamTextures.md)
     * [Input](Input.md)
     * [Input Scripting](PolySpatialInput.md)
     * PolySpatial Components
@@ -37,6 +38,7 @@
     * [Import the samples](SamplesImport.md)
     * [Bounded Volume samples](SamplesBounded.md)
     * [Unbounded Volume samples](SamplesUnbounded.md)
+    * [Interoperate with SwiftUI sample](InteropWithSwiftUI.md)
     * [VR samples](VRSamples.md)
 * [FAQ](FAQ.md)
 * [Glossary](Glossary.md)

@@ -3,47 +3,6 @@ import PolySpatialRealityKit
 import RealityKit
 typealias Scene = SwiftUI.Scene
 
-#if !os(visionOS)
-
-@main
-struct UnityPolySpatialApp: App {
-    @UIApplicationDelegateAdaptor
-    var swiftUIdelegate: UnityPolySpatialAppDelegate
-
-    @ObservedObject
-    var polyspatialObserver = PolySpatialVolumeCoordinator()
-
-    init() {
-    }
-
-    var body: some Scene {
-        WindowGroup {
-//            ForEach(0..<polyspatialObserver.volumes.count, id: \.self) { i in polyspatialObserver.volumes[i].view }
-        }
-    }
-}
-
-class PolySpatialVolumeCoordinator: ObservableObject, PolySpatialRealityKitDelegate {
-    @Published var volumes: [PolySpatialVolume] = []
-
-    init() {
-        PolySpatialRealityKitAccess.addDelegate(self)
-    }
-
-    func on(volumeAdded: PolySpatialVolume) {
-        self.volumes.append(volumeAdded)
-    }
-
-    func on(volumeRemoved: PolySpatialVolume) {
-        self.volumes.removeAll(where: { $0 == volumeRemoved })
-    }
-
-    func reset() {
-    }
-}
-
-#else
-
 @_silgen_name("UnityVisionOS_SetIsImmersiveSpaceReady")
 private func UnityVisionOS_SetIsImmersiveSpaceReady(_ immersiveSpaceReady: Bool)
 
@@ -60,7 +19,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     init() {
         PolySpatialWindowManagerAccess.delegate = self
 
-        let _ = UnityLibrary.GetInstance()
+        let _ = UnityLibrary.getInstance()
         let unityClass = NSClassFromString("UnityVisionOS") as? NSObject.Type
         var parameters = displayProviderParameters()
         let value = NSValue(bytes: &parameters, objCType: DisplayProviderParametersObjCType())
@@ -117,7 +76,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
 // Vision OS in order for it to register and pop up the keyboard.
 struct KeyboardTextField: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextField {
-        let textField = UnityLibrary.GetInstance()!.keyboardTextField!
+        let textField = UnityLibrary.getInstance()!.keyboardTextField!
         textField.isHidden = true
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -126,5 +85,3 @@ struct KeyboardTextField: UIViewRepresentable {
     func updateUIView(_ uiView: UITextField, context: Context) {
     }
 }
-
-#endif

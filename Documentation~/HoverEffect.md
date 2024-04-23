@@ -14,6 +14,6 @@ Three components must be present to achieve the hover effect:
 * A `MeshRenderer` provides the mesh and geometry on which the coloration affect is applied.  The `MeshRenderer` may be on the `GameObject` containing the `VisionOSHoverEffect` and `Collider` components or on any of its descendants.
 
 ## Skinned Mesh Renderers
-To display a hover effect on `SkinnedMeshRenderer` components, the `VisionOSHoverEffect` and `Collider` components must be present on the parent of the root bone (or any of its ancestors).
+To display a hover effect on `SkinnedMeshRenderer` components, the `VisionOSHoverEffect` and `Collider` components must be present on the parent of the `SkinnedMeshRenderer` GameObject (or any of its ancestors).
 
 ![VisionOSHoverEffect](images/ReferenceGuide/VisionOSHoverEffect.png)

@@ -115,6 +115,14 @@ When using the "Replicate Properties" particle mode in PolySpatial, Particle Sys
 | **TextMesh Pro**     | &#8226; Partially Supported<br/>&#8226; SDF only<br/> &#8226; No custom shaders |
 | **Rect Transform**   | No specific support for sizing                                                     |  
 | **Platform Text**    | See [Platform Text Rendering](PlatformText.md)                                     |
+| **Masking** .        | Image masking is supported. Please see the note below in regards to support.       |
+
+**Note**: Image masking is supported but there may be fidelity issues that come up. Straight image masking using simple images should work fairly well out of the box, though there may be some slight sizing differences due to the ability to support correct mapping. For 9-Slice sprite, Tile or other mesh based images, there will be some definite issues in how the mask is applied. Currently we do not support handling of the mesh information and instead just apply the mask as if it is a simple image based mask.
+
+**Note**: Image masking does not affect clip box/collider hit testing when running. While the image mask may only show a portion of the item being masked, the clipping/collider testing still extends to the full rectangle that covers the masked portion of any UGUI item.
+
+**Note**: By default, Dropdown and ScrollView will not apply image masking to their children due to the format of masking image they use by default. If you want to use masking with these components, you will need to change their mask image.
+
 # Final thoughts
 Unity has many more components, but the main parts of the average XR app were covered in this section. Generally speaking, your existing Unity projects will likely require work to port to PolySpatial XR.
 

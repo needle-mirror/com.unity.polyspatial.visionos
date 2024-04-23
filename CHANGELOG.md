@@ -9,19 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [1.1.6] - 2024-03-12
+## [1.2.3] - 2024-04-23
+
+## [1.2.2] - 2024-04-22
+
+## [1.2.1] - 2024-04-22
+
+## [1.2.0] - 2024-04-19
 
 ### Added
 
-### Changed
-
-### Deprecated
-
-### Removed
+- Added a loading screen during initial Play To Device loading
+- Added support for procedural skinned meshes. Updating a skinned mesh will now notify all skinned mesh renderers using that mesh to update.
 
 ### Fixed
+- Fix compilation issues when targeting tvOS.
 
-### Security
+## [1.1.6] - 2024-03-12
 
 ## [1.1.4] - 2024-02-26
 
@@ -71,6 +75,7 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 ### Added
 - Added installation instructions to the documentation.
 - Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused. 
+- Added a "PolySpatial XR" Plug-in Provider to XR Plug-in Managment in Project Settings.  Allows you to view ARPlane's and hands from device in editor while using Play To Device.
 
 ### Changed
 - Improved documentation about samples.

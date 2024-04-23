@@ -61,7 +61,7 @@ extension SwiftUI.EnvironmentValues {
   public var description: Swift.String {
     get
   }
-  public var id: Swift.UInt64 {
+  public var id: PolySpatialRealityKit.PackedIdentifier {
     get
   }
   public func getOutputDimension() -> simd.simd_float3
@@ -72,7 +72,7 @@ extension SwiftUI.EnvironmentValues {
   public func windowDismissed()
   public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
-  public typealias ID = Swift.UInt64
+  public typealias ID = Swift.ObjectIdentifier
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
   public var hashValue: Swift.Int {
@@ -113,6 +113,18 @@ extension Swift.String : Foundation.LocalizedError {
     get
   }
 }
+public struct PackedIdentifier : Swift.CustomStringConvertible {
+  public init(id0: Swift.UInt64, id1: Swift.UInt64)
+  public var description: Swift.String {
+    get
+  }
+  public var id0: Swift.UInt64 {
+    get
+  }
+  public var id1: Swift.UInt64 {
+    get
+  }
+}
 public struct PolySpatialContentViewWrapper : SwiftUI.View {
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
@@ -130,7 +142,7 @@ public protocol PolySpatialWindowManagerDelegate {
 }
 @_hasMissingDesignatedInitializers public class PolySpatialWindowManagerAccess {
   public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
-  public static func entityForIdentifier(id: Swift.UInt64) -> RealityFoundation.Entity?
-  public static func identifierForEntity(entity: RealityFoundation.Entity) -> Swift.UInt64?
+  public static func entityForIdentifier(id: PolySpatialRealityKit.PackedIdentifier) -> RealityFoundation.Entity?
+  public static func identifierForEntity(entity: RealityFoundation.Entity) -> PolySpatialRealityKit.PackedIdentifier?
   @objc deinit
 }

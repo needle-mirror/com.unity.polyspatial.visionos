@@ -6,6 +6,9 @@ You can use the Unity Shader Graph to create custom materials for visionOS. Thes
 
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
+## Debugging shader graphs
+Shader graphs that are modified and saved while in play mode when using [Play to Device](PlayToDevice.md) will be updated immediately and retransferred.  Materials using them will reflect the saved changes automatically.
+
 ## Texture limitations
 When sampling textures in shader graphs, note that the sampler state (filter, wrap modes) associated with the texture itself is ignored.  Instead, you must use the `Sampler State` node to control how the texture is sampled if you want to use a mode other than the default (linear filtering, repeat wrap mode).
 
@@ -27,6 +30,16 @@ Note that visionOS materials do not support global properties natively, and thus
 
 ## Supported targets
 The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types and the `Alpha Clipping` setting.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  Due to platform limitations, all materials will have `Front` render face, depth writes enabled, `LEqual` depth testing, and tangent space fragment normals.
+
+## MaterialX keyword
+The built-in `MaterialX` keyword may be used to select different paths to use for Unity rendering (as used in editor play mode) versus MaterialX export (as used on visionOS).  This is useful in cases where, for example, the Unity path requires Custom Function nodes that use HLSL beyond what is supported by the [MaterialX exporter](CustomFunctionNode.md).  Connect the Unity path to the `Off` keyword input and the MaterialX path to the `On` input.
+
+## MaterialX data extension
+Additional options for MaterialX conversion may be configured in the `Data Extension Settings` section, located under `Target Settings` in the `Graph Inspector`.  Adding the `MaterialX` data extension provides the following options:
+
+| **Option** | **Description** |
+| --- | --- |
+| **Unlit Tone Mapping** | If true, apply tone mapping to unlit targets.  |
 
 ## Shader Graph nodes
 The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
@@ -95,6 +108,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Vertex Color             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Vertex ID                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | View Direction           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | View Vector              | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Gradient  | Blackbody                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -107,7 +121,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   | PBR       | Dielectric Specular      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Metal Reflectance        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Scene     | Camera                   | `Position` and `Direction` outputs supported (non-standard).                                                           |
-  |           | Eye Index                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
+  |           | Eye Index                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Fog                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
   |           | Object                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Scene Depth              | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -198,7 +213,8 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Procedural | Checkerboard      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 | Noise      | Gradient Noise    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
-|            | Voronoi           | `Cells` output not supported.                                                                                                                                         |
+|            | Simple Noise      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
+|            | Voronoi           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 | Shapes     | Ellipse           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 |            | Polygon           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
 |            | Rectangle         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                              |
@@ -226,6 +242,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Section | Node              | Notes                                                                    |
 |---------|-------------------|--------------------------------------------------------------------------|
 | UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Parallax Mapping  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Polar Coordinates | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Radial Shear      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
 |         | Rotate            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |

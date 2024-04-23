@@ -279,12 +279,10 @@ namespace Unity.PolySpatial.Internals.Editor
             foreach (var InjectedScenePath in extraWindowGroups)
             {
                 var name = Path.GetFileNameWithoutExtension(InjectedScenePath);
-                sceneContent.Add($"\n       {name}.scene");
+                sceneContent.Add($"\n        {name}.scene");
             }
 
-            var parameters = isSimulator ?
-                PolySpatialSettings.instance.SimulatorDisplayProviderParameters :
-                PolySpatialSettings.instance.DeviceDisplayProviderParameters;
+            var parameters = PolySpatialSettings.instance.DeviceDisplayProviderParameters;
 
             var displayProviderParametersInit = GetDisplayProviderParamametersInitString(parameters);
 
@@ -361,8 +359,8 @@ extension UnityPolySpatialApp {{
         static string GetDisplayProviderParamametersInitString(PolySpatialSettings.DisplayProviderParameters parameters)
         {
             return $@".init(
-            framebufferWidth: {parameters.framebufferWidth},
-            framebufferHeight: {parameters.framebufferHeight},
+            framebufferWidth: {parameters.dimensions.x},
+            framebufferHeight: {parameters.dimensions.y},
             leftEyePose: .init(position: {ToSwift(parameters.leftEyePose.position)},
                                rotation: {ToSwift(parameters.leftEyePose.rotation)}),
             rightEyePose: .init(position: {ToSwift(parameters.rightEyePose.position)},

@@ -5,7 +5,7 @@ uid: psl-vos-sorting-group
 
 The **VisionOS Sorting Group** component provides a way to use the visionOS platform's native sorting group capabilities. By placing renderers in a sorting group, you can get fine-grained control over which render is drawn first. While 2D components (such as SpriteRenderers and CanvasRenderers) have their own sorting mechanism, in some situations, it might help to override their sorting, or to sort non-2D renderers such as `MeshRenderers`.
 
-A visionOS sorting group** can also be used to sort input on visionOS, in the same way renderers would be sorted. Game objects with colliders can be rearranged using a sorting group - colliders with higher order will capture input and block any lower order colliders from receiving input. Note that the physics of these colliders are not altered - the sorting group only affects the collider with respect to input resolution.
+A visionOS sorting group can also be used to sort input on visionOS, in the same way renderers would be sorted. Game objects with colliders can be rearranged using a sorting group - colliders with higher order will capture input and block any lower order colliders from receiving input. Note that the physics of these colliders are not altered - the sorting group only affects the collider with respect to input resolution.
 
 Any 2D renderers included in the `VisionOSSortingGroup` will have their default (sprite/canvas) sorting overridden. Each renderer can only belong to one sorting group at a time, and subsequent attempts to add a renderer to another sorting group will result in a warning.
 

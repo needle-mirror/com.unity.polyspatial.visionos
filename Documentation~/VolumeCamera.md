@@ -47,9 +47,6 @@ The **VolumeCamera** has one event that can be subscribed to:
 
 `OnWindowEvent` An event that is triggered when this volume camera's window changes state - in other words, it is triggered whenever the window is opened, closed, resized, receives focus, or loses focus. When a change has occurred, the event will supply a `WindowState` struct that encapsulates information on the window's state change.
 
-> [!NOTE]
-> All volume camera events besides `OnWindowEvent` are obsolete, and will be removed in later versions. `OnWindowEvent` will supply all the information the other OnWindow events would normally supply.
-
 The `WindowState` struct has the following properties:
 
 | **Property**                           | **Description**      |

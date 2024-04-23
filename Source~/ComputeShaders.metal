@@ -3,7 +3,38 @@
 using namespace metal;
 
 // This file contains the compute shaders used to process image based lighting (IBL) textures,
-// converting them from Unity to RealityKit format.
+// converting them from Unity to RealityKit format, as well as the compute shaders used to
+// perform blend shape blending.
+
+kernel void copyBlendShapeBuffer(
+    device const simd_float3* src [[buffer(0)]],
+    device simd_float3* dest [[buffer(1)]],
+    device const uint& size [[buffer(2)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index < size)
+        dest[index] = src[index];
+}
+
+kernel void addScaledBlendShapeBuffer(
+    device const simd_float3* src [[buffer(0)]],
+    device const float& scale [[buffer(1)]],
+    device simd_float3* dest [[buffer(2)]],
+    device const uint& size [[buffer(3)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index < size)
+        dest[index] += src[index] * scale;
+}
+
+kernel void normalizeBlendShapeBuffer(
+    device simd_float3* dest [[buffer(0)]],
+    device const uint& size [[buffer(1)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index < size)
+        dest[index] = normalize(dest[index]);
+}
 
 // A compute shader that simply flips in the input vertically and writes it to the output
 // (necessary because the CGImage constructor expects data with a lower-left origin).
@@ -12,7 +43,8 @@ kernel void textureFlipVertical(
     texture2d<half, access::write> outTexture [[texture(1)]],
     uint2 gid [[thread_position_in_grid]])
 {
-    outTexture.write(inTexture.read(uint2(gid.x, inTexture.get_height() - gid.y - 1)), gid);
+    if (gid.x < outTexture.get_width() && gid.y < outTexture.get_height())
+        outTexture.write(inTexture.read(uint2(gid.x, inTexture.get_height() - gid.y - 1)), gid);
 }
 
 float2 getZFaceCoord(float3 dir)
@@ -31,6 +63,10 @@ kernel void textureCubeToEquirectangular(
     texture2d<half, access::write> outTexture [[texture(1)]],
     uint2 gid [[thread_position_in_grid]])
 {
+    if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
+        return;
+    }
+
     // Convert grid position to lat/long.
     float latitude = gid.x * 2 * M_PI_F / outTexture.get_width();
     float longitude = gid.y * M_PI_F / outTexture.get_height();

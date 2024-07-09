@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [1.3.1] - 2024-07-09
+
+## [1.3.0] - 2024-06-26
+
+### Added
+- Added support for adding new reference images at runtime, refer to [ARFoundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@6.0/manual/features/image-tracking.html#add-new-reference-images-at-runtime) documentation.
+- Added tracked image support to the "PolySpatial XR" Plug-in Provider, under XR Plug-in Managment.
+
 ## [1.2.3] - 2024-04-23
 
 ## [1.2.2] - 2024-04-22
@@ -18,7 +26,6 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 ## [1.2.0] - 2024-04-19
 
 ### Added
-
 - Added a loading screen during initial Play To Device loading
 - Added support for procedural skinned meshes. Updating a skinned mesh will now notify all skinned mesh renderers using that mesh to update.
 

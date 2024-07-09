@@ -45,7 +45,7 @@ genType splitlr(genType valuel, genType valuer, float center, float2 texcoord);
 (where `genType` is one of `float`, `float2`, `float3`, or `float4`)
 
 ### Unity Macros
-For sampling textures, the parser supports Unity macros: `SAMPLE_TEXTURE2D`, `SAMPLE_TEXTURE2D_LOD`, `SAMPLE_TEXTURE3D`, `SAMPLE_TEXTURE3D_LOD`, `SAMPLE_TEXTURECUBE_LOD`
+For sampling textures, the parser supports Unity macros: `GATHER_TEXTURE2D`, `SAMPLE_TEXTURE2D`, `SAMPLE_TEXTURE2D_LOD`, `SAMPLE_TEXTURE3D`, `SAMPLE_TEXTURE3D_LOD`, `SAMPLE_TEXTURECUBE_LOD`
 
 ## Supported Globals
 The parser supports several of Unity's built-in global variables: `_Time`, `_SinTime`, `_CosTime`, `unity_DeltaTime`, `unity_ObjectToWorld`, `unity_WorldToObject`, `UNITY_MATRIX_V`, `UNITY_MATRIX_I_V`, `UNITY_MATRIX_P`, `UNITY_MATRIX_I_P`, `UNITY_MATRIX_VP`, `UNITY_MATRIX_I_VP`

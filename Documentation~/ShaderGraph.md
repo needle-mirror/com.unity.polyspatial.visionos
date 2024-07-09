@@ -22,8 +22,8 @@ To obtain positions, normals, tangents, or bitangents in the world space of the 
 ### Notes on Transform and Transformation Matrix nodes in VisionOS
 The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
 
-## Input properties
-Shader graph properties must be set to `Exposed` in order to be set on a per-instance basis.  Globals must *not* be `Exposed`, and global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).  
+## Global properties
+Global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).  
 
 ### Time-based animation
 Note that visionOS materials do not support global properties natively, and thus PolySpatial must apply global properties separately to all material instances, which may affect performance.  For animation, consider using the `PolySpatial Time` node rather than the standard Unity shader graph `Time`.  While `PolySpatial Time` will not be exactly synchronized with [Time.time](https://docs.unity3d.com/ScriptReference/Time-time.html) (notably, it will not reflect changes to [Time.timeScale](https://docs.unity3d.com/ScriptReference/Time-timeScale.html)), it is supported natively in visionOS and does not require per-frame property updates.
@@ -113,7 +113,9 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Lighting  | Ambient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Baked GI                 | Subject to limitations of [PolySpatial Lighting Node](PolySpatialLighting.md)                                          |
   |           | Main Light Direction     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Reflection Probe         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Matrix    | Matrix 2x2               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 3x3               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 4x4               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -127,6 +129,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Scene Depth              | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Texture   | Cubemap Asset            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Gather Texture 2D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Cubemap           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Reflected Cubemap | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -239,14 +242,15 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 ### UV
 
-| Section | Node              | Notes                                                                    |
-|---------|-------------------|--------------------------------------------------------------------------|
-| UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Parallax Mapping  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Polar Coordinates | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Radial Shear      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Rotate            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Spherize          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Tiling and Offset | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Triplanar         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Twirl             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+| Section | Node                        | Notes                                                                    |
+|---------|-----------------------------|--------------------------------------------------------------------------|
+| UV      | Flipbook                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Parallax Mapping            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Parallax Occlusion Mapping  | `Steps` input must be constant (unconnected).                            |
+|         | Polar Coordinates           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Radial Shear                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Rotate                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Spherize                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Tiling and Offset           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Triplanar                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Twirl                       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |

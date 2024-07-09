@@ -72,7 +72,7 @@ Additionally, the PlayToDevice UI will appear in the last used **VolumeCameraWin
 
 ## AR visualization in editor
 
-You can visualize AR planes and hand data from your device in your editor when using the Play To Device feature.  To enable this functionality go to `Project Settings` > `XR Plug-in Management`.
+You can visualize AR planes, tracked images, meshes, and hand data from your device in your editor when using the Play To Device feature.  To enable this functionality go to `Project Settings` > `XR Plug-in Management`.
 Under the Standalone target look for  `Plug-in Providers` turn on `PolySpatial XR`.  Make sure to disable `XR Simulation` if it is on.
 
 ![XRPluginManagementP2D.png](images/PlayToDevice/XRPluginManagementP2D.png)

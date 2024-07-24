@@ -14,9 +14,9 @@ Before you import the visionOS samples, you must first:
 
 Refer to [Install PolySpatial and visionOS support](install.md) for instructions.
 
-## Import the mixed reality samples
+## Import the RealityKit samples
 
-To import the samples for the **Mixed Reality - Volume or Immersive Space** **App Mode** into your project:
+To import the samples for the **RealityKit with PolySpatial** and **Hybrid - Switch between Metal and RealityKit** **App Modes** into your project:
 
 1. In the Unity Editor, open the Package Manager window (menu: **Window &gt; Package Manager**).
 2. Select the PolySpatial package (com.unity.polyspatial) from the list of packages in your project.
@@ -36,9 +36,9 @@ To import the samples for the **Virtual Reality - Fully Immersive Space** **App 
 1. In the Unity Editor, open the Package Manager window (menu: **Window &gt; Package Manager**).
 2. Select the Apple visionOS XR Plugin package (com.unity.xr.visionos) from the list of packages in your project.
 
-   ![The PackageManager window with the PolySpatial package selected](images/samples/import-vr-samples.png)
+   ![The PackageManager window with the PolySpatial package selected](images/samples/import-metal-samples.png)
    
 3. Select the **Samples** tab to show the samples available for the package.
-4. Click the **Import** button for either the **VR Sample - Built-in** or the **VR Sample - URP** item, depending on which rendering pipeline the project uses.
+4. Click the **Import** button for either the **Metal Sample - Built-in** or the **Metal Sample - URP** item, depending on which rendering pipeline the project uses.
 
-Unity imports the VR sample into your project. You can find the sample in the **Assets &gt; Samples &gt; Apple visionOS XR Plugin** folder.
+Unity imports the Metal sample into your project. You can find the sample in the **Assets &gt; Samples &gt; Apple visionOS XR Plugin** folder.

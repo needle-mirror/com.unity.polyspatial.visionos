@@ -1,10 +1,14 @@
 import SwiftUI
 import PolySpatialRealityKit
 import RealityKit
+import CompositorServices
 typealias Scene = SwiftUI.Scene
 
 @_silgen_name("UnityVisionOS_SetIsImmersiveSpaceReady")
 private func UnityVisionOS_SetIsImmersiveSpaceReady(_ immersiveSpaceReady: Bool)
+
+@_silgen_name("UnityVisionOS_SetLayerRenderer")
+private func setLayerRenderer(_ layerRenderer: LayerRenderer?)
 
 @main
 struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
@@ -30,41 +34,63 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
         mainScene
     }
 
-    func requestOpenWindow(_ config: String) {
-        Task {
-            if config == "Unbounded" {
-                await openImmersiveSpace(id: config)
-            } else {
-                openWindow(id: config)
+    func requestOpenWindow(_ configuration: String) {
+        let unityVisionOS = NSClassFromString("UnityVisionOS") as? NSObject.Type
+        let useParameterizedProvider = configuration == "CompositorSpace" ? 0 : 1
+        unityVisionOS?.perform(Selector(("setUseParameterizedDisplayProvider:")), with: useParameterizedProvider)
+        if PolySpatialWindow.windowConfigurationIsImmersive(configuration) {
+            Task {
+                await openImmersiveSpace(id: configuration)
+                // TODO: Handle failure case where user dismisses safety dialog without allowing the space to open
+                // or clicks "Learn More," which will background the app and open Safari
             }
+        } else {
+            openWindow(id: configuration)
         }
     }
 
-    func requestDismissWindow(_ window: PolySpatialWindow, _ session: UISceneSession?) {
-        // dismissWindow doesn't seem to function as expected; but the else
-        // code below should be what we can do and avoid all the SceneSession goop
-        #if true
-        UIApplication.shared.requestSceneSessionDestruction(session!, options: nil)
-        #else
-        let config = window.windowConfiguration
-        Task {
-            if config == "Unbounded" {
+    func requestDismissWindow(_ window: PolySpatialWindow) {
+        let configuration = window.windowConfiguration
+        if PolySpatialWindow.windowConfigurationIsImmersive(configuration) {
+            Task {
                 await dismissImmersiveSpace()
-            } else {
-                dismissWindow(value: window.uuid)
+
+                if configuration == "CompositorSpace" {
+                    // Inform the Unity trampoline that we are turning off Metal rendering
+                    let compositorBridge = NSClassFromString("UnityVisionOSCompositorBridge") as? NSObject.Type
+                    compositorBridge?.perform(Selector(("setLayerRenderer:")), with: nil)
+
+                    // Inform the XR plugin that we are turning off Metal rendering
+                    setLayerRenderer(nil)
+
+                    // Inform the window manager that we're closing the compositor space
+                    PolySpatialWindowManagerAccess.onCompositorSpaceDismissed(window)
+
+                    // Unpause Unity, which will have been paused when shutting down the compositor space
+                    // We can't prevent this with the current architecture, because we need to keep rendering
+                    // until the Metal space is dismissed, at which point Unity thinks the app is being backgrounded
+                    // TODO: LXR-3764 Update trampoline to prevent pausing Unity in the first place
+                    let unity = UnityLibrary.getInstance()
+                    unity?.didBecomeActive()
+                }
             }
+        } else {
+            dismissWindow(id: configuration, value: window.uuid)
         }
-        #endif
     }
 
     func onWindowAdded(_ window: PolySpatialWindow) {
-        if window.windowConfiguration == "Unbounded" {
-            // Hook to let ARKit know to set things up
+        if PolySpatialWindow.windowConfigurationIsImmersive(window.windowConfiguration) {
+            // Hook to let XR plugin know to set things up
             UnityVisionOS_SetIsImmersiveSpaceReady(true)
         }
     }
 
     func onWindowRemoved(_ window: PolySpatialWindow) {
+        if PolySpatialWindow.windowConfigurationIsImmersive(window.windowConfiguration) {
+            // Hook to let XR plugin know to the space is no longer ready
+            UnityVisionOS_SetIsImmersiveSpaceReady(false)
+        }
     }
 
     func reset() {

@@ -3,7 +3,7 @@ uid: psl-vos-image-based-light
 ---
 # Image Based Lighting
 
-The **VisionOSImageBasedLight** and **VisionOSImageBasedLightReceiver** components provides a hint to the platform to set a custom image based light (IBL) texture.  In visionOS, this maps directly to the [ImageBasedLightComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightcomponent).
+The **VisionOSImageBasedLight** and **VisionOSImageBasedLightReceiver** components provide a hint to the platform to set a custom image based light (IBL) texture.  In visionOS, these map directly to the [ImageBasedLightComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightcomponent) and [ImageBasedLightReceiverComponent](https://developer.apple.com/documentation/realitykit/imagebasedlightreceivercomponent).  Additionally, the **VisionOSEnvironmentLightingConfiguration** component controls the amount by which environment lighting (that is, lighting from the real-world environment) affects objects.
 
 The `VisionOS Image Based Light` component defines the texture used as a light with the following properties:
 
@@ -26,3 +26,9 @@ This component works in tandem with the `VisionOS Image Based Light Receiver` co
 Place this component on the GameObject you wish to be affected and set the `Image Based Light` property to an instance of `VisionOS Image Based Light` within the scene.  All `MeshRenderer` instances on the GameObject and its descendants will use the referenced IBL.
 
 ![VisionOSImageBasedLightReceiver](images/ReferenceGuide/VisionOSImageBasedLightReceiver.png)
+
+## Environment Lighting Configuration
+
+This component controls the amount by which environment lighting (that is, lighting derived from the real-world environment) affects objects on visionOS.  Add it to the GameObject that you want to affect or to any of that object's ancestors and set its `Environment Lighting Weight` property to a value between zero (no influence from environment lighting) to one (full environment lighting influence).
+
+This weight does not affect the image based lighting controlled by the `VisionOS Image Based Light` and `VisionOS Image Based Light Receiver` components described above.  To remove image based lighting in addition to environment lighting, add a `VisionOS Image Based Light Receiver` component along with `VisionOS Environment Lighting Configuration` and configure it to refer to a `VisionOS Image Based Light` with no sources set.

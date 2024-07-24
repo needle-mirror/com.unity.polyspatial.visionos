@@ -6,34 +6,100 @@ using namespace metal;
 // converting them from Unity to RealityKit format, as well as the compute shaders used to
 // perform blend shape blending.
 
-kernel void copyBlendShapeBuffer(
-    device const simd_float3* src [[buffer(0)]],
-    device simd_float3* dest [[buffer(1)]],
-    device const uint& size [[buffer(2)]],
-    uint index [[thread_position_in_grid]])
+// Contains the attributes associated with a base vertex for blending.
+struct BaseVertex
 {
-    if (index < size)
-        dest[index] = src[index];
-}
+    float3 position;
+    float3 normal;
+    float4 tangent;
+};
 
-kernel void addScaledBlendShapeBuffer(
-    device const simd_float3* src [[buffer(0)]],
-    device const float& scale [[buffer(1)]],
-    device simd_float3* dest [[buffer(2)]],
-    device const uint& size [[buffer(3)]],
-    uint index [[thread_position_in_grid]])
+// Contains the deltas associated with a single blend shape for a single vertex.
+#pragma pack(push, 1)
+struct BlendShapeVertex
 {
-    if (index < size)
-        dest[index] += src[index] * scale;
-}
+    int32_t index;
+    float3 positionDelta;
+    float3 normalDelta;
+    float3 tangentDelta;
+};
+#pragma pack(pop)
 
-kernel void normalizeBlendShapeBuffer(
-    device simd_float3* dest [[buffer(0)]],
-    device const uint& size [[buffer(1)]],
+// Represents the influence of a single joint on a vertex.
+struct JointInfluence
+{
+    int32_t index;
+    float weight;
+};
+
+// Contains the final result of blending.
+struct BlendResult
+{
+    float3 position;
+    float3 normal;
+    float3 tangent;
+    float3 bitangent;
+};
+
+// Compute shader to perform blend shape blending and skinning.
+kernel void blendAndSkin(
+    device const uint& vertexCount [[buffer(0)]],
+    device const BaseVertex* baseVertices [[buffer(1)]],
+    device const int32_t* blendShapeVertices [[buffer(2)]],
+    device const float* blendFrameWeights [[buffer(3)]],
+    device const JointInfluence* jointInfluences [[buffer(4)]],
+    device const uint& jointInfluencesPerVertex [[buffer(5)]],
+    device const float4x4* jointMatrices [[buffer(6)]],
+    device const float3x3* jointNormalMatrices [[buffer(7)]],
+    device BlendResult* results [[buffer(8)]],
     uint index [[thread_position_in_grid]])
 {
-    if (index < size)
-        dest[index] = normalize(dest[index]);
+    if (index >= vertexCount)
+        return;
+    
+    // Start with the base vertex attributes.
+    device auto& result = results[index];
+    device auto& baseVertex = baseVertices[index];
+    auto blendedPosition = baseVertex.position;
+    auto blendedNormal = baseVertex.normal;
+    auto blendedTangent = baseVertex.tangent.xyz;
+    
+    // Extract the blend shape vertex range for the current index.
+    auto startVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index]);
+    auto endVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index + 1]);
+    
+    // Add each blend shape vertex multiplied by its weight in the array.
+    for (auto currentVertex = startVertex; currentVertex != endVertex; ++currentVertex)
+    {
+        auto weight = blendFrameWeights[currentVertex->index];
+        blendedPosition += currentVertex->positionDelta * weight;
+        blendedNormal += currentVertex->normalDelta * weight;
+        blendedTangent += currentVertex->tangentDelta * weight;
+    }
+    
+    auto position = float3(0, 0, 0);
+    auto normal = float3(0, 0, 0);
+    auto tangent = float3(0, 0, 0);
+    
+    auto startInfluence = jointInfluences + index * jointInfluencesPerVertex;
+    auto endInfluence = startInfluence + jointInfluencesPerVertex;
+    
+    // Apply the joint influences to the results of blending.
+    for (auto currentInfluence = startInfluence; currentInfluence != endInfluence; ++currentInfluence)
+    {
+        auto jointMatrix = jointMatrices[currentInfluence->index];
+        auto jointNormalMatrix = jointNormalMatrices[currentInfluence->index];
+        
+        position += (jointMatrix * float4(blendedPosition, 1)).xyz * currentInfluence->weight;
+        normal += jointNormalMatrix * blendedNormal * currentInfluence->weight;
+        tangent += jointNormalMatrix * blendedTangent * currentInfluence->weight;
+    }
+    
+    // Normalize and set the results and apply the tangent sign.
+    result.position = position;
+    result.normal = normalize(normal);
+    result.tangent = normalize(tangent);
+    result.bitangent = normalize(cross(normal, tangent)) * baseVertex.tangent.w;
 }
 
 // A compute shader that simply flips in the input vertically and writes it to the output
@@ -47,19 +113,10 @@ kernel void textureFlipVertical(
         outTexture.write(inTexture.read(uint2(gid.x, inTexture.get_height() - gid.y - 1)), gid);
 }
 
-float2 getZFaceCoord(float3 dir)
-{
-    if (dir.z > 0)
-        return dir.xy * float2(0.5, -0.5 / 6.0) + float2(0.5, 4.5 / 6.0);
-    else
-        return dir.xy * float2(-0.5, -0.5 / 6.0) + float2(0.5, 5.5 / 6.0);
-}
-
-// A compute shader that converts a cube map stored as a 2D texture (which we use to emulate cube maps in
-// shader graphs, since RealityKit lacks direct support for cube maps) to the equirectangular (that is,
+// A compute shader that converts a cube map to the equirectangular (that is,
 // latitude/longitude) format required by the EnvironmentResource constructor.
 kernel void textureCubeToEquirectangular(
-    texture2d<half, access::sample> inTexture [[texture(0)]],
+    texturecube<half, access::sample> inTexture [[texture(0)]],
     texture2d<half, access::write> outTexture [[texture(1)]],
     uint2 gid [[thread_position_in_grid]])
 {
@@ -75,35 +132,6 @@ kernel void textureCubeToEquirectangular(
     float sinLongitude = sin(longitude);
     float3 dir = float3(-sinLongitude * sin(latitude), cos(longitude), -sinLongitude * cos(latitude));
     
-    // Set coords based on cube map face.
-    float2 coord;
-    float3 absdir = abs(dir);
-    if (absdir.x > absdir.y)
-    {
-        if (absdir.x > absdir.z) // +X/-X
-        {
-            if (dir.x > 0)
-                coord = dir.zy * float2(-0.5, -0.5 / 6.0) + float2(0.5, 0.5 / 6.0);
-            else
-                coord = dir.zy * float2(0.5, -0.5 / 6.0) + float2(0.5, 1.5 / 6.0);
-        }
-        else // +Z/-Z
-        {
-            coord = getZFaceCoord(dir);
-        }
-    }
-    else if (absdir.y > absdir.z) // +Y/-Y
-    {
-        if (dir.y > 0)
-            coord = dir.xz * float2(0.5, 0.5 / 6.0) + float2(0.5, 2.5 / 6.0);
-        else
-            coord = dir.xz * float2(0.5, -0.5 / 6.0) + float2(0.5, 3.5 / 6.0);
-    }
-    else // +Z/-Z
-    {
-        coord = getZFaceCoord(dir);
-    }
-    
     constexpr sampler textureSampler(mag_filter::linear, min_filter::linear);
-    outTexture.write(inTexture.sample(textureSampler, coord), gid);
+    outTexture.write(inTexture.sample(textureSampler, dir), gid);
 }

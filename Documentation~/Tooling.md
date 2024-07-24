@@ -4,10 +4,10 @@ uid: psl-vos-tooling
 # PolySpatial Tooling
 
 ## Logging
-PolySpatial logging messages are tagged by category and level to facilitate more targeted debugging. From the main menu of the Unity Editor, select **Window &gt; PolySpatial &gt; Logging** to open the PolySpatial Logging window. From here, you can toggle which categories are enabled, whether they should generate stack traces, and for categories for which stack traces are enabled, what levels will generate the traces. 
+PolySpatial logging messages are tagged by category and level to facilitate more targeted debugging. From **Project Settings > PolySpatial > Logging Categories**, you can toggle which categories are enabled and whether they should generate stack traces.
 
 ## Debug Links
-To facilitate debugging in Play Mode, the PolySpatial runtime adds **DebugPolySpatialGameObjectLinks** components to connect each **simulation** GameObject to its corresponding **backing** GameObject in the Unity SceneGraph.
+To facilitate debugging in Play Mode, the PolySpatial runtime adds **DebugPolySpatialGameObjectLinks** components to connect each **simulation** GameObject to its corresponding **backing** GameObject(s) in the Unity SceneGraph. A **backing** GameObject will be created for each volume that the **simulation** GameObject is instanced into.
 
 ## Recording & Playback
 <a name="recording-and-playback"></a>

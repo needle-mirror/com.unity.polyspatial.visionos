@@ -35,7 +35,7 @@ Swizzling vector values is supported.  For example, `float3(1, 2, 3).xz` is equi
 ## Supported Functions
 
 ### HLSL Intrinsic Functions
-The parser supports a subset of HLSL's intrinsic functions: `abs`, `acos`, `all`, `any`, `asin`, `atan`, `atan2`, `ceil`, `clamp`, `cos`, `cosh`, `cross`, `degrees`, `distance`, `dot`, `exp`, `exp2`, `floor`, `fmod`, `frac`, `isinf`, `isnan`, `length`, `lerp`, `log`, `max`, `min`, `mul`, `normalize`, `pow`, `radians`, `rcp`, `reflect`, `refract`, `round`, `rsqrt`, `saturate`, `sign`, `sin`, `sinh`, `smoothstep`, `sqrt`, `step`, `tan`, `tanh`, `transpose`, `trunc`
+The parser supports a subset of HLSL's intrinsic functions: `abs`, `acos`, `all`, `any`, `asin`, `atan`, `atan2`, `ceil`, `clamp`, `cos`, `cosh`, `cross`, `ddx`, `ddy`, `degrees`, `distance`, `dot`, `exp`, `exp2`, `floor`, `fmod`, `frac`, `fwidth`, `isinf`, `isnan`, `length`, `lerp`, `log`, `max`, `min`, `mul`, `normalize`, `pow`, `radians`, `rcp`, `reflect`, `refract`, `round`, `rsqrt`, `saturate`, `sign`, `sin`, `sinh`, `smoothstep`, `sqrt`, `step`, `tan`, `tanh`, `transpose`, `trunc`
 
 ### PolySpatial-Specific Functions
 Additionally, the parser supports the custom `splitlr` function, which implements the splitlr function described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf):
@@ -45,7 +45,7 @@ genType splitlr(genType valuel, genType valuer, float center, float2 texcoord);
 (where `genType` is one of `float`, `float2`, `float3`, or `float4`)
 
 ### Unity Macros
-For sampling textures, the parser supports Unity macros: `SAMPLE_TEXTURE2D`, `SAMPLE_TEXTURE2D_LOD`, `SAMPLE_TEXTURE3D`, `SAMPLE_TEXTURE3D_LOD`, `SAMPLE_TEXTURECUBE_LOD`
+For sampling textures, the parser supports Unity macros: `GATHER_TEXTURE2D`, `SAMPLE_TEXTURE2D`, `SAMPLE_TEXTURE2D_LOD`, `SAMPLE_TEXTURE3D`, `SAMPLE_TEXTURE3D_LOD`, `SAMPLE_TEXTURECUBE_LOD`
 
 ## Supported Globals
 The parser supports several of Unity's built-in global variables: `_Time`, `_SinTime`, `_CosTime`, `unity_DeltaTime`, `unity_ObjectToWorld`, `unity_WorldToObject`, `UNITY_MATRIX_V`, `UNITY_MATRIX_I_V`, `UNITY_MATRIX_P`, `UNITY_MATRIX_I_P`, `UNITY_MATRIX_VP`, `UNITY_MATRIX_I_VP`

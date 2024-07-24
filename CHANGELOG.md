@@ -9,12 +9,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [2.0.0-pre.9] - 2024-07-24
+
+### Added
+- Added `Hybrid` app mode. This allows an application to switch between Metal and RealityKit mode at runtime. Hybrid mode requires PolySpatial. Refer to the **PolySpatial Hybrid apps on visionOS** section of the PolySpatial VisionOS documentation for more information.
+- Added the ability to create multiple volume cameras. Refer to the **Volume cameras** section of the PolySpatial VisionOS documentation for more information. 
+
+### Changed
+- Updated instructions for setting up 2.x prerelease packages. This currently requires manually pointing your project's manifest.json at the appropriate package versions.
+- Several VisionOS prefixed components (such as VisionOSVideoComponent and VisionOSImageBasedLight) have had DisallowMultipleComponent applied to them, and cannot be added multiple times to the same GameObject.
+
+
 ## [2.0.0-pre.3] - 2024-04-22
 
 ### Added
-
 - Added a loading screen during initial Play To Device loading
 - Added support for procedural skinned meshes. Updating a skinned mesh will now notify all skinned mesh renderers using that mesh to update.
+- Added support for adding new reference images at runtime, refer to [ARFoundation](https://docs.unity3d.com/Packages/com.unity.xr.arfoundation@6.0/manual/features/image-tracking.html#add-new-reference-images-at-runtime) documentation.
+- Added tracked image support to the "PolySpatial XR" Plug-in Provider, under XR Plug-in Managment.
 
 ### Changed
 

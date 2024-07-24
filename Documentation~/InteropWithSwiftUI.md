@@ -4,8 +4,7 @@ uid: psl-vos-interop-with-swiftui
 
 # Using SwiftUI together with Unity
 
-On visionOS, it is possible to use SwiftUI together with a Unity application built
-for mixed reality (Immersive Space). The [Samples](Samples.md) contain a `SwiftUI`
+On visionOS, it is possible to use SwiftUI together with a Unity application. The [Samples](Samples.md) contain a `SwiftUI`
 sample that demonstrates one approach.
 
 For detailed information, please review the comments in the following files in the sample:

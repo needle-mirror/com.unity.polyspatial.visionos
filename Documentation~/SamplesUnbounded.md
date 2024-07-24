@@ -19,7 +19,7 @@ You can find instructions on how to install these packages at the links above.
 
 ## Image Tracking
 
-The **Image Tracking** scene allows users to spawn content using predefined, unique image markers in an unbounded application. 
+The **Image Tracking** scene allows users to spawn content using predefined, unique image markers in an unbounded application.
 
 > [!NOTE]
 > This sample uses ARKit features which are not supported in the VisionOS simulator, you must run it on device.
@@ -27,7 +27,7 @@ The **Image Tracking** scene allows users to spawn content using predefined, uni
 
 ## Mixed Reality
 
-The **Mixed Reality** scene allows users to spawn content using a custom ARKit hand gesture in an unbounded application. It also visualizes plane data information in the physical environment. 
+The **Mixed Reality** scene allows users to spawn content using a custom ARKit hand gesture in an unbounded application. It also visualizes plane data information in the physical environment.
 
 > [!NOTE]
 > This sample uses ARKit features that are not supported in the VisionOS simulator, you must run it on device.

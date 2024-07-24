@@ -5,6 +5,7 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Scripting;
+using Profiler = Unity.PolySpatial.Internals.PolySpatialProfiler;
 
 namespace Unity.PolySpatial.Internals
 {
@@ -15,14 +16,12 @@ namespace Unity.PolySpatial.Internals
     internal class RealityKitBackend : IPolySpatialCommandHandler, IPolySpatialHostCommandDispatcher,
         IPolySpatialLocalBackend, PolySpatialBackendExtraFeatures
     {
-        static readonly ProfilerMarker s_HandleCommandMarker = new("RealityKitBackend.HandleCommand");
+        static readonly ProfilerMarker s_HandleCommandMarker = new(Profiler.Name<RealityKitBackend>().HandleCommandName);
 
         public IPolySpatialHostCommandHandler NextHostHandler { get; set; }
 
         static Platform.PolySpatialNativeAPI s_OldAPIPointers;
         static RealityKitBackend s_Instance;
-
-        public bool IgnoreSetCameraData { get; set; }
 
         static bool TryGetAPIPointers()
         {
@@ -117,9 +116,6 @@ namespace Unity.PolySpatial.Internals
 
         public unsafe void HandleCommand(PolySpatialCommand cmd, int argCount, void** argValues, int* argSizes)
         {
-            if (IgnoreSetCameraData && cmd == PolySpatialCommand.SetCameraData)
-                return;
-
             s_HandleCommandMarker.Begin();
             s_OldAPIPointers.SendClientCommand(cmd, argCount, argValues, argSizes);
             s_HandleCommandMarker.End();

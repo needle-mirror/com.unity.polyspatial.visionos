@@ -91,7 +91,7 @@ namespace Unity.PolySpatial.Internals.Editor
             var path = report.summary.outputPath;
             var projectName = PlayerSettings.productName;
 
-            var pluginBundle = Path.GetFullPath(Path.Combine(k_PackageLibPath, PluginName));
+            var pluginBundle = FileUtil.GetPhysicalPath(Path.Combine(k_PackageLibPath, PluginName));
             if (Path.GetExtension(path) == ".app")
             {
                 BuildUtils.CopyDirectoryTo(pluginBundle, Path.Combine(path, "Contents", "PlugIns"));

@@ -12,33 +12,46 @@ You can develop Windowed apps for visionOS by [installing the visionOS Platform 
 
 Refer to [Windowed Apps in visionOS](WindowedApps.md) for more information about developing windowed apps.
 
-**VR apps**
+**Metal apps**
 
-To develop VR apps for visionOS, you must:
+To develop Metal apps for visionOS, you must:
 
 * [Install the visionOS platform module](#install-the-visionos-platform-module)
 * [Install the XR packages](#install-the-xr-packages)
 
-You must also set the visionOS **App Mode** to **Virtual Reality - Fully Immersive Space**.
+You must also set the visionOS **App Mode** to **Metal Rendering with Compositor Services**.
 You can access this setting in the **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**.
 
-Refer to [Fully Immersive VR on visionOS](VRApps.md) for more information about developing VR apps.
+Refer to [Metal-based Apps on visionOS](MetalApps.md) for more information about developing Metal apps.
 
-**Mixed reality apps**
+**RealityKit apps**
 
-To develop MR apps for visionOS, you must install the PolySpatial packages in addition to the visionOS platform module and the XR packages:
+To develop RealityKit apps for visionOS, you must install the PolySpatial packages in addition to the visionOS platform module and the XR packages:
 
 * [Install the visionOS platform module](#install-the-visionos-platform-module)
 * [Install the XR packages](#install-the-xr-packages)
 * [Install the PolySpatial packages](#install-the-polyspatial-packages)
 
-You must also set the visionOS **App Mode** to **Mixed Reality - Volume or Immersive Space**.
+You must also set the visionOS **App Mode** to **RealityKit with PolySpatial**.
 You can access this setting in the **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**.
 
-Refer to [PolySpatial Mixed Reality apps on visionOS](PolySpatialMRApps.md) for more information about developing MR apps.
+Refer to [RealityKit apps on visionOS](RealityKitApps.md) for more information about developing RealityKit apps.
+
+**Hybrid apps**
+
+A hybrid app can switch between Metal and RealityKit mode. Hybrid apps have the same package requirements as RealityKit apps. To develop Hybrid apps for visionOS, you must:
+
+* [Install the visionOS platform module](#install-the-visionos-platform-module)
+* [Install the XR packages](#install-the-xr-packages)
+* [Install the PolySpatial packages](#install-the-polyspatial-packages)
+
+You must also set the visionOS **App Mode** to **Hybrid - Switch between Metal and RealityKit**.
+You can access this setting in the **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**.
+
+Refer to [RealityKit apps on visionOS](RealityKitApps.md) for more information about developing RealityKit apps.
 
 > [!IMPORTANT]
-> Developing VR or MR apps for the visionOS platform requires a Unity Pro, Enterprise, or Industrial subscription.
+> Developing XR apps using Metal, RealityKit or Hybrid for the visionOS platform requires a Unity Pro, Enterprise, or Industrial subscription.
 
 ## Prerequisites
 
@@ -76,10 +89,10 @@ When you enable the **Apple visionOS** provider, the Unity Package Manager insta
 
 Additional packages in the project might be updated during the install process if required to satisfy version dependencies.
 
-After you install the Apple visionOS XR Plugin, you can choose whether your app launches in VR or windowed mode with the **App Mode** setting. You can access this setting in **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**. If you choose the remaining option, **Mixed Reality - Volume or Immersive Space**, Unity offers to install the PolySpatial packages for you.
+After you install the Apple visionOS XR Plugin, you can choose whether your app launches in Metal or windowed mode with the **App Mode** setting. You can access this setting in **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**. If you choose one of the remaining options, **RealityKit with PolySpatial** or **Hybrid - Switch between Metal and RealityKit**, Unity offers to install the PolySpatial packages for you.
 
 > [!NOTE]
-> You cannot change **App Mode** at runtime. For example, you cannot launch an app in Windowed mode and then change to VR or MR mode.
+> You cannot change **App Mode** at runtime. For example, you cannot launch an app in Windowed mode and then change to Metal, RealityKit, or Hybrid mode.
 
 <a id="install-the-polyspatial-packages"></a>
 ## Install the PolySpatial packages
@@ -90,9 +103,9 @@ To install the PolySpatial packages:
 
 1. Open the **Project Settings** window (menu: **Edit &gt; Project Settings**).
 2. Select the **Apple visionOS** settings under **XR Plug-in Management**.
-3. Change the **App Mode** setting to **Mixed Reality - Volume or Immersive Space**.
+3. Change the **App Mode** setting to **RealityKit with PolySpatial** or **Hybrid - Switch between Metal and RealityKit**.
 
-   Unity offers to install the PolySpatial packages, which are required to support the mixed reality app mode.
+   Unity offers to install the PolySpatial packages, which are required to support the RealityKit and hybrid app modes.
    
    ![](images/easy-install.png)
    

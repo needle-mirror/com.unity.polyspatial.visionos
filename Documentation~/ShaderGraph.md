@@ -7,7 +7,9 @@ You can use the Unity Shader Graph to create custom materials for visionOS. Thes
 For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
 
 ## Debugging shader graphs
-Shader graphs that are modified and saved while in play mode when using [Play to Device](PlayToDevice.md) will be updated immediately and retransferred.  Materials using them will reflect the saved changes automatically.
+PolySpatial provides two methods useful for debugging shader graph conversion when using [Play to Device](PlayToDevice.md) to test your scenes on the visionOS simulator/device.
+* First, shader graphs that are modified and saved while in play mode will be updated immediately and retransferred.  Materials using them will reflect the saved changes automatically.
+* Second, when connected to the Play to Device app, the shader graph editor will provide a `Preview Selection on Device` toggle in its menu bar.  When that option is enabled and any single node or edge is selected, the value of that edge (or the first output of the node) will be rendered as the (unlit) output color in any materials that use the shader.  Selecting a different node or edge will immediately update the result.  This allows dynamic inspection of different intermediate values within the shader graph.
 
 ## Texture limitations
 When sampling textures in shader graphs, note that the sampler state (filter, wrap modes) associated with the texture itself is ignored.  Instead, you must use the `Sampler State` node to control how the texture is sampled if you want to use a mode other than the default (linear filtering, repeat wrap mode).
@@ -29,7 +31,7 @@ Global values must be set in C# using the methods of [PolySpatialShaderGlobals](
 Note that visionOS materials do not support global properties natively, and thus PolySpatial must apply global properties separately to all material instances, which may affect performance.  For animation, consider using the `PolySpatial Time` node rather than the standard Unity shader graph `Time`.  While `PolySpatial Time` will not be exactly synchronized with [Time.time](https://docs.unity3d.com/ScriptReference/Time-time.html) (notably, it will not reflect changes to [Time.timeScale](https://docs.unity3d.com/ScriptReference/Time-timeScale.html)), it is supported natively in visionOS and does not require per-frame property updates.
 
 ## Supported targets
-The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types and the `Alpha Clipping` setting.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  Due to platform limitations, all materials will have `Front` render face, depth writes enabled, `LEqual` depth testing, and tangent space fragment normals.
+The `Universal` and `Built-In` targets are supported for conversion.  For both targets, the `Lit` and `Unlit` materials are supported, as well as the `Opaque` and `Transparent` surface types, the `Alpha Clipping` setting, the `Render Face` option, and the `Depth Write` option (where `Auto` is interpreted as `Enabled`).  The `Depth Test` setting may be `LEqual` or `Always`.  For `Transparent` surfaces, the `Alpha`, `Premultiply`, and `Additive` blending modes are supported.  No other target settings are currently supported for conversion.  All materials will have tangent space fragment normals.
 
 ## MaterialX keyword
 The built-in `MaterialX` keyword may be used to select different paths to use for Unity rendering (as used in editor play mode) versus MaterialX export (as used on visionOS).  This is useful in cases where, for example, the Unity path requires Custom Function nodes that use HLSL beyond what is supported by the [MaterialX exporter](CustomFunctionNode.md).  Connect the Unity path to the `Off` keyword input and the MaterialX path to the `On` input.
@@ -113,7 +115,9 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Gradient                 | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Gradient          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Lighting  | Ambient                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Baked GI                 | Subject to limitations of [PolySpatial Lighting Node](PolySpatialLighting.md)                                          |
   |           | Main Light Direction     | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Reflection Probe         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Matrix    | Matrix 2x2               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 3x3               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Matrix 4x4               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -127,13 +131,16 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Scene Depth              | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Texture   | Cubemap Asset            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Gather Texture 2D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Cubemap           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Reflected Cubemap | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Sample Texture 2D Array  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 2D LOD    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sample Texture 3D        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Sampler State            | `MirrorOnce` wrap mode not supported.                                                                                  |
   |           | Split Texture Transform  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
+  |           | Texture 2D Array Asset    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture 2D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture 3D Asset         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Texture Size             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
@@ -158,6 +165,9 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 |               | Power                  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Square Root            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Subtract               | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+| Derivative    | DDX                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | DDXY                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
+|               | DDY                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 | Interpolation | Inverse Lerp           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Lerp                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
 |               | Smoothstep             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                           |
@@ -226,7 +236,9 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 | Section | Node                             | Notes                                                                                                                                                                                |
 |---------|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Utility | Custom Function                  | See [custom function node conversion notes](CustomFunctionNode.md).                                                                                                                  |
+|         | PolySpatial Background Blur      | See [below](#polyspatial-background-blur).                                                                                                                                           |
 |         | PolySpatial Environment Radiance | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
+|         | PolySpatial Hover State          | See [hover effect notes](HoverEffect.md).                                                                                                                                            |
 |         | PolySpatial Lighting             | See [lighting notes](PolySpatialLighting.md).                                                                                                                                        |
 |         | PolySpatial Time                 | Non-standard shader graph node specific to PolySpatial. Implements the time function as described in the [MaterialX Spec](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf).    |
 |         | Preview                          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                                                                                             |
@@ -239,14 +251,22 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
 
 ### UV
 
-| Section | Node              | Notes                                                                    |
-|---------|-------------------|--------------------------------------------------------------------------|
-| UV      | Flipbook          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Parallax Mapping  | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Polar Coordinates | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Radial Shear      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Rotate            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Spherize          | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Tiling and Offset | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Triplanar         | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
-|         | Twirl             | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+| Section | Node                        | Notes                                                                    |
+|---------|-----------------------------|--------------------------------------------------------------------------|
+| UV      | Flipbook                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Parallax Mapping            | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Parallax Occlusion Mapping  | `Steps` input must be constant (unconnected).                            |
+|         | Polar Coordinates           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Radial Shear                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Rotate                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Spherize                    | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Tiling and Offset           | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Triplanar                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+|         | Twirl                       | <span style="color: green; font-weight: bold;">&#x2713; Supported</span> |
+
+## PolySpatial-specific nodes
+PolySpatial provides several custom nodes that are not part of the standard shader graph [node library](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Node-Library.html) in order to expose additional features of host platforms (such as visionOS) and the MaterialX standard.  These include the PolySpatial Lighting and Environment Radiance nodes described in the [lighting documentation](PolySpatialLighting.md), the PolySpatial Time and Split LR nodes from the [MaterialX specification](https://materialx.org/assets/MaterialX.v1.38.Spec.pdf), and the following additional nodes.
+
+<a id="polyspatial-background-blur"></a>
+### PolySpatial Background Blur
+This node provides a single color output that represents a blurred version of the color buffer at the current pixel position, useful for creating frosted glass effects.

@@ -2,7 +2,7 @@
 uid: psl-vos-tutorial-template
 ---
 # Starting a new visionOS project from the Immersive App Template
-<a name="starting-a-new-visionos-mr-project-from-the-project-template"></a>
+<a name="starting-a-new-visionos-realitykit-project-from-the-project-template"></a>
 
 Unity’s [visionOS Template](https://drive.google.com/drive/folders/1Oe-6bBCCmk7okbK832HWiYFbM8mV0XrZ) provides a starting point for visionOS development in Unity. The template configures project settings, pre-installs the right XR related packages, and includes various pre-configured Example Assets to demonstrate how to set up a project that is ready to deploy to visionOS.
 
@@ -20,9 +20,10 @@ The visionOS Template demonstrates:
 
 To use the visionOS project template, follow these steps:
 
-* Install Unity 2022.3 LTS and make sure you target the visionOS build target.
+* Install Unity 6 and make sure you target the **visionOS** build target.
 * Download the zipped [visionOS template project here](https://drive.google.com/drive/folders/1Oe-6bBCCmk7okbK832HWiYFbM8mV0XrZ), and unzip to your desired file location.
 * Use the Unity Hub to `Add project from disk`, targeting that unzipped location.
+* Open the project, selecting the **visionOS** build target.
 * In the template, you will be led through next steps via the In-Editor Tutorial.
   * Go to `Tutorials > Show Tutorials` if the tutorial does not show up automatically.
 

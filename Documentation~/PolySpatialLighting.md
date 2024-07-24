@@ -3,10 +3,21 @@ uid: psl-vos-polyspatial-lighting
 ---
 
 # Unity PolySpatial Lighting Support
-Because visionOS itself supplies only image based lighting, PolySpatial includes a lighting solution available to shader graphs that provides a subset of the lighting features available in Unity.  The PolySpatial Lighting Node supports directional lightmaps, light probes, and up to four dynamic lights (point, spot, or directional).
+VisionOS provides image based lighting as well as dynamic point, spot, and directional lights.  PolySpatial also includes a lighting solution available to shader graphs that provides a subset of the lighting features available in Unity.  The PolySpatial Lighting Node supports directional lightmaps, light probes, and up to four dynamic lights (point, spot, or directional).
 
-## Limitations
-Only static directional lightmaps with dLDR encoding are supported.
+## VisionOS Lighting
+Lit materials (both standard shaders such as `Universal Render Pipeline/Lit` and shader graphs using Lit targets) use visionOS lighting by default.  This lighting comprises [image based lighting](ImageBasedLight.md) (derived from the device cameras and/or environment maps) and, optionally, dynamic point, spot, and directional lights.  Spot and directional lights support shadows.
+
+Because visionOS uses different lighting calculations from Unity, the appearance of lit objects in visionOS will not exactly match that of objects rendered in the Unity editor.  To achieve a closer match for dynamic lights, you may wish to use the `PolySpatial Lighting Node`.
+
+### VisionOS Light Settings
+To control the default behavior for dynamic lights in visionOS, use the `Default VisionOS Lighting` option under `PolySpatial` in `Project Settings`.  This defaults to `Image Based Only`, but you can change it to `Image Based and Dynamic Lights` to enable point/spot/directional lights for standard Lit materials in visionOS, or to `Image Based, Dynamic Lights, and Shadows` to enable spot/directional shadows as well.
+
+There are two additional settings that control shadow behavior specific to visionOS: 
+* Because visionOS uses only a fixed depth bias for shadows (versus Unity's fixed plus directional biases), the `Default VisionOS Shadow Bias Offset` setting provides a means to add an additional depth bias amount to shadows on visionOS.
+* Because visionOS does not use cascaded shadow maps for directional lights, it requires a maximum distance to be set relatively close to the camera.  The `Default VisionOS Directional Shadow Max Distance` setting controls the maximum distance away from the camera to render directional shadow maps.  Set this to a small value (such as 2-3 meters) for typical indoor bounded scenes in order to maximize the apparent resolution of the shadow map.
+
+To control visionOS light behavior on a per-light basis, add an instance of the `VisionOS Light Settings` component to the `GameObject` containing the `Light` instance.  This has the same options as the defaults in the `PolySpatial` project settings.
 
 ## PolySpatial Lighting Node
 To add PolySpatial lighting to a shader graph, create an instance of the `PolySpatial Lighting Node` using the `Create Node` command in the shader graph editor.
@@ -15,7 +26,10 @@ To add PolySpatial lighting to a shader graph, create an instance of the `PolySp
 The inputs to the lighting node are largely the same as the inputs to the `Lit` shader graph target--`Base Color` (albedo), `Normal` (in tangent space), `Metallic`, `Smoothness`, `Emission`, and `Ambient Occlusion`--with the additional of a `Lightmap UV` input for lightmap texture coordinates.
 
 ### Output
-The output (`Out`) of the lighting node is a single color result.  Depending on your application, you may wish to supply this output directly to the `Base Color` input of an `Unlit` target (if you wish to use only PolySpatial lighting) or to the `Emission` input of a `Lit` target (if you wish to combine PolySpatial lighting with visionOS's image based lighting).
+The output (`Out`) of the lighting node is a single color result.  Depending on your application, you may wish to supply this output directly to the `Base Color` input of an `Unlit` target (if you wish to use only PolySpatial lighting) or to the `Emission` input of a `Lit` target (if you wish to combine PolySpatial lighting with visionOS's lighting).
+
+### Limitations
+Only static directional lightmaps with dLDR encoding are supported.
 
 ### Settings
 

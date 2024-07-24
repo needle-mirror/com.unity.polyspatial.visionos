@@ -38,7 +38,11 @@ class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableOb
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         var arguments = CommandLine.arguments
-        arguments.append("-batchmode")
+
+        // unityStartInBatchMode will be defined in UnityVisionOSSettings.swift, which is generated during the Unity Player build process
+        if unityStartInBatchMode {
+            arguments.append("-batchmode")
+        }
 
         unity.run(arguments: arguments)
 

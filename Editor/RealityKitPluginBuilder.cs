@@ -34,7 +34,7 @@ namespace Unity.PolySpatial.Internals.Editor
                 string output;
 
                 if (plugin == "xr-visionos") {
-                    var xrSrcPath = Path.Combine(Path.GetFullPath("Packages/com.unity.xr.visionos"), "Source~");
+                    var xrSrcPath = Path.Combine(FileUtil.GetPhysicalPath("Packages/com.unity.xr.visionos"), "Source~");
                     if (!Directory.Exists(xrSrcPath))
                     {
                         throw new BuildFailedException($"{xrSrcPath} not found");
@@ -43,9 +43,9 @@ namespace Unity.PolySpatial.Internals.Editor
                     (success, output) = BuildUtils.RunCommandWithOutput(Path.Combine(xrSrcPath, "bee"), null, xrSrcPath, k_BuildTimeoutSeconds,
                             new () { ["XRSDK_USE_LOCAL_TOOLCHAIN"] = "1" });
                 } else {
-                    var pkgPath = Path.GetFullPath("Packages/com.unity.polyspatial.visionos");
+                    var pkgPath = FileUtil.GetPhysicalPath("Packages/com.unity.polyspatial.visionos");
                     var repoRoot = Path.Combine(pkgPath, "../..");
-                    var scriptPath = Path.GetFullPath(Path.Combine(repoRoot, "Tools/build-binary-plugins.sh"));
+                    var scriptPath = FileUtil.GetPhysicalPath(Path.Combine(repoRoot, "Tools/build-binary-plugins.sh"));
                     if (!File.Exists(scriptPath))
                     {
                         throw new BuildFailedException($"{scriptPath} not found");

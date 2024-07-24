@@ -19,7 +19,7 @@ namespace Unity.PolySpatial.Internals.Editor
     {
         private static readonly string MODULE_MAP = "UnityFramework.modulemap";
 
-        private static readonly string UNITY_RK_PACKAGE_PATH = BuildUtils.PathToUnixPath(Path.GetFullPath(Path.Combine("Packages", "com.unity.polyspatial.visionos")));
+        private static readonly string UNITY_RK_PACKAGE_PATH = BuildUtils.PathToUnixPath(FileUtil.GetPhysicalPath(Path.Combine("Packages", "com.unity.polyspatial.visionos")));
         private static readonly string UNITY_RK_SRC_PATH = BuildUtils.PathToUnixPath(Path.Combine(UNITY_RK_PACKAGE_PATH, "Source~"));
 
         // Paths both on disk relative to project file, and logical inside relevant xcode projects
@@ -103,8 +103,6 @@ namespace Unity.PolySpatial.Internals.Editor
 
             if (buildTarget == BuildTarget.VisionOS)
             {
-                CopyAndAddToBuildTarget(swiftAppTarget, "ScreenOverlay.usda", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
-
                 CopyAndAddToProject("Unity-VisionOS-Bridging-Header.h", UNITY_RK_SRC_PATH, "");
                 proj.SetBuildProperty(swiftAppTarget, "SWIFT_OBJC_BRIDGING_HEADER", "Unity-VisionOS-Bridging-Header.h");
             }

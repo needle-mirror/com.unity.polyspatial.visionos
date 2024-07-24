@@ -18,6 +18,6 @@ you will find a wide range of vertical slices demo projects explaining how to de
 
 When porting existing Unity projects to visionOS, several considerations need to be taken into account. The biggest limitation is that some core Unity features aren't supported, and others provide a reduced feature set. In addition, input is different, and processing power and supported components will vary. Sometimes you will have to develop your own systems to support your unique project features and work around these limitations. 
 
-You can find information about [porting VR experiences to visionOS](VRApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project.
+You can find information about [porting VR experiences to visionOS](MetalApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project.
 
 <!-- ## Development best practices -->

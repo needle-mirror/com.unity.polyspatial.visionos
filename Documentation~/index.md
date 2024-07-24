@@ -1,6 +1,8 @@
 ---
 uid: psl-vos-index
 ---
+# PolySpatial visionOS
+
 ![Unity PolySpatial](images/polyspatial-xr-landing-page.png)
 
 ## Introduction
@@ -12,16 +14,17 @@ Unity PolySpatial and visionOS support is only available to Unity Pro, Unity Ent
 To learn about the requirements for visionOS and PolySpatial in Unity, see [visionOS PolySpatial Requirements & Limitations](Requirements.md).
 
 ## visionOS Platform Overview
-You can find information about Unity's support for visionOS in the [visionOSPlatformOverview](visionOSPlatformOverview.md). 
+You can find information about Unity's support for visionOS in the [visionOSPlatformOverview](visionOSPlatformOverview.md).
 
 ### visionOS Application Types
 Unity supports several different application types on visionOS, each with their own advantages:
-* If you're interested in creating fully immersive virtual reality (VR) apps for visionOS, refer to [Fully Immersive VR apps on visionOS](VRApps.md) for more information.
-* If you're interested in creating immersive mixed reality (MR) apps for visionOS, refer to [PolySpatial MR Apps on visionOS](PolySpatialMRApps.md) for more information. These apps are built with Unity's newly developed PolySpatial technology, where apps are simulated with Unity, but rendered with RealityKit, the system renderer of visionOS.
+* If you're interested in creating immersive apps with Metal Rendering for visionOS (or if you are porting existing Unity content), refer to [Metal-based Apps on visionOS](MetalApps.md) for more information.
+* If you're interested in creating apps using RealityKit for rendering content in volumes or immersive spaces for visionOS, refer to [RealityKit Apps on visionOS](RealityKitApps.md) for more information. These apps are built with Unity's newly developed PolySpatial technology, where apps are simulated with Unity, but rendered with RealityKit, the system renderer of visionOS.
+* If you're interested in combining the capabilities of Metal and RealityKit, refer to [PolySpatial Hybrid Apps on visionOS](PolySpatialHybridApps.md) for more information. These apps can switch between Metal and RealityKit Immersive Spaces, and can even combine Metal with RealityKit content rendered in a volume with RealityKit.
 * If you're interested in creating content that will run in a window on visionOS, refer to [Windowed Apps on visionOS](WindowedApps.md) for more information.
 
 ## Resources
-**New users** should find the [Getting Started](GettingStarted.md) page an ideal place for an introduction to visionOS and PolySpatial. It guides you through setup, prerequisites, iterating, previewing, building, and debugging with with [development and iteration](DevelopmentAndIteration.md) basics and building your first app for visionOS.
+**New users** should find the [Getting Started](GettingStarted.md) page an ideal place for an introduction to visionOS and PolySpatial. It guides you through setup, prerequisites, iterating, previewing, building, and debugging with [development and iteration](DevelopmentAndIteration.md) basics and building your first app for visionOS.
 
 **All developers** should familiarize themselves with [development and iteration](DevelopmentAndIteration.md) on this platform. This section covers the nuts and bolts of setting up PolySpatial for visionOS, iterating, [previewing](PlayToDevice.md), building, and debugging. 
 

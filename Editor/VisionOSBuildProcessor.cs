@@ -23,9 +23,31 @@ namespace Unity.PolySpatial.Internals.Editor
 {
     internal class VisionOSBuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
+        struct VolumeWindowConfiguration
+        {
+            public VolumeCamera.PolySpatialVolumeCameraMode Mode;
+            public VolumeCamera.PolySpatialWindowWorldAlignment WorldAlignment;
+            public Vector3 OutputDimensions;
+            public VolumeCamera.PolySpatialWindowResizeLimits ResizeLimits;
+            public Vector3 MinSize;
+            public Vector3 MaxSize;
+
+            public VolumeWindowConfiguration(VolumeCameraWindowConfiguration configuration)
+            {
+                Mode = configuration.Mode;
+                WorldAlignment = configuration.WorldAlignment;
+                OutputDimensions = configuration.Dimensions;
+                ResizeLimits = configuration.WindowResizeLimits;
+                MinSize = configuration.MinWindowSize;
+                MaxSize = configuration.MaxWindowSize;
+            }
+        }
+
         internal const string k_XcodeProjName = "Unity-VisionOS.xcodeproj";
 
         public int callbackOrder => 150; // 150 is after the plugin builder (?)
+
+        const int m_PlayToDeviceVolumeSizeRange = 3;
 
         public void OnPreprocessBuild(BuildReport report)
         {
@@ -46,9 +68,8 @@ namespace Unity.PolySpatial.Internals.Editor
             }
 
             var xrSettings = VisionOSSettings.currentSettings;
-            var autoMeansEnabled = xrSettings != null && xrSettings.appMode == VisionOSSettings.AppMode.MR;
-
-            BuildUtils.GetRuntimeFlagsForAuto(autoMeansEnabled, out runtimeEnabled, out var runtimeLinked);
+            var mixedRealitySupported = xrSettings != null && xrSettings.appMode is VisionOSSettings.AppMode.RealityKit or VisionOSSettings.AppMode.Hybrid;
+            BuildUtils.GetRuntimeFlagsForAuto(mixedRealitySupported, out runtimeEnabled, out var runtimeLinked);
 
             return runtimeLinked;
         }
@@ -152,40 +173,86 @@ namespace Unity.PolySpatial.Internals.Editor
 
         // Create a ImmersiveSpace or WindowGroup entry for the specified volume camera configuration. Optionally pass in a name for this entry, or
         // opt to use the one that DimensionsToSwiftStrings() provides.
+        // Passing in each variable instead of the whole VolumeCameraWindowConfiguration class due to the fact that P2D uses this function
+        // but doesn't have access to VolumeCameraWindowConfiguration scriptable objects - P2D uses hard-coded values.
         static string CreateWindowConfigurationEntry(
-            Vector3 dim,
-            VolumeCamera.PolySpatialVolumeCameraMode mode,
+            VolumeWindowConfiguration configuration,
             string configName)
         {
-            DimensionsToSwiftStrings(dim, out var dimsVec3, out var dimsSizeParams, out var _);
+            var worldAlignmentString = "";
+            switch (configuration.WorldAlignment)
+            {
+                case VolumeCamera.PolySpatialWindowWorldAlignment.Adaptive:
+                    worldAlignmentString = ".volumeWorldAlignment(.adaptive)";
+                    break;
+                case VolumeCamera.PolySpatialWindowWorldAlignment.GravityAligned:
+                    worldAlignmentString = ".volumeWorldAlignment(.gravityAligned)";
+                    break;
+            }
+
+            var windowSizeLimitString = "";
+            var minWindowSize = configuration.MinSize;
+            var maxWindowSize = configuration.MaxSize;
+            switch (configuration.ResizeLimits)
+            {
+                case VolumeCamera.PolySpatialWindowResizeLimits.FixedSize:
+                    // Fix min and max window size to output dimensions.
+                    windowSizeLimitString = ".windowResizability(.contentSize)";
+                    minWindowSize = configuration.OutputDimensions;
+                    maxWindowSize = configuration.OutputDimensions;
+                    break;
+                case VolumeCamera.PolySpatialWindowResizeLimits.LimitMinimumSize:
+                    windowSizeLimitString = ".windowResizability(.contentMinSize)";
+                    break;
+                case VolumeCamera.PolySpatialWindowResizeLimits.LimitMinimumAndMaximumSize:
+                    windowSizeLimitString = ".windowResizability(.contentSize)";
+                    break;
+            }
+
+            DimensionsToSwiftStrings(configuration.OutputDimensions, out var dimsVec3, out var dimsSizeParams, out var _);
+            DimensionsToSwiftStrings(minWindowSize, out var minSizeString, out _, out _);
+            DimensionsToSwiftStrings(maxWindowSize, out var maxSizeString, out _, out _);
 
             var windowType = "";
             var windowStyle = "";
-            var upperLimbVisibility = "";
-
-            switch (mode)
+            var limbVisibility = VisionOSSettings.currentSettings.upperLimbVisibility;
+            var upperLimbVisibility = $".upperLimbVisibility({VisionOSSettings.UpperLimbVisibilityToString(limbVisibility)})";
+            switch (configuration.Mode)
             {
                 case VolumeCamera.PolySpatialVolumeCameraMode.Bounded:
                     windowType = "WindowGroup";
-                    windowStyle = $".windowStyle(.volumetric).defaultSize({dimsSizeParams})";
-                    upperLimbVisibility = "";
-                    break;
+                    windowStyle = $".windowStyle(.volumetric).defaultSize({dimsSizeParams}){windowSizeLimitString}";
+                    // The entry in the App Scene for these types of windows
+                    return $@"
+                    {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
+                        PolySpatialContentViewWrapper(minSize: {minSizeString}, maxSize: {maxSizeString})
+                            .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                        KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
+                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility} {worldAlignmentString}";
+
                 case VolumeCamera.PolySpatialVolumeCameraMode.Unbounded:
                     windowType = "ImmersiveSpace";
                     windowStyle = "";
-                    upperLimbVisibility = $".upperLimbVisibility({(VisionOSSettings.currentSettings.upperLimbVisibility ? ".visible" : ".hidden")})";
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unexpected VolumeCameraConfiguration mode {mode}");
-            }
 
-            // The entry in the App Scene for these types of windows
-            return $@"
-        {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
-            PolySpatialContentViewWrapper()
-                .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
-            KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
-        }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}";
+                    var immersionStyle = VisionOSSettings.currentSettings.realityKitImmersionStyle;
+                    var immersionStyleString = VisionOSSettings.ImmersionStyleToString(immersionStyle);
+                    // The entry in the App Scene for these types of windows
+                    return $@"
+                    {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
+                        PolySpatialContentViewWrapper(minSize: {minSizeString}, maxSize: {maxSizeString})
+                            .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                            .onImmersionChange() {{ oldContext, newContext in
+                                PolySpatialWindowManagerAccess.onImmersionChange(oldContext.amount, newContext.amount)
+                            }}
+                        KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
+                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}
+                    .immersionStyle(selection: .constant({immersionStyleString}), in: {immersionStyleString})";
+
+                case VolumeCamera.PolySpatialVolumeCameraMode.Metal:
+                    return "\n        unityVisionOSCompositorSpace";
+                default:
+                    throw new InvalidOperationException($"Unexpected VolumeCameraConfiguration mode {configuration.Mode}");
+            }
         }
 
         [Conditional("PLAY_TO_DEVICE")]
@@ -214,8 +281,27 @@ namespace Unity.PolySpatial.Internals.Editor
                 allAvailableConfigs.Add(configName);
                 availableConfigsForMatch.Add(swiftVec3);
 
-                // Create an entry for this bounded volume camera.
-                var swift = CreateWindowConfigurationEntry(dim, VolumeCamera.PolySpatialVolumeCameraMode.Bounded, configName);
+                // Create an entry for this bounded volume camera. Min and max size are hardcoded to avoid creating multiple volume configurations
+                // for every possible window size.
+                var minWindowSize = new Vector3(
+                    Mathf.Clamp(dim.x - m_PlayToDeviceVolumeSizeRange, 0.0f, float.MaxValue),
+                    Mathf.Clamp(dim.y - m_PlayToDeviceVolumeSizeRange, 0.0f, float.MaxValue),
+                    Mathf.Clamp(dim.z - m_PlayToDeviceVolumeSizeRange, 0.0f, float.MaxValue));
+                var maxWindowSize = dim + (Vector3.one * m_PlayToDeviceVolumeSizeRange);
+
+                var p2dConfig = new VolumeWindowConfiguration()
+                {
+                    Mode = VolumeCamera.PolySpatialVolumeCameraMode.Bounded,
+                    WorldAlignment = VolumeCamera.PolySpatialWindowWorldAlignment.GravityAligned,
+                    OutputDimensions = dim,
+                    ResizeLimits = VolumeCamera.PolySpatialWindowResizeLimits.LimitMinimumSize,
+                    MinSize = minWindowSize,
+                    MaxSize = maxWindowSize,
+                };
+                var swift = CreateWindowConfigurationEntry(
+                    p2dConfig,
+                    configName);
+
                 sceneContent.Add(swift);
             }
         }
@@ -256,8 +342,16 @@ namespace Unity.PolySpatial.Internals.Editor
                 var configName = NameForVolumeConfig(config);
 
                 // for Unbounded, we always treat is as 1.0 (?)
-                var dim = config.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ? Vector3.one : config.Dimensions;
-                var swift = CreateWindowConfigurationEntry(dim, config.Mode, configName);
+                var configurationEntry = new VolumeWindowConfiguration(config)
+                {
+                    OutputDimensions = config.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ? Vector3.one : config.Dimensions,
+                    MinSize = config.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ? Vector3.zero : config.MinWindowSize,
+                    MaxSize = config.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ? Vector3.zero : config.MaxWindowSize
+                };
+
+                var swift = CreateWindowConfigurationEntry(
+                    configurationEntry,
+                    configName);
 
                 // The default/initial configuration needs to be first in the Scene list,
                 // because this is what the OS will open on launch. Otherwise just append to the string.
@@ -282,9 +376,14 @@ namespace Unity.PolySpatial.Internals.Editor
                 sceneContent.Add($"\n        {name}.scene");
             }
 
-            var parameters = isSimulator ?
-                PolySpatialSettings.instance.SimulatorDisplayProviderParameters :
-                PolySpatialSettings.instance.DeviceDisplayProviderParameters;
+            // The transition from Unbounded RealityKit to Metal requires a window to be visible while the RealityKit space is closed, otherwise the app is backgrounded and the
+            // user is presented with the home screen (as if the app has closed or crashed)
+            // Note: if users modify the immersion style of the RealityKit ImmersiveSpace, they can hit this issue and get backgrounded. They will need to provide
+            // their own loading window to compensate for this.
+            // TODO: LXR-3770 Allow users to customize the behavior and content of the loading window
+            sceneContent.Add("\n        WindowGroup(id: \"LoadingWindow\") {\n            Text(\"Loading...\")\n        }.defaultSize(width: 0.2, height: 0.15)");
+
+            var parameters = PolySpatialSettings.instance.DeviceDisplayProviderParameters;
 
             var displayProviderParametersInit = GetDisplayProviderParamametersInitString(parameters);
 
@@ -320,6 +419,11 @@ namespace Unity.PolySpatial.Internals.Editor
 
             mainSceneDeclaration.AppendLine("    }");
 
+            var settings = VisionOSSettings.currentSettings;
+
+            // RealityKit mode will not need the graphics device, so we use batch mode to save CPU cycles
+            var startInBatchMode = settings != null && settings.appMode == VisionOSSettings.AppMode.RealityKit;
+
 // ==============================
 // the template of the entire file.
             var content = $@"// GENERATED BY BUILD
@@ -327,6 +431,8 @@ import Foundation
 import SwiftUI
 import PolySpatialRealityKit
 import UnityFramework
+
+let unityStartInBatchMode = {(startInBatchMode ? "true" : "false")}
 
 extension UnityPolySpatialApp {{
     func initialWindowName() -> String {{ return ""{NameForVolumeConfig(initialConfig)}"" }}
@@ -361,8 +467,8 @@ extension UnityPolySpatialApp {{
         static string GetDisplayProviderParamametersInitString(PolySpatialSettings.DisplayProviderParameters parameters)
         {
             return $@".init(
-            framebufferWidth: {parameters.framebufferWidth},
-            framebufferHeight: {parameters.framebufferHeight},
+            framebufferWidth: {parameters.dimensions.x},
+            framebufferHeight: {parameters.dimensions.y},
             leftEyePose: .init(position: {ToSwift(parameters.leftEyePose.position)},
                                rotation: {ToSwift(parameters.leftEyePose.rotation)}),
             rightEyePose: .init(position: {ToSwift(parameters.rightEyePose.position)},
@@ -392,6 +498,9 @@ extension UnityPolySpatialApp {{
                 case VolumeCamera.PolySpatialVolumeCameraMode.Bounded:
                     DimensionsToSwiftStrings(config.Dimensions, out var _, out var _, out var volIdent);
                     return volIdent;
+
+                case VolumeCamera.PolySpatialVolumeCameraMode.Metal:
+                    return "CompositorSpace";
 
                 case VolumeCamera.PolySpatialVolumeCameraMode.Unbounded:
                 case null:
@@ -460,6 +569,16 @@ extension UnityPolySpatialApp {{
                     cflags = $"-DUNITY_POLYSPATIAL=1 {cflags}";
 
                     pbx.SetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS", cflags);
+
+                    // TODO: What's the plan for back compat?
+                    // TODO: Expose this as a player setting?
+                    pbx.SetBuildPropertyForConfig(cfguid, "XROS_DEPLOYMENT_TARGET", "2.0");
+
+                    // Define UNITY_POLYSPATIAL to allow compositor space from XR plugin to use PolySpatial APIs for mode switching
+                    const string swiftFlagsProperty = "SWIFT_ACTIVE_COMPILATION_CONDITIONS";
+                    var swiftFlags = pbx.GetBuildPropertyForConfig(cfguid, swiftFlagsProperty) ?? string.Empty;
+                    swiftFlags = $"UNITY_POLYSPATIAL {swiftFlags}";
+                    pbx.SetBuildPropertyForConfig(cfguid, swiftFlagsProperty, swiftFlags);
                 }
             }
 
@@ -469,7 +588,7 @@ extension UnityPolySpatialApp {{
         private void FilterPlist(string outputPath)
         {
             var settings = VisionOSSettings.currentSettings;
-            if (settings.appMode == VisionOSSettings.AppMode.VR)
+            if (settings.appMode == VisionOSSettings.AppMode.Metal)
                 return;
 
             var plistPath = outputPath + "/Info.plist";
@@ -502,7 +621,9 @@ extension UnityPolySpatialApp {{
                 var array = sceneConfigs.CreateArray("UISceneSessionRoleImmersiveSpaceApplication");
                 var dict = array.AddDict();
                 dict.SetString("UISceneConfigurationName", "Unbounded");
-                dict.SetString("UISceneInitialImmersionStyle", "UIImmersionStyleMixed");
+
+                var immersionStyleString = GetImmersionStyleString(settings.realityKitImmersionStyle);
+                dict.SetString("UISceneInitialImmersionStyle", immersionStyleString);
 
                 // remove PreferredLaunchSize if present from previous build
                 if (root.values.ContainsKey("UILaunchPlacementParameters"))
@@ -525,12 +646,45 @@ extension UnityPolySpatialApp {{
                 preferredSize.SetReal("Height", initialConfig.Dimensions.y * metersToPoints);
                 preferredSize.SetReal("Depth", initialConfig.Dimensions.z * metersToPoints);
             }
+            else if (initialConfig.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Metal)
+            {
+                sceneManifest.SetString("UIApplicationPreferredDefaultSceneSessionRole", "CPSceneSessionRoleImmersiveSpaceApplication");
+                var sceneConfigs = sceneManifest.CreateDict("UISceneConfigurations");
+                var array = sceneConfigs.CreateArray("CPSceneSessionRoleImmersiveSpaceApplication");
+                var dict = array.AddDict();
+                var immersionStyleString = GetImmersionStyleString(settings.metalImmersionStyle);
+                dict.SetString("UISceneInitialImmersionStyle", immersionStyleString);
+
+                // remove PreferredLaunchSize if present from previous build
+                if (root.values.ContainsKey("UILaunchPlacementParameters"))
+                {
+                    var launchParams = root["UILaunchPlacementParameters"].AsDict();
+                    launchParams.values.Remove("PreferredLaunchSize");
+                }
+            }
             else
             {
                 throw new InvalidOperationException($"Unexpected VolumeCameraConfiguration mode {initialConfig.Mode}");
             }
 
             plist.WriteToFile(plistPath);
+        }
+
+        static string GetImmersionStyleString(VisionOSSettings.ImmersionStyle immersionStyle)
+        {
+            switch (immersionStyle)
+            {
+                case VisionOSSettings.ImmersionStyle.Automatic:
+                    return "UIImmersionStyleMixed";
+                case VisionOSSettings.ImmersionStyle.Full:
+                    return "UIImmersionStyleFull";
+                case VisionOSSettings.ImmersionStyle.Mixed:
+                    return "UIImmersionStyleMixed";
+                case VisionOSSettings.ImmersionStyle.Progressive:
+                    return "UIImmersionStyleProgressive";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 

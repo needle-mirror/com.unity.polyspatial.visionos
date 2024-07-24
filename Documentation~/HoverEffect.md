@@ -13,7 +13,27 @@ Three components must be present to achieve the hover effect:
 * A `Collider` component on the same `GameObject` as the `VisionOSHoverEffect` defines the collision shape against which the gaze ray is cast.
 * A `MeshRenderer` provides the mesh and geometry on which the coloration affect is applied.  The `MeshRenderer` may be on the `GameObject` containing the `VisionOSHoverEffect` and `Collider` components or on any of its descendants.
 
+The `VisionOS Hover Effect` component contains following properties:
+
+| **Property** | **Description** |
+| --- | --- |
+| **Type** | The type of hover effect to use: `Spotlight` for a spotlight around the hovered position, `Highlight` for the spotlight effect plus a uniform highlight, or `Shader` for a hover effect defined by the `PolySpatial Hover State` node. |
+| **Color** | The color of the effect, when using the `Spotlight` or `Highlight` types. |
+| **Intensity Multiplier** | The intensity of the effect, when using the `Spotlight` or `Highlight` types. |
+| **Fade In Duration** | The duration in seconds over which the effect fades in, when using the `Shader` type. |
+| **Fade Out Duration** | The duration in seconds over which the effect fades out, when using the `Shader` type. |
+
 ## Skinned Mesh Renderers
 To display a hover effect on `SkinnedMeshRenderer` components, the `VisionOSHoverEffect` and `Collider` components must be present on the parent of the `SkinnedMeshRenderer` GameObject (or any of its ancestors).
+
+## PolySpatial Hover State shader graph node
+Within shader graphs, the hover state may be accessed using the `PolySpatial Hover State` node.  This node provides the following outputs:
+
+| **Output** | **Type** | **Description** |
+| --- | --- | --- |
+| **Intensity** | Float | The current hover intensity.  This fades in and out according to the `Fade In Duration` and `Fade Out Duration` properties. |
+| **Position** | Vector 3 | The position of the hover point. |
+| **Time Since Hover Start** | Float | The time in seconds since the hover effect started. |
+| **Is Active** | Boolean | Whether or not the hover effect is currently active. |
 
 ![VisionOSHoverEffect](images/ReferenceGuide/VisionOSHoverEffect.png)

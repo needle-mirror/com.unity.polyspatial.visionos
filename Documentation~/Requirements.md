@@ -7,33 +7,33 @@ uid: psl-vos-requirements
 
 ### Unity Version Support 
 
-This package is compatible with Unity 2022 LTS for Apple Silicon (2022.3.18f1 or newer).
-Unity visionOS Support is not compatible with earlier LTS versions of Unity. 
+The visionOS and PolySpatial 2.x packages are compatible with Unity 6 (6000.0f0 or newer) for Apple Silicon 
 
-Please ensure that the **visionOS Build Support** module is installed. 
+For Unity 2022.3 support, please refer instead to the 1.x packages (2022.3.18f1 or newer). Unity visionOS Support is not compatible with earlier LTS versions of Unity. 
 
+Please ensure to include **visionOS Build Support** module when installing the Unity Edtior.
 
 ### Xcode and visionOS version
 This package is compatible with:
-- Xcode 15.2 or newer
-- visionOS 1.0 (21N301) SDK or newer
+- Xcode 16 beta 1 or newer
+- visionOS 2.0 SDK or newer
 
 ### Hardware
 
 - An Apple Silicon Mac is currently required for development. 
-- If you do not have access to Apple Vision Pro, you can also develop with the visionOS simulator included with compatible versions of Xcode (15.2 or newer). 
+- If you do not have access to Apple Vision Pro, you can also develop with the visionOS simulator included with compatible versions of Xcode (16 beta 1 or newer). 
 
 For more information about setting up your development environment, refer to [Development & Iteration](DevelopmentAndIteration.md).
 
 ### Graphics 
 
-For Mixed Reality (Immersive) applications, Unity delegates all rendering to the platform so that the OS can provide the best performance, battery life, and rendering quality while taking into account all MR applications that are running concurrently. This imposes significant constraints on the graphics features that are available. While we are constantly working to improve visual equivalency between Unity and RealityKit, there will likely be some visual differences. 
+For RealityKit applications, Unity delegates all rendering to the platform so that the OS can provide the best performance, battery life, and rendering quality while taking into account all RealityKit applications that are running concurrently. This imposes significant constraints on the graphics features that are available. While we are constantly working to improve visual equivalency between Unity and RealityKit, there will likely be some visual differences.
 
-Note that rendering for Virtual Reality (Fully Immersive) applications and Windowed applications is managed by Unity. 
+Note that rendering for Virtual Reality (Fully Immersive) applications and Windowed applications is managed by Unity. In Hybrid mode, you can switch between, or even combine, rendering with Unity and RealityKit.
 
 #### Render pipeline
 
-While your project can use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline, we recommend using URP when developing for visionOS. Features like Foveated Rendering for VR and Stereo Render Targets will only be compatible with URP. Refer to our Migration guide to move from the Built-in pipeline to URP: [Move on over to the Universal Render Pipeline with our advanced guide | Unity Blog](https://blog.unity.com/technology/move-on-over-to-the-universal-render-pipeline-with-our-advanced-guide).
+While your project can use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline, we recommend using URP when developing for visionOS. Features like Foveated Rendering for Metal and Stereo Render Targets will only be compatible with URP. Refer to our Migration guide to move from the Built-in pipeline to URP: [Move on over to the Universal Render Pipeline with our advanced guide | Unity Blog](https://blog.unity.com/technology/move-on-over-to-the-universal-render-pipeline-with-our-advanced-guide).
 
 #### Color space
 

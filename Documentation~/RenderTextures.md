@@ -8,7 +8,7 @@ PolySpatial transfers RenderTextures to host platforms using an optimized path. 
 Formats supported for RenderTextures on visionOS are limited by the underlying [DrawableQueue](https://developer.apple.com/documentation/realitykit/textureresource/drawablequeue-swift.class) API.  The only formats currently tested are `R8G8B8A8_UNORM` (the default RenderTexture format) and `R16G16B16A16_SFLOAT`.  Other formats may or may not work; we recommend experimenting to find out.
 
 ## Batch mode rendering
-Mixed reality apps for visionOS run in batch mode, which means that cameras do not render automatically.  If you use a RenderTexture as the `Output Texture` of a camera, you may use the following script to ensure that the camera renders once per update.
+RealityKit apps for visionOS run in batch mode, which means that cameras do not render automatically.  If you use a RenderTexture as the `Output Texture` of a camera, you may use the following script to ensure that the camera renders once per update.
 ```
 using UnityEngine;
 using Unity.PolySpatial;

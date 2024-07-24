@@ -23,7 +23,7 @@ The input is registered by the user looking at an object and peforming a pinch g
 
 The `SpatialPointerDevice` provides the following properties:
 * `.interactionPosition`: the position of the interaction in world space. This value will updated while the input is maintained and will always start on a collider.
-* `.deltaInteractionPosition`: the difference between the starting interaction position and the current interaction position.
+* `.deltaInteractionPosition`: the difference between the prior interaction position and the current interaction position.
 * `.startInteractionPosition`: the starting position of the interaction. This will always be on a collider and will only be set when the input occurs.
 * `.startInteractionRayOrigin`: the ray origin based on the user's eye gaze. This is only available when an app is in unbounded mode and will only be available when the input occurs.
 * `.startInteractionRayDirection`: the ray direction based on the user's eye gaze. This is only available when an app is in unbounded mode and will only be available when the input occurs.

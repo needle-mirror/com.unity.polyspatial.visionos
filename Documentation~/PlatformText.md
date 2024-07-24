@@ -10,7 +10,8 @@ To address this, PolySpatial provides a new `VisionOSNativeText` component that 
 It's important to note that this component is not in any way compatible with `TextMesh Pro`. You will need to decide if you want to use one or the other. Any attempt to assign them both to the same `GameObject` will result in an error, and the removal of the PolySpatial component.
 
 ## TMP Font Serialization
-Because font assets are big, and there are many dependencies in each asset, there is no good way to get the font asset over to the platform side. The solution presented here relies on Unity JSON serialziation coupled with replacement of instance ids with asset ids. When the platform instance gets one of these serialized assets, it will basically do the reverse asset->instance id replacement using local assets previously sent to it. In this way we maintain no only the original font info, but all linkages to weight table instances and fallback instances.
+
+Because font assets are big, and there are many dependencies in each asset, there is no good way to get the font asset over to the platform side. The solution presented here relies on Unity JSON serialization coupled with replacement of instance ids with asset ids. When the platform instance gets one of these serialized assets, it will basically do the reverse asset->instance id replacement using local assets previously sent to it. In this way we maintain not only the original font info, but all linkages to weight table instances and fallback instances.
 
 ## About fonts and matching
 
@@ -25,6 +26,7 @@ For 1 & 2, we will use the font information to find matching bold, italic or bol
 In all cases we will use the font size requested to get the correct display size on the platform.
 
 ## Build management of font resources
+
 The TMP Font to Font mapping is built up by actions taken but the developer whenever they assign a font to a text component instance. Once we notice a change, we take the TMP Font asset, find the Font associated and add this to the map. We then do that for each weight table entry and each fallback entry, if available. This works for assigned fonts, but it is entirely possible for the user to change the font on the component at runtime, in which case we need to be able to find the Font then as well. Because we don't know what that may be, we have to make sure that we have everything mapped that might be possibly used at runtime. To this end, we have a build processor that will iterate over every TMP Font asset in the project and add them to the mapping if not already there.
 
 ![PlatformText](images/ReferenceGuide/VisionOSPlatformText.png)
@@ -32,7 +34,6 @@ The TMP Font to Font mapping is built up by actions taken but the developer when
 ## Platform Text Component Features
 
 The `VisionOSNativeText` component provides the following features:
-
 
 | Feature | Description                                                                                                                                                                               |
 |---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

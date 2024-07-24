@@ -17,7 +17,7 @@ namespace Unity.PolySpatial.Internals.Editor
     {
         public static bool IsPackageImmutable()
         {
-            return Path.GetFullPath("Packages/com.unity.polyspatial.visionos").Contains("PackageCache");
+            return FileUtil.GetPhysicalPath("Packages/com.unity.polyspatial.visionos").Contains("PackageCache");
         }
 
         static MD5 md5Hasher = MD5.Create();

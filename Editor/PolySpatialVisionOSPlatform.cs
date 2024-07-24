@@ -32,8 +32,8 @@ namespace Unity.PolySpatial.Editor
             if (PolySpatialSettings.RuntimeModeAuto)
             {
                 var xrSettings = VisionOSSettings.currentSettings;
-                if (xrSettings != null &&
-                    xrSettings.appMode == VisionOSSettings.AppMode.MR)
+                var mixedRealitySupported = xrSettings != null && xrSettings.appMode is VisionOSSettings.AppMode.RealityKit or VisionOSSettings.AppMode.Hybrid;
+                if (mixedRealitySupported)
                 {
                     return true;
                 }

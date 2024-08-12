@@ -25,7 +25,7 @@ The Scene Validation system will automatically display an issue header in the In
 
 The issues header has buttons to navigate between GameObjects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes. 
 
-The availability of some features and components is dependent on the visionOS application type that your scene is targeting. The dropdown button labeled **Everything** in the image, allows you to choose the application types to use for validation.
+The availability of some features and components is dependent on the visionOS application mode that your scene is targeting. The dropdown button labeled **Everything** in the image, allows you to choose the application modes to use for validation.
 
 The **Fix this Object** button automatically fixes all validation issues in the currently selected GameObject. The **Hide/Show Alerts** button will hide or show the Component issues in all the GameObjects.
 

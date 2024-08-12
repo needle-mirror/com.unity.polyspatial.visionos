@@ -16,8 +16,8 @@ To learn about the requirements for visionOS and PolySpatial in Unity, see [visi
 ## visionOS Platform Overview
 You can find information about Unity's support for visionOS in the [visionOSPlatformOverview](visionOSPlatformOverview.md).
 
-### visionOS Application Types
-Unity supports several different application types on visionOS, each with their own advantages:
+### visionOS Application Modes
+Unity supports several different application modes on visionOS, each with their own advantages:
 * If you're interested in creating immersive apps with Metal Rendering for visionOS (or if you are porting existing Unity content), refer to [Metal-based Apps on visionOS](MetalApps.md) for more information.
 * If you're interested in creating apps using RealityKit for rendering content in volumes or immersive spaces for visionOS, refer to [RealityKit Apps on visionOS](RealityKitApps.md) for more information. These apps are built with Unity's newly developed PolySpatial technology, where apps are simulated with Unity, but rendered with RealityKit, the system renderer of visionOS.
 * If you're interested in combining the capabilities of Metal and RealityKit, refer to [PolySpatial Hybrid Apps on visionOS](PolySpatialHybridApps.md) for more information. These apps can switch between Metal and RealityKit Immersive Spaces, and can even combine Metal with RealityKit content rendered in a volume with RealityKit.

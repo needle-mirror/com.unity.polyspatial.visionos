@@ -3,18 +3,62 @@ uid: psl-vos-metal-apps
 ---
 # Metal-based Apps on visionOS
 
-With Unity, users can leverage on familiar workflows to build [fully immersive experiences for VisionOS](https://developer.apple.com/documentation/visionOS/creating-fully-immersive-experiences), including virtual reality games or fully virtual environments. Today, Unity provides a wide [range of features and APIs](https://docs.unity3d.com/Manual/VROverview.html) that can be used to develop fully immersive experiences for visionOS. Such packages include:
+With Unity, users can leverage familiar workflows to build Metal-based apps using [**Compositor Services**](https://developer.apple.com/documentation/compositorservices) for visionOS, allowing users to create [fully immersive](https://developer.apple.com/documentation/visionOS/creating-fully-immersive-experiences) or mixed immersion experiences. Today, Unity provides a wide [range of features and APIs](https://docs.unity3d.com/Manual/VROverview.html) that can be used to develop experiences for visionOS. Such packages include:
 
-* [visionOS plug-in]()
+[//]: # (TODO: LXR-3988 Once visionOS plug-in docs page is created, link the below to that docs page.)
+* visionOS plug-in
 * [XR Interaction Toolkit](https://docs.unity3d.com/Manual/VROverview.html#xr-interaction-toolkit)
 * [XR Core Utilities](https://docs.unity3d.com/Manual/VROverview.html#xr-core-utilities)
 * [Input System](https://docs.unity3d.com/Manual/VROverview.html#input-system)
 * [VR project template](https://docs.unity3d.com/Manual/VROverview.html#vr-template)
 * [Hand tracking](https://docs.unity3d.com/Manual/VROverview.html#hand-tracking)
 
-Once you’ve built your VR content in Unity, simply select **Apple visionOS** on the XR Plug-in Management window, select and build for the visionOS platform, recompile native plugins and a Unity XCode Project file will be generated. From here on, [you’ll continue your development process in XCode](https://developer.apple.com/documentation/visionOS/creating-fully-immersive-experiences), where you can explore concepts like transitioning between windowed content and fully immersive content.
+To get started, simply select **Apple visionOS** on the **XR Plug-in Management** window in **Project Settings**, then navigate to the **Apple visionOS** project setting below **XR Plugin-in Management**. 
+
+Set the App Mode to **Metal Rendering with Compositor Services**. If you are using ARKit features, you may also need to set a **Hands Tracking Usage Description** and/or a **World Sensing Usage Description**. 
+
+![MetalAppSetting](images/ReferenceGuide/MetalAppSettings.png)
+
+The Apple visionOS project settings menu has a few properties pertaining to the **Metal Rendering with Compositor Services** app mode. 
+
+[//]: # (TODO: LXR-3988 Once visionOS plug-in docs page is created, put the below into that docs page.)
+| **Property**                            | **Description**                                                                                                                                                                                                                                                                                                                                                                          |
+|:----------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Initialize Hand Tracking On Startup** | Initializes hand tracking when application starts up.                                                                                                                                                                                                                                                                                                                                    |
+| **Metal Immersion Style**               | Defines the immersion style to be used in Metal-based apps. Immersion style determines whether an app will have pass-through. For Metal-based apps, only two immersion styles are valid - **Mixed** and **Full**. The **Progressive** immersion style is not supported with Metal-based apps.                                                                                            |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Automatic*     | For Metal-based apps, choosing **Automatic** will cause the app to fallback to **Mixed** immersion style.                                                                                                                                                                                                                                                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Full*          | With this immersion style, pass-through is disabled, and only the skybox will be shown.                                                                                                                                                                                                                                                                                                  |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Mixed*         | With this immersion style, apps will have pass-through video feed. This immersion style allows an app to switch at runtime between allowing pass-through and rendering the skybox.                                                                                                                                                                                                       |
+| **RealityKit Immersion Style**          | Defines the immersion style to be used in RealityKit-based apps. Immersion style determines whether your application will have pass-through. Although all immersion styles are applicable to RealityKit-based apps, the effects of some immersion styles will differ depending on the **VolumeCamera** **Mode**.                                                                         |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Automatic*     | For RealityKit-based apps, choosing **Automatic** will cause the app to fallback to **Mixed** immersion style.                                                                                                                                                                                                                                                                           |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Full*          | If all **VolumeCamera**s are set to **Bounded** **Mode**, content will still appear with pass-through, as if the app was in **Mixed** immersion style. If one **VolumeCamera** in the scene is set to **Unbounded** **Mode**, pass-through will be disabled and replaced with a black background, and only content will be visible. The **Digital Crown** will have no effect.           |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Mixed*         | With this immersion style, apps will have pass-through video feed. **VolumeCamera** **Mode** will have no effect on this immersion style.                                                                                                                                                                                                                                                |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Progressive*   | If all **VolumeCamera**s are set to **Bounded** **Mode**, content will still appear with pass-through, as if the app was in **Mixed** immersion style. If one **VolumeCamera** in the scene is set to **Unbounded** **Mode**, content will appear inside a radial portal with a black background. See [Progressive Immersion](RealityKitApps.md#progressive-immersion) for more details. |
+| **Upper Limb Visibility**               | This option allows for controlling whether the hands are visible within the app. This option is ignored if the **App Mode** is Windowed, or if the **App Mode** is  set to RealityKit but the scene consists of only **Bounded** **VolumeCamera**s.                                                                                                                                      |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Automatic*     | Hands visibility will be determined by visionOS's default hands setting, which will depend on the context.                                                                                                                                                                                                                                                                               |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Visible*       | In **Metal** **App Mode**, the hands will always be visible in the app. Hands always render on top of virtual content. In **RealityKit** **App Mode**, the hands are blended with virtual content based on depth.                                                                                                                                                                        |
+| &nbsp;&nbsp;&nbsp;&nbsp;*Hidden*        | In **Metal** **App Mode**, the hands will be hidden, which may be beneficial if you wish to present virtual hands instead. In **RealityKit** **App Mode**, the hands will be displayed behind virtual content.                                                                                                                                                                           |
+| **Foveated Rendering**                  | This option controls whether foveated rendering is enabled or disabled. This option only applies to Metal-based content, and requires the Universal Render Pipeline.                                                                                                                                                                                                                     |
+| **IL2CPP Large Exe Workaround**         | When building your project in Xcode, you may encounter an error such as `ARM64 branch out of range`, especially with larger projects. This option will patch the project to work around this error.                                                                                                                                                                                      |
+
+After modifying the project settings, select and build for the visionOS platform in the **Build Profiles** menu. This will generate a Unity XCode Project. From here on, you'll continue the build process in the XCode project, debugging in XCode as needed.
 
 >Please note that Unity is still building towards feature parity with the Metal API on XCode, so you might observe warnings from Metal’s API validation layer. To work around this, you can turn off the Metal API Validation Layer via XCode’s scheme menu.
+
+### Pass-through Video in Metal Mode
+With visionOS 2, apps set to **Metal Rendering with Compositor Services** can now show pass-through instead of just the skybox. The steps for enabling pass-through with Metal-based apps are the same as the steps for enabling pass-through with [Hybrid](PolySpatialHybridApps.md) apps. 
+
+1. Set the **Metal Immersion Style** under the **Apple visionOS** project setting to **Mixed** or **Automatic**. 
+2. Set your Unity **Camera**'s **Background Type** to **Solid Color**.
+3. Under **Background Type**, click on **Background**. Set the RGBA values for the background color to 0. You can technically use any color here, but ensure the **Alpha** value is set to 0.
+
+You may switch **Background Type** from **Solid Color** to **Skybox** in order to switch from showing pass-through to showing the skybox, and vice-versa.
+
+> [!NOTE]
+> When you set **Background Type** to **Skybox** (both in the Inspector and via scripting API), Unity will change the alpha value of the background color to 1. When you switch back to pass-through, you must _also_ set the background color to something transparent.
+
+> [!NOTE]
+> You will need to disable **HDR** on your **Universal Render Pipeline Asset** to get pass-through to work.
 
 ## Porting VR experiences to visionOS 
 For users who are looking to port existing VR titles looking to visionOS as a fully immersive experience there are a few things you can do to make the transition smoother, in addition to the build workflow elaborated in the above section. 

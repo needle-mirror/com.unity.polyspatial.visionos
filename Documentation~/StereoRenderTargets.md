@@ -18,7 +18,8 @@ Enables a camera to render into a single-pass stereo framebuffer and then displa
    Renderer Features list yourself. Or place the preconfigured asset `Samples/StereoRenderer/Settings/StereoRendererURPAsset`
    into **Project Settings > Graphics > Default Render Pipeline** and **Project Settings > Quality > Rendering > Render Pipeline Asset**.
 5. Add all of the sample scenes within `PolySpatial Extensions/Samples/StereoRenderer/Scenes` to your **Build Settings** list.
-6. Build and deploy to visionOS.
+6. Name **User Layer 20** to `StereoRender+DisabledTracking`. Then set **Project Settings > PolySpatial > Ignored Objects Layer Mask** to include the `StereoRender+DisabledTracking` layer.
+7. Build and deploy to visionOS.
 
 | Sample Scene Name                          | Description                                                                                                                                                                                                                                                                                                                                                                                                       |
 |--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

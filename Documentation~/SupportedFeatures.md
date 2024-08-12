@@ -37,7 +37,7 @@ It's impossible to list all the systems and packages that Unity exposes in this 
 | **Camera**                | Not supported |
 | **Halo**                  | Not supported |
 | **Lens Flare**            | Not supported |
-| **Line Rendering**        | Not supported |
+| **Line Renderer**         | Partial support; View-Aligned Line Renderers will only achieve proper alignment in unbounded mode with an ARSession in the scene |
 | **Projector**             | Not supported |
 | **Visual Effects**        | Not supported |
 | **Lens Flare**            | Not supported |
@@ -124,6 +124,8 @@ When using the "Replicate Properties" particle mode in PolySpatial, Particle Sys
 **Note**: Image masking does not affect clip box/collider hit testing when running. While the image mask may only show a portion of the item being masked, the clipping/collider testing still extends to the full rectangle that covers the masked portion of any UGUI item.
 
 **Note**: By default, Dropdown and ScrollView will not apply image masking to their children due to the format of masking image they use by default. If you want to use masking with these components, you will need to change their mask image.
+
+**Note**: Hover transitions on UGUI Selectables (Buttons, Dropdowns, Toggles, etc.) are subject to limitations on visionOS.  See the documentation for [Hover Effects](HoverEffect.md#ugui-selectable-hover-transitions) for more information.
 
 # Final thoughts
 Unity has many more components, but the main parts of the average XR app were covered in this section. Generally speaking, your existing Unity projects will likely require work to port to PolySpatial XR.

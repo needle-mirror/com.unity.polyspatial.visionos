@@ -2,8 +2,8 @@
 * [visionOS Platform Overview](visionOSPlatformOverview.md)
     * visionOS Modes
         * [Metal-based Apps on visionOS](MetalApps.md)
-            * [Windowed Apps on visionOS](WindowedApps.md)
         * [RealityKit Apps on visionOS](RealityKitApps.md)
+        * [Windowed Apps on visionOS](WindowedApps.md)
         * Advanced Features
             * [PolySpatial Hybrid Apps on visionOS](PolySpatialHybridApps.md)
             * [Stereo Render Targets](StereoRenderTargets.md)

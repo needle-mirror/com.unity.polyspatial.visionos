@@ -256,7 +256,7 @@ namespace Unity.PolySpatial.Internals.Editor
         }
 
         [Conditional("PLAY_TO_DEVICE")]
-        static void ConfigurePlayToDevice(List<string> allAvailableConfigs, List<string> availableConfigsForMatch, List<string> sceneContent)
+        static void ConfigurePlayToDevice(HashSet<string> allAvailableConfigs, List<string> availableConfigsForMatch, List<string> sceneContent)
         {
             // TODO LXR-2979: hardcoded for now, will be moved somewhere else.
             Vector3[] possibleDimValues = {
@@ -275,10 +275,17 @@ namespace Unity.PolySpatial.Internals.Editor
             foreach (var dim in possibleDimValues)
             {
                 // Create an entry for this in both the list for all volume cameras
-                // and the list for the the matchable volume cameras.
+                // and the list for the matchable volume cameras.
                 DimensionsToSwiftStrings(dim, out var swiftVec3, out var _, out var configName);
 
-                allAvailableConfigs.Add(configName);
+                if (!allAvailableConfigs.Add(configName))
+                {
+                    Debug.LogWarning($"One of the volume window configurations {configName} in the PlayToDevice project " +
+                                     "conflicts with the PlayToDevice preset volume window configurations. Limit " +
+                                     "overlaps between the configurations in the project and the configurations in the preset.");
+                    continue;
+                }
+
                 availableConfigsForMatch.Add(swiftVec3);
 
                 // Create an entry for this bounded volume camera. Min and max size are hardcoded to avoid creating multiple volume configurations
@@ -320,26 +327,22 @@ namespace Unity.PolySpatial.Internals.Editor
                 configurations.Add(initialConfig);
             }
 
-            // Make sure only one Unbounded configuration remains, but if it's also the initial config then make sure
-            // that's the one that stays. This is all to avoid multiple ImmersiveSpace scene elements.
-            var unbounded =
-                    initialConfig.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded ?
-                    initialConfig :
-                    configurations.FirstOrDefault((cfg) => cfg.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded);
-            if (unbounded != null)
-            {
-                // remove any but this first one we found
-                configurations.RemoveAll((cfg) =>
-                    cfg.Mode == VolumeCamera.PolySpatialVolumeCameraMode.Unbounded &&
-                    cfg != unbounded);
-            }
+            // Avoid multiple configs matching the initial configuration, that way we ensure the initial configuration is used.
+            configurations.RemoveAll(cfg => NameForVolumeConfig(cfg) == NameForVolumeConfig(initialConfig) && cfg != initialConfig);
 
             List<string> sceneContent = new();
-            List<string> allAvailableConfigs = new();
-
+            HashSet<string> allAvailableConfigs = new();
             foreach (var config in configurations)
             {
                 var configName = NameForVolumeConfig(config);
+
+                // If a duplicate configuration has already been added, skip it.
+                if (!allAvailableConfigs.Add(configName))
+                {
+                    Debug.LogWarning(@$"VolumeCameraWindowConfiguration {config.name} conflicts with another configuration in the project.
+Please ensure the project does not have duplicate Metal or Unbounded configurations, and that each Bounded configuration has a different OutputDimension." );
+                    continue;
+                }
 
                 // for Unbounded, we always treat is as 1.0 (?)
                 var configurationEntry = new VolumeWindowConfiguration(config)
@@ -364,7 +367,6 @@ namespace Unity.PolySpatial.Internals.Editor
             }
 
             List<string> availableConfigsForMatch = new();
-
             ConfigurePlayToDevice(allAvailableConfigs, availableConfigsForMatch, sceneContent);
 
             // For every Swift plugin that ends in "InjectedScene.swift", add it to the

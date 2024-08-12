@@ -37,3 +37,7 @@ Within shader graphs, the hover state may be accessed using the `PolySpatial Hov
 | **Is Active** | Boolean | Whether or not the hover effect is currently active. |
 
 ![VisionOSHoverEffect](images/ReferenceGuide/VisionOSHoverEffect.png)
+
+<a id="ugui-selectable-hover-transitions"></a>
+## UGUI Selectable hover transitions
+On visionOS, hover transitions for certain `Selectable` objects (`Button`, `Dropdown`, `TMP_Dropdown`, `InputField`, `TMP_InputField`, `Scrollbar`, `Slider`, and `Toggle`) are automatically handled by adding a hover effect component to the Selectable's `targetGraphic` and using the `PolySpatial Hover State` shader graph node in the PolySpatial UI image shader graph (`Packages/PolySpatial/Resources/Shaders/MaskingShader.shadergraph`) to switch between the normal `Color` and a separate `HoverColor` property.  Note that only `Color Tint` transitions are supported for hover through this method and that any custom UI shaders (that is, shaders other than `UI/Default`) must replicate the properties and hover state functionality of `MaskingShader` in order to show transitions on hover.

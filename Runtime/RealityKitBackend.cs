@@ -97,13 +97,6 @@ namespace Unity.PolySpatial.Internals
             s_OldAPIPointers.SendClientCommand(PolySpatialCommand.SetSimulationHostAPI, 1, args, sizes);
 
             s_Instance = this;
-
-#if !UNITY_EDITOR && UNITY_VISIONOS
-            // Override the default batch mode frame rate of 30 fps (if still at the initial
-            // value of -1, indicating that the user hasn't already overridden it).
-            if (Application.targetFrameRate == -1)
-                Application.targetFrameRate = 90;
-#endif
         }
 
         HostCommandCallback hostCallbackDelegate;
@@ -111,7 +104,15 @@ namespace Unity.PolySpatial.Internals
         [MonoPInvokeCallback(typeof(HostCommandCallback))]
         private unsafe static void HostCommandCallbackFromRealityKit(PolySpatialHostCommand command, int argCount, void** args, int* argSizes)
         {
-            s_Instance.NextHostHandler.HandleHostCommand(command, argCount, args, argSizes);
+            // MonoPInvokeCallback methods will leak exceptions and cause crashes; always use a try/catch in these methods
+            try
+            {
+                s_Instance.NextHostHandler.HandleHostCommand(command, argCount, args, argSizes);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
         }
 
         public unsafe void HandleCommand(PolySpatialCommand cmd, int argCount, void** argValues, int* argSizes)

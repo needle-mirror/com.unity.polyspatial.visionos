@@ -70,6 +70,8 @@ If you notice that your connection is timing out, you can increase the connectio
 
 **NOTE**: If you select multiple connections at once, content will be streamed to all selected hosts simultaneously.
 
+**NOTE**: Limit Frames Per Second should be enabled and set to the expected framerate on device. If the editor runs significantly faster than the device it can overload the network with unnecessary messages making Play To Device feel unresponsive.
+
 **NOTE**: Your project's **App Mode** must be set to `RealityKit with PolySpatial` in order to use Play To Device. You can access this setting in the **Apple visionOS** section under **XR Plug-in Management** in your **Project Settings**.
 
 ## Subsequent Usage

@@ -8,6 +8,3 @@ The **VisionOSBillboard** component ensures an object always faces the user, eve
 | **Property** | **Description** |
 | --- | --- |
 | **Blend Factor** | "Degree" that entity rotates towards camera.  |
-| **Forward Direction** | Vector in local space that will point towards camera. |
-| **Up Direction** | Direction in local space to align with world up. |
-| **Rotation Axis** | World space axis to rotate around, if any. |

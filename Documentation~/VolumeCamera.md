@@ -73,6 +73,7 @@ The **Scale Content With Window** Volume Camera property can be changed at runti
 
 Additionally, while **Scale Content With Window** is disabled, the content may appear to shift upwards or downwards in space when the volume window is resized - this is due to the volume itself getting larger. For example, any content fixed at position 0x0x0 (the middle of the volume) will appear to move upwards relative to world space as the volume gets larger. To compensate for this, while **Scale Content With Window** is disabled, subscribe to **OnWindowEvent** to get the true size of the volume window and shift the content either upwards or downwards to compensate for the changing size of the volume window.
 
+<a id="volume-camera-events"></a>
 ## Volume camera events
 
 The **VolumeCamera** has the following events that can be subscribed to:
@@ -114,6 +115,13 @@ Additionally, some of the ordering may be subject to change in the future, parti
 
 This event will only trigger once a viewpoint change has happened. Currently, when the volume is first created, this event will not trigger.
 
+`OnImmersionChanged` An event that is triggered when the user turns  the **Digital Crown** to change the immersion level. The VolumeCamera must be set to **Unbounded** **Mode** and the **Immersion Style** must be set to **Progressive** in Project Settings.
+
+When the user rotates the dial, this event provides a decimal value in the range [0, 1] indicating the amount of immersion. A value of 1.0 means full, 100% immersion and the app will behave as if it had been set to **Full** immersion style.
+
+> [!NOTE]
+> Apple visionOS 2.0 added support for the `ImmersionChanged` event. This event is not available in earlier visionOS versions. Refer to  [onImmersionChange](https://developer.apple.com/documentation/swiftui/view/onimmersionchange(_:)) for additional information.
+
 <a id="volume-camera-window-configuration-assets"></a>
 ## Volume Camera Window Configuration assets
 
@@ -139,6 +147,8 @@ Volume Camera Window Configuration assets support the following properties:
 > The visionOS operating system is free to set the volume window dimensions as it sees fit. The actual window dimensions are reported in [OnWindowEvent](#volume-camera-events) when `WindowEvent` is Opened. This also applies to the Min/Max Window Size - setting a high maximum or low minimum window size does not necessarily guarantee the volume window can be resized to that value.
 
 Create volume camera configuration assets using the **Create** menu: **Assets &gt; Create &gt; PolySpatial &gt; Volume Camera Window Configuration**. You must store these assets within a folder named `Resources` and they must exist when you start the build -- they cannot be added as a build process or post-process. Refer to [Special Folder names](xref:SpecialFolders) for more information about `Resources` folders in Unity. All volume camera configuration assets that you intend to use must be included in the build. You cannot create them dynamically at runtime.
+
+Within each project, there can only be a maximum of one Metal and one Unbounded **Volume Camera Window Configuration**. There can be multiple Bounded **Volume Camera Window Configuration**s within a project, but they all must have different `OutputDimensions`. During a build, if a duplicate is detected, a warning will be logged for the duplicate. 
 
 Once created, you can swap between configurations at runtime, but you cannot modify the output properties of a Volume Camera directly. You can only change these properties by referencing a different volume camera configuration asset.  
 

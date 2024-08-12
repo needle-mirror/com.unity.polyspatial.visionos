@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [2.0.0-pre.11] - 2024-08-12
+
+### Added
+- PlayToDevice will now limit the editor framerate to 45 by default in order to lower network congestion. The editor sending too many packets over PlayToDevice could cause significant lag and latency for some users. This limit can be changed in the PlayToDevice window.
+
+### Changed
+- Duplicate VolumeCameraWindowConfigurations are not allowed - in each project, there can only be one of each of Metal and Unbounded configurations. There can be multiple Bounded configurations, but each Bounded configuration must have a different OutputDimension.
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Wrap all MonoPInvokeCallback methods in try/catch to avoid potential crashes in player builds.
+
+### Security
+
 ## [2.0.0-pre.9] - 2024-07-24
 
 ### Added

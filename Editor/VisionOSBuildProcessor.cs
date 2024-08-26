@@ -1,4 +1,4 @@
-#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
+#if (UNITY_VISIONOS || UNITY_IOS || POLYSPATIAL_INTERNAL) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
 using System.Runtime;
 using System.ComponentModel;
 using System;
@@ -161,31 +161,39 @@ namespace Unity.PolySpatial.Internals.Editor
 
             var windowType = "";
             var windowStyle = "";
-            var upperLimbVisibility = "";
-
+            var limbVisibility = VisionOSSettings.currentSettings.upperLimbVisibility;
+            var upperLimbVisibility = $".upperLimbVisibility({VisionOSSettings.UpperLimbVisibilityToString(limbVisibility)})";
             switch (mode)
             {
                 case VolumeCamera.PolySpatialVolumeCameraMode.Bounded:
                     windowType = "WindowGroup";
                     windowStyle = $".windowStyle(.volumetric).defaultSize({dimsSizeParams})";
-                    upperLimbVisibility = "";
-                    break;
+                    // The entry in the App Scene for these types of windows
+                    return $@"
+                    {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
+                        PolySpatialContentViewWrapper()
+                            .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                        KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
+                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}";
+
                 case VolumeCamera.PolySpatialVolumeCameraMode.Unbounded:
                     windowType = "ImmersiveSpace";
                     windowStyle = "";
-                    upperLimbVisibility = $".upperLimbVisibility({(VisionOSSettings.currentSettings.upperLimbVisibility ? ".visible" : ".hidden")})";
-                    break;
+
+                    var immersionStyle = VisionOSSettings.currentSettings.mrImmersionStyle;
+                    var immersionStyleString = VisionOSSettings.ImmersionStyleToString(immersionStyle);
+                    // The entry in the App Scene for these types of windows
+                    return $@"
+                    {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
+                        PolySpatialContentViewWrapper()
+                            .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                        KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
+                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}
+                    .immersionStyle(selection: .constant({immersionStyleString}), in: {immersionStyleString})";
+
                 default:
                     throw new InvalidOperationException($"Unexpected VolumeCameraConfiguration mode {mode}");
             }
-
-            // The entry in the App Scene for these types of windows
-            return $@"
-        {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
-            PolySpatialContentViewWrapper()
-                .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
-            KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
-        }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}";
         }
 
         [Conditional("PLAY_TO_DEVICE")]

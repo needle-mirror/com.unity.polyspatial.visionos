@@ -1,4 +1,4 @@
-Unity PolySpatial visionOS Support © 2023 Unity Technologies.
+com.unity.polyspatial.visionos Support © 2024 Unity Technologies.
 
 Licensed under the Unity Package Distribution License (see [https://unity3d.com/legal/licenses/Unity_Package_Distribution_License](https://unity3d.com/legal/licenses/Unity_Package_Distribution_License)).
 

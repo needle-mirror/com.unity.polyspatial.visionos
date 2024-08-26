@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [1.3.9] - 2024-08-26
+
+### Changed
+- We have narrowed down the conditions under which the package will compile from UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX to (UNITY_VISIONOS || UNITY_IOS) && UNITY_EDITOR_OSX.  This should eliminate compile errors in the case where you had the OSX editor but not the visionOS or iOS platform dependencies.
+
+### Fixed
+- Wrap all MonoPInvokeCallback methods in try/catch to avoid potential crashes in player builds.
+- Parent SkinnedMeshRenderer bones to parent of the RootBone (so that it's a sibling with the RootBone) rather than to the SkinnedMeshRenderer itself - this fixes an issue where the RootBone was on a different hierarchy than the SkinnedMeshRenderer, and changes applied to the RootBone GameObject didn't affect the bones. 
+
 ## [1.3.1] - 2024-07-09
 
 ## [1.3.0] - 2024-06-26

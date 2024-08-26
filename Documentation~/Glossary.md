@@ -9,7 +9,9 @@ uid: psl-vos-glossary
 
 - **Unity PolySpatial -- Apple visionOS support** (com.unity.polyspatial.visionos): Adds a new build target (visionOS) and platform support for visionOS and Apple Vision Pro.
 
-- **PolySpatial App** (aka **Client App** or **Unity App**): A Unity app (Unity player) that uses PolySpatial. PolySpatial apps are split in two logical parts: the **Unity Sim** and the **Backend**. 
+- **PolySpatial App** (aka **Client App** or **Unity App**): A Unity app (Unity player) that uses PolySpatial. PolySpatial apps are split in two logical parts: the **Unity Sim** and the **Backend**.
+
+- **Apple visionOS XR Plug-in** (com.unity.xr.visionos): Implements XR Subsystems and includes common settings for visionOS apps like **App Mode** and **Immersion Style**. This is the only package required for immersive XR apps that use Metal to render.
 
 - **Unity Sim**: The non-rendering portion of a Unity app - its application-specific logic, as well as built-in simulation features including physics, animation, AI, and asset management.
     - **(Unity) Sim Space**: The world space of a Unity Sim. While a typical Unity app simulates and renders objects in the same space, these may differ in a PolySpatial app.
@@ -31,3 +33,9 @@ uid: psl-vos-glossary
 - **Exclusive Mode**: Refers to the runtime behavior where an app is the only active and visible application
 
 - **Shared Mode**: Refers to the runtime behavior where other apps may be active and/or visible
+
+- **Immersion Style**: Defines the behavior of fully immersive content when using a `VolumeCamera` whose output mode is `Unbounded` or `VR`. This can be set at build time under `Project Settings > XR Plug-in Management > Apple visionOS`. There are two settings for Immersion Style, one for MR and one for VR, and they can be set independently. See [Apple's documentation](https://developer.apple.com/documentation/swiftui/immersionstyle) for more information. The options for Immersion Style are:
+    - Automatic: The default immersion style. It is equivalent to to Mixed.
+    - Full: Displays unbounded content that completely replaces passthrough.
+    - Mixed: Displays unbounded content mixed with passthrough.
+    - Progressive: Displays unbounded content that partially replaces passthrough.

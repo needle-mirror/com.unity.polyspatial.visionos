@@ -26,11 +26,11 @@ Apps created with this mode will launch in **Immersive Space**, and other applic
 
 ### RealityKit with PolySpatial
 
-**RealityKit with PolySpatial** app mode allows apps to take full advantage of visionOS's capabilities. These apps are built with Unity's newly developed PolySpatial technology, where apps are simulated with Unity, but rendered with RealityKit, the system renderer of visionOS. 
+**RealityKit with PolySpatial** app mode allows apps to take full advantage of visionOS's capabilities. These apps are built with Unity's newly developed PolySpatial technology, where apps are simulated with Unity, but rendered with RealityKit, the system renderer of visionOS.
 
-In this mode, apps can run side by side with other apps in visionOS's **Shared Spaces**, utilize visionOS components such as volumes, and create content with the same look and feel as other visionOS applications. Additionally, the full complement of PolySpatial debug tooling, such as Play To Device, Recording and Playback, and Shader Graph debugging, will be available. 
+In this mode, apps can run side by side with other apps in visionOS's **Shared Spaces**, utilize visionOS components such as volumes, and create content with the same look and feel as other visionOS applications. Additionally, the full complement of PolySpatial debug tooling, such as Play To Device, Recording and Playback, and Shader Graph debugging, will be available.
 
-However, some Unity features may only partially work or may not work at all. Additionally, as compared to **Metal Rendering with Compositor Services** mode, there may be additional overhead. See [Supported Unity Features & Components](SupportedFeatures.md) for more information on which features are supported. 
+However, some Unity features may only partially work or may not work at all. Additionally, as compared to **Metal Rendering with Compositor Services** mode, there may be additional overhead. See [Supported Unity Features & Components](SupportedFeatures.md) for more information on which features are supported.
 
 Apps created with this mode can be launched into either the **Shared Space** or into an **Immersive Space**.
 
@@ -39,9 +39,9 @@ Apps created with this mode can be launched into either the **Shared Space** or 
 
 ### Windowed
 
-**Windowed** app mode allows apps to create and use windows, upright planes that can be used to present 2D or 3D content. This is most similar to traditional windowed content, and can provide a quick path to port existing windowed apps to visionOS. 
+**Windowed** app mode allows apps to create and use windows, upright planes that can be used to present 2D or 3D content. This is most similar to traditional windowed content, and can provide a quick path to port existing windowed apps to visionOS.
 
-However, ARKit features will not be usable in this mode. 
+However, ARKit features will not be usable in this mode.
 
 Windowed apps will always be launched within the **Shared Space**.
 

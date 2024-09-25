@@ -27,11 +27,11 @@ RealityKit-based apps can utilize the Digital Crown to control immersion level. 
 1. The [ImmersionStyle](xref:UnityEditor.XR.VisionOS.VisionOSSettings.ImmersionStyle) must be set to **Progressive**.
 2. One **VolumeCamera** in the scene must be set to **Unbounded** **Mode**.
 
-Content will then appear within a radial portal with a black background. This portal will replace pass-through within a portion fo the field of view. The **Digital Crown** on the Vision Pro can control the size of this radial portal, and can increase the size of the portal until the portal fully covers pass-through. 
+Content will then appear within a radial portal with a black background. This portal will replace pass-through within a portion fo the field of view. The **Digital Crown** on the Vision Pro can control the size of this radial portal, and can increase the size of the portal until the portal fully covers pass-through.
 
 At maximum portal size, the app will behave as if it had been set to **Full** immersion style, and any properties that apply to **Full** immersion style will apply here.
 
-Additionally, the VolumeCamera will dispatch an event called **OnImmersionChanged** when the user interacts with the crown dial to change the immersion amount. You must set the [ImmersionStyle](xref:UnityEditor.XR.VisionOS.VisionOSSettings.ImmersionStyle) of the volume camera configuration to **Progressive**. See [VolumeCamera Events](VolumeCamera.md#volume-camera-events) for more details.
+Additionally, the VolumeCamera will dispatch an event called **ImmersionChanged** when the user interacts with the crown dial to change the immersion amount. You must set the [ImmersionStyle](xref:UnityEditor.XR.VisionOS.VisionOSSettings.ImmersionStyle) of the volume camera configuration to **Progressive**. See [VolumeCamera Events](VolumeCamera.md#volume-camera-events) for more details.
 
 > [!NOTE]
 > Apple visionOS 2.0 added support for the `ImmersionChanged` event. This event is not available in earlier visionOS versions. Refer to  [onImmersionChange](https://developer.apple.com/documentation/swiftui/view/onimmersionchange(_:)) for additional information.

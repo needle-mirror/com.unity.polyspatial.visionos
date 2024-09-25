@@ -3,12 +3,12 @@ uid: psl-vos-supported-features
 ---
 # Supported Unity Features & Components
 <a name="supported-unity-features-and-components"></a>
-The majority of Unity components will work without modification on this platform - including most custom MonoBehaviours, animation logic, physics, input handling, asset management, AI, and so forth. However, components that need to be rendered require special support. Consequently, some components offer a reduced feature set on this platform; others are not currently supported. The tables below summarize the current state of various rendering component support on this platform. 
+The majority of Unity components will work without modification on this platform - including most custom MonoBehaviours, animation logic, physics, input handling, asset management, AI, and so forth. However, components that need to be rendered require special support. Consequently, some components offer a reduced feature set on this platform; others are not currently supported. The tables below summarize the current state of various rendering component support on this platform.
 
 For more information about converting legacy projects, see also [Porting Unity Projects to PolySpatial XR](PortingUnityProjectsToPolySpatialXR.md)
 
 ## Unity Simulation Components / Systems
-It's impossible to list all the systems and packages that Unity exposes in this page but the table below lists the status of support for a range of core Unity features: 
+It's impossible to list all the systems and packages that Unity exposes in this page but the table below lists the status of support for a range of core Unity features:
 
 | **Component**             | **Status**               |
 |---------------------------|--------------------------|
@@ -68,7 +68,7 @@ Support for Unity's built-in particles under PolySpatial is actively being devel
 ### Supported Modes:
 - **Replicate Properties**: This mode aims to map Unity particle system properties to the native particle systems offered by RealityKit. While it offers relatively good performance, visual quality can vary significantly, especially for particles that utilize advanced features. Custom shaders are not supported in this mode.
 
-**Note:** The size of particle systems may differ in RealityKit since RealityKit specifies particle properties like speed and size in meters. Additionally, particle systems in RealityKit inherit scale from its GameObject and all its parents. 
+**Note:** The size of particle systems may differ in RealityKit since RealityKit specifies particle properties like speed and size in meters. Additionally, particle systems in RealityKit inherit scale from its GameObject and all its parents.
 
 - **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.
 
@@ -115,7 +115,7 @@ When using the "Replicate Properties" particle mode in PolySpatial, Particle Sys
 | **Canvas Renderer**  | Partially Supported                                                                |
 | **Sprite Renderer**  | Supported                                                                          |
 | **TextMesh Pro**     | &#8226; Partially Supported<br/>&#8226; SDF only<br/> &#8226; No custom shaders |
-| **Rect Transform**   | No specific support for sizing                                                     |  
+| **Rect Transform**   | No specific support for sizing                                                     |
 | **Platform Text**    | See [Platform Text Rendering](PlatformText.md)                                     |
 | **Masking** .        | Image masking is supported. Please see the note below in regards to support.       |
 

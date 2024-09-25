@@ -9,7 +9,7 @@ You can use either of two components to display video content on visionOS with P
 
 Although either component can play video on visionOS, each component has advantages and disadvantages to consider.
 
-## VisionOSVideoComponent 
+## VisionOSVideoComponent
 
 In order to support video content on visionOS, PolySpatial currently includes a custom `VisionOSVideoComponent`. To use it, add the component to a GameObject and set its properties. The `Target Material Renderer` property identifies the `MeshRenderer` that will display the video content. Any MeshRenderer can be used. The `Clip` property identifies the `Video Clip` asset that you want to play, such as an `.mp4`.
 
@@ -56,9 +56,9 @@ Setting the `Render Mode` property on the `VideoPlayer` component to anything bu
 
 ## Video Player vs VisionOS Video Component
 
-There are tradeoffs that come with choosing one video component over the other. 
+There are tradeoffs that come with choosing one video component over the other.
 
-The `VisionOSVideoComponent` utilizes visionOS's native video player to display and render video, allowing it to display video in a performant manner. More importantly, the `VisionOSVideoComponent` is also capable of playing 3D spatial video (MV-HEVC video) in visionOS. However, the public API for this component is much more limited than that of the normal VideoPlayer component, and more complex video player functionality (such as Events and Delegates) cannot be used with it. Additionally, because the video texture is created in visionOS, there is no access to that video texture through Unity. Additionally, the `VisionOSVideoComponent` will not work with debugging tools like PlayToDevice. 
+The `VisionOSVideoComponent` utilizes visionOS's native video player to display and render video, allowing it to display video in a performant manner. More importantly, the `VisionOSVideoComponent` is also capable of playing 3D spatial video (MV-HEVC video) in visionOS. However, the public API for this component is much more limited than that of the normal VideoPlayer component, and more complex video player functionality (such as Events and Delegates) cannot be used with it. Additionally, because the video texture is created in visionOS, there is no access to that video texture through Unity. Additionally, the `VisionOSVideoComponent` will not work with debugging tools like PlayToDevice.
 
 
-Using the normal `VideoPlayer` component comes with performance costs, because it must update the render texture each frame, but has the advantage of being able to utilize all of the Unity Video Player's extensive methods, events, and delegates. Additionally, you have access to the video texture and can use it like any other texture - for example, using it in a shader graph material. Using the normal `VideoPlayer` component also allows streaming over a network, and works with [Play To Device](xref:psl-play-to-device). 
+Using the normal `VideoPlayer` component comes with performance costs, because it must update the render texture each frame, but has the advantage of being able to utilize all of the Unity Video Player's extensive methods, events, and delegates. Additionally, you have access to the video texture and can use it like any other texture - for example, using it in a shader graph material. Using the normal `VideoPlayer` component also allows streaming over a network, and works with [Play To Device](xref:psl-play-to-device).

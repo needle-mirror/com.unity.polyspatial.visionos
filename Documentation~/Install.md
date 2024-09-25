@@ -80,7 +80,7 @@ To install the visionOS XR packages:
 
 > [!IMPORTANT]
 > To see the **Apple visionOS** provider, you must have version 4.4.1 (or later) of the XR Plug-in Management package installed. Use the **Package Manager** window (menu: **Window &gt; Package Manager**) to update the package, if necessary.
- 
+
 When you enable the **Apple visionOS** provider, the Unity Package Manager installs the following packages:
 
 * [Apple visionOS XR Plugin](https://docs.unity3d.com/Packages/com.unity.xr.visionos@1.0/manual/index.html) (`com.unity.xr.visionos`)
@@ -106,9 +106,9 @@ To install the PolySpatial packages:
 3. Change the **App Mode** setting to **RealityKit with PolySpatial** or **Hybrid - Switch between Metal and RealityKit**.
 
    Unity offers to install the PolySpatial packages, which are required to support the RealityKit and hybrid app modes.
-   
+
    ![](images/easy-install.png)
-   
+
 4. Choose **Yes**.
 
 Unity installs the following packages:

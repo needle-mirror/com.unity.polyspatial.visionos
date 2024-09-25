@@ -1,4 +1,4 @@
-#if UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX
+#if (UNITY_VISIONOS || UNITY_IOS || POLYSPATIAL_INTERNAL) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
 using System.Runtime;
 using System.ComponentModel;
 using System;
@@ -216,7 +216,7 @@ namespace Unity.PolySpatial.Internals.Editor
             var windowType = "";
             var windowStyle = "";
             var limbVisibility = VisionOSSettings.currentSettings.upperLimbVisibility;
-            var upperLimbVisibility = $".upperLimbVisibility({VisionOSSettings.UpperLimbVisibilityToString(limbVisibility)})";
+            var upperLimbVisibility = $".upperLimbVisibility({VisionOSSettings.VisibilityToString(limbVisibility)})";
             switch (configuration.Mode)
             {
                 case VolumeCamera.PolySpatialVolumeCameraMode.Bounded:
@@ -234,6 +234,10 @@ namespace Unity.PolySpatial.Internals.Editor
                     windowType = "ImmersiveSpace";
                     windowStyle = "";
 
+                    var overlayVisibility = VisionOSSettings.currentSettings.realityKitImmersiveOverlays;
+                    var persistentSystemOverlays =
+                        $".persistentSystemOverlays({VisionOSSettings.VisibilityToString(overlayVisibility)})";
+
                     var immersionStyle = VisionOSSettings.currentSettings.realityKitImmersionStyle;
                     var immersionStyleString = VisionOSSettings.ImmersionStyleToString(immersionStyle);
                     // The entry in the App Scene for these types of windows
@@ -245,7 +249,7 @@ namespace Unity.PolySpatial.Internals.Editor
                                 PolySpatialWindowManagerAccess.onImmersionChange(oldContext.amount, newContext.amount)
                             }}
                         KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
-                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility}
+                    }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility} {persistentSystemOverlays}
                     .immersionStyle(selection: .constant({immersionStyleString}), in: {immersionStyleString})";
 
                 case VolumeCamera.PolySpatialVolumeCameraMode.Metal:
@@ -385,7 +389,7 @@ Please ensure the project does not have duplicate Metal or Unbounded configurati
             // TODO: LXR-3770 Allow users to customize the behavior and content of the loading window
             sceneContent.Add("\n        WindowGroup(id: \"LoadingWindow\") {\n            Text(\"Loading...\")\n        }.defaultSize(width: 0.2, height: 0.15)");
 
-            var parameters = PolySpatialSettings.instance.DeviceDisplayProviderParameters;
+            var parameters = PolySpatialSettings.Instance.DeviceDisplayProviderParameters;
 
             var displayProviderParametersInit = GetDisplayProviderParamametersInitString(parameters);
 
@@ -483,7 +487,7 @@ extension UnityPolySpatialApp {{
 
         static VolumeCameraWindowConfiguration GetDefaultVolumeConfig()
         {
-            var initialConfig = PolySpatialSettings.instance.DefaultVolumeCameraWindowConfiguration;
+            var initialConfig = PolySpatialSettings.Instance.DefaultVolumeCameraWindowConfiguration;
             if (initialConfig == null)
             {
                 // handle projects without this setting that have never opened the PolySpatial Settings window
@@ -571,10 +575,6 @@ extension UnityPolySpatialApp {{
                     cflags = $"-DUNITY_POLYSPATIAL=1 {cflags}";
 
                     pbx.SetBuildPropertyForConfig(cfguid, "OTHER_CFLAGS", cflags);
-
-                    // TODO: What's the plan for back compat?
-                    // TODO: Expose this as a player setting?
-                    pbx.SetBuildPropertyForConfig(cfguid, "XROS_DEPLOYMENT_TARGET", "2.0");
 
                     // Define UNITY_POLYSPATIAL to allow compositor space from XR plugin to use PolySpatial APIs for mode switching
                     const string swiftFlagsProperty = "SWIFT_ACTIVE_COMPILATION_CONDITIONS";

@@ -11,12 +11,12 @@ Please refer to [Development & Iteration](DevelopmentAndIteration.md) for inform
 These guides have step by step instructions for getting started with visionOS.
 * In [Starting a new visionOS project from scratch](TutorialCreateFromScratch.md), you will find a step-by-step tutorial that guides you through installing, setting up and deploying a simple Unity app from scratch to target visionOS and the Apple Vision Pro.
 * In [Starting a new visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md), you will find a step-by-step tutorial for setting up a new project using the Immersive App Template.
-* In [Sample Contents: Learn how to use visionOS with Application Examples](Samples.md), 
-you will find a wide range of vertical slices demo projects explaining how to develop for visionOS using PolySpatial technology. 
+* In [Sample Contents: Learn how to use visionOS with Application Examples](Samples.md),
+you will find a wide range of vertical slices demo projects explaining how to develop for visionOS using PolySpatial technology.
 
 ## Porting Existing Projects
 
-When porting existing Unity projects to visionOS, several considerations need to be taken into account. The biggest limitation is that some core Unity features aren't supported, and others provide a reduced feature set. In addition, input is different, and processing power and supported components will vary. Sometimes you will have to develop your own systems to support your unique project features and work around these limitations. 
+When porting existing Unity projects to visionOS, several considerations need to be taken into account. The biggest limitation is that some core Unity features aren't supported, and others provide a reduced feature set. In addition, input is different, and processing power and supported components will vary. Sometimes you will have to develop your own systems to support your unique project features and work around these limitations.
 
 You can find information about [porting VR experiences to visionOS](MetalApps.md#porting-vr-experiences-to-visionos), find out which [Unity features and components](SupportedFeatures.md) are currently supported for immersive apps, or how to use [Project Validation](PolySpatialXRProjectValidation.md) for helpful in-editor assistance to port a project.
 

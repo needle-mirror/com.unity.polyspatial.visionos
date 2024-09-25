@@ -2,10 +2,15 @@ using NUnit.Framework;
 
 namespace Unity.PolySpatial.Internals.Tests
 {
+    /// <summary>
+    /// Validation only test fixture.
+    /// </summary>
     [TestFixture]
     public class ValidationOnlyTest
     {
-
+        /// <summary>
+        /// Validation only test.
+        /// </summary>
         [Test]
         public void ValidationTest()
         {

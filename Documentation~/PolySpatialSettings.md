@@ -5,7 +5,7 @@ uid: psl-vos-polyspatial-settings
 
 ![PolySpatialSettings](images/PolySpatialSettings.png)
 
-To access the PolySpatial Settings window, go to: `Edit > Project Settings > PolySpatial Settings` in the Unity Editor. 
+To access the PolySpatial Settings window, go to: `Edit > Project Settings > PolySpatial Settings` in the Unity Editor.
 
 The following settings are available:
 

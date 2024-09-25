@@ -4,7 +4,7 @@ uid: psl-vos-porting-xr
 # Porting existing Unity projects into PolySpatial XR
 When porting an existing project to a new platform, it is important to know what potential technical risks and challenges you will face; PolySpatial XR is no exception. This section discusses several aspects of porting Unity projects, with emphasis on their support in PolySpatial XR.
 
-Depending on the target platform some Unity features may not supported, or supported in a limited way, so you will need to plan your project with this info at hand. 
+Depending on the target platform some Unity features may not supported, or supported in a limited way, so you will need to plan your project with this info at hand.
 
 ## Input
 The Input System allows users to control your game or app using a device, touch, or gestures. In projects developed for PolySpatial XR, the supported Input system is the [New Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@latest/index.html). This input system is intended to be a replacement for Unity's classic Input Manager.

@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.7.6 clang-1600.0.24.1)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target x86_64-apple-xros2.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PolySpatialRealityKit
 import ARKit
 import AVFoundation
@@ -106,23 +106,23 @@ extension SwiftUICore.EnvironmentValues {
     set
   }
 }
-@_hasMissingDesignatedInitializers public class PolySpatialVolume : Foundation.ObservableObject, Swift.Equatable, Swift.Hashable {
-  public var assignedWindowUUID: Foundation.UUID?
-  public var description: Swift.String {
+@_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialVolume : Foundation.ObservableObject, Swift.Equatable, Swift.Hashable {
+  @_Concurrency.MainActor public var assignedWindowUUID: Foundation.UUID?
+  @_Concurrency.MainActor public var description: Swift.String {
     get
   }
-  public func getOutputDimension() -> simd.simd_float3
-  public func overrideOutputDimension(_ outputDimensions: simd.simd_float3)
-  public var desiredWindowConfiguration: Swift.String {
+  @_Concurrency.MainActor public func getOutputDimension() -> simd.simd_float3
+  @_Concurrency.MainActor public func overrideOutputDimension(_ outputDimensions: simd.simd_float3)
+  @_Concurrency.MainActor public var desiredWindowConfiguration: Swift.String {
     get
   }
-  public func windowDismissed()
-  public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
+  @_Concurrency.MainActor public func windowDismissed()
+  @_Concurrency.MainActor public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
+  @_Concurrency.MainActor public func hash(into hasher: inout Swift.Hasher)
   @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
-  public var hashValue: Swift.Int {
+  nonisolated public var hashValue: Swift.Int {
     get
   }
 }
@@ -149,11 +149,11 @@ public protocol PolySpatialRealityKitDelegate {
   func on(volumeAdded: PolySpatialRealityKit.PolySpatialVolume)
   func on(volumeRemoved: PolySpatialRealityKit.PolySpatialVolume)
 }
-@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class PolySpatialRealityKitAccess : ObjectiveC.NSObject {
-  public static func register()
-  public static func getApiData() -> Swift.UnsafeRawPointer
-  public static func getApiSize() -> Swift.Int32
-  public static func addDelegate(_ delegate: any PolySpatialRealityKit.PolySpatialRealityKitDelegate)
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @objc public class PolySpatialRealityKitAccess : ObjectiveC.NSObject {
+  @_Concurrency.MainActor public static func register()
+  @_Concurrency.MainActor public static func getApiData() -> Swift.UnsafeRawPointer
+  @_Concurrency.MainActor public static func getApiSize() -> Swift.Int32
+  @_Concurrency.MainActor public static func addDelegate(_ delegate: any PolySpatialRealityKit.PolySpatialRealityKitDelegate)
   @objc deinit
 }
 extension Swift.String : Foundation.LocalizedError {
@@ -177,15 +177,18 @@ public protocol PolySpatialWindowManagerDelegate {
   func onWindowAdded(_ window: PolySpatialRealityKit.PolySpatialWindow)
   func onWindowRemoved(_ window: PolySpatialRealityKit.PolySpatialWindow)
 }
-@_hasMissingDesignatedInitializers public class PolySpatialWindowManagerAccess {
-  public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
-  public static func onCompositorSpaceOpened(_ window: PolySpatialRealityKit.PolySpatialWindow)
-  public static func onCompositorSpaceDismissed(_ window: PolySpatialRealityKit.PolySpatialWindow)
-  public static func onImmersionChange(_ oldAmount: Swift.Double?, _ newAmount: Swift.Double?)
+@_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialWindowManagerAccess {
+  @_Concurrency.MainActor public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
+  @_Concurrency.MainActor public static func onCompositorSpaceOpened(_ window: PolySpatialRealityKit.PolySpatialWindow)
+  @_Concurrency.MainActor public static func onCompositorSpaceDismissed(_ window: PolySpatialRealityKit.PolySpatialWindow)
+  @_Concurrency.MainActor public static func onImmersionChange(_ oldAmount: Swift.Double?, _ newAmount: Swift.Double?)
   @objc deinit
 }
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Equatable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Hashable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.RawRepresentable {}
+extension PolySpatialRealityKit.PolySpatialVolume : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialSceneDelegate : Swift.Sendable {}
+extension PolySpatialRealityKit.PolySpatialRealityKitAccess : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialContentViewWrapper : Swift.Sendable {}
+extension PolySpatialRealityKit.PolySpatialWindowManagerAccess : Swift.Sendable {}

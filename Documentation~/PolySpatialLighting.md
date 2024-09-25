@@ -13,7 +13,7 @@ Because visionOS uses different lighting calculations from Unity, the appearance
 ### VisionOS Light Settings
 To control the default behavior for dynamic lights in visionOS, use the `Default VisionOS Lighting` option under `PolySpatial` in `Project Settings`.  This defaults to `Image Based Only`, but you can change it to `Image Based and Dynamic Lights` to enable point/spot/directional lights for standard Lit materials in visionOS, or to `Image Based, Dynamic Lights, and Shadows` to enable spot/directional shadows as well.
 
-There are two additional settings that control shadow behavior specific to visionOS: 
+There are two additional settings that control shadow behavior specific to visionOS:
 * Because visionOS uses only a fixed depth bias for shadows (versus Unity's fixed plus directional biases), the `Default VisionOS Shadow Bias Offset` setting provides a means to add an additional depth bias amount to shadows on visionOS.
 * Because visionOS does not use cascaded shadow maps for directional lights, it requires a maximum distance to be set relatively close to the camera.  The `Default VisionOS Directional Shadow Max Distance` setting controls the maximum distance away from the camera to render directional shadow maps.  Set this to a small value (such as 2-3 meters) for typical indoor bounded scenes in order to maximize the apparent resolution of the shadow map.
 

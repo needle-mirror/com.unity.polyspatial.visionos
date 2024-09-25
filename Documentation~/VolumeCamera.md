@@ -17,7 +17,7 @@ A scene may have as many as 255 **Bounded** volume cameras and one **Unbounded**
 
 Each volume camera renders objects independently of each other, and objects from the scene can appear simultaneously in multiple volume cameras at once. For example, if two bounded volume cameras encapsulate a single sphere in their respective bounding boxes, the sphere will appear in both volume camera windows.
 
-Input events can only originate from one volume camera at a time. For example, if a user holds the pinch gesture on an object in one volume, then looks at another volume's object and attempts a pinch gesture with a second hand, the first input event will end and the second pinch gesture will take its place. 
+Input events can only originate from one volume camera at a time. For example, if a user holds the pinch gesture on an object in one volume, then looks at another volume's object and attempts a pinch gesture with a second hand, the first input event will end and the second pinch gesture will take its place.
 
 > [!NOTE]
 > Only one `Volume Camera` is allowed per GameObject. To create multiple `Volume Camera` components, they must be placed on different GameObjects.
@@ -71,14 +71,14 @@ At runtime, you cannot change the dimensions of a bounded volume window directly
 
 The **Scale Content With Window** Volume Camera property can be changed at runtime. When toggling this property during runtime, the content may appear to change size and positioning. When **Scale Content With Window** is enabled, the content will automatically resize to maintain proportionality - in other words, content that is half the size of your volume's bounding box in the editor will scale so that it is half the size of your volume window's size during runtime. When this property is disabled, content will scale independently of the volume window size, and will be the same size as it would've been within an **Unbounded** volume window.
 
-Additionally, while **Scale Content With Window** is disabled, the content may appear to shift upwards or downwards in space when the volume window is resized - this is due to the volume itself getting larger. For example, any content fixed at position 0x0x0 (the middle of the volume) will appear to move upwards relative to world space as the volume gets larger. To compensate for this, while **Scale Content With Window** is disabled, subscribe to **OnWindowEvent** to get the true size of the volume window and shift the content either upwards or downwards to compensate for the changing size of the volume window.
+Additionally, while **Scale Content With Window** is disabled, the content may appear to shift upwards or downwards in space when the volume window is resized - this is due to the volume itself getting larger. For example, any content fixed at position 0x0x0 (the middle of the volume) will appear to move upwards relative to world space as the volume gets larger. To compensate for this, while **Scale Content With Window** is disabled, subscribe to **WindowStateChanged** to get the true size of the volume window and shift the content either upwards or downwards to compensate for the changing size of the volume window.
 
 <a id="volume-camera-events"></a>
 ## Volume camera events
 
 The **VolumeCamera** has the following events that can be subscribed to:
 
-`OnWindowEvent` An event that is triggered when this volume camera's window changes state - in other words, it is triggered whenever the window is opened, closed, resized, receives focus, or loses focus. When a change has occurred, the event will supply a `WindowState` struct that encapsulates information on the window's state change.
+`WindowStateChanged` An event that is triggered when this volume camera's window changes state - in other words, it is triggered whenever the window is opened, closed, resized, receives focus, or loses focus. When a change has occurred, the event will supply a `WindowState` struct that encapsulates information on the window's state change.
 
 The `WindowState` struct has the following properties:
 
@@ -96,9 +96,9 @@ The `WindowState` struct has the following properties:
 | **IsFocused**                          | When windowEvent is set to `WindowEvent.Focused`, this will indicate whether it has received focus or lost it. |
 | **SessionID**                          | A value to identify the PolySpatial session that the volume camera generating the event belongs to. This is useful for multi-session applications (such as Play-to-Device), where the scene exists both locally and on the device. When the Session ID is 0, the event came from a volume in the local session. When the ID is greater than 0, it came from a volume in a remote session (such as on the device). |
 
-The following table provides examples of the sequence in which `OnWindowEvent` is called when a volume window changes state because of a User or OS action. For example, when the OS opens a window while launching an app, `OnWindowEvent` is invoked twice, once with `WindowEvent.Opened`, and once with `WindowEvent.Resized`.
+The following table provides examples of the sequence in which `WindowStateChanged` is called when a volume window changes state because of a User or OS action. For example, when the OS opens a window while launching an app, `WindowStateChanged` is invoked twice, once with `WindowEvent.Opened`, and once with `WindowEvent.Resized`.
 
-Note that these events may differ from backend to backend. The events listed below are when running an app on Vision OS. When running an app on the Unity editor, there are no `UnityEvent.Focused` events triggered, nor are there `UnityEvent.Backgrounded` events. 
+Note that these events may differ from backend to backend. The events listed below are when running an app on Vision OS. When running an app on the Unity editor, there are no `UnityEvent.Focused` events triggered, nor are there `UnityEvent.Backgrounded` events.
 
 Additionally, some of the ordering may be subject to change in the future, particularly **Changing the Volume Window Configuration**.
 
@@ -111,16 +111,16 @@ Additionally, some of the ordering may be subject to change in the future, parti
 | **Tapping the `x` button next to the window bar** | WindowEvent.Focused, IsFocused = false<br>WindowEvent.Backgrounded                  |
 | **Reopening the app from the home view**          | WindowEvent.Opened<br>WindowEvent.Focused, IsFocused = true     |
 
-`OnViewpointChanged` An event that is triggered when the user's viewpoint of the volume changes. This event will only trigger for volumes with the bounded window configuration mode. The possible viewpoints are left, right, front, and back. When the user steps to the left of the bounded volume, this event will trigger and indicate that the user is to the left of the volume.
+`ViewpointChanged` An event that is triggered when the user's viewpoint of the volume changes. This event will only trigger for volumes with the bounded window configuration mode. The possible viewpoints are left, right, front, and back. When the user steps to the left of the bounded volume, this event will trigger and indicate that the user is to the left of the volume.
 
 This event will only trigger once a viewpoint change has happened. Currently, when the volume is first created, this event will not trigger.
 
-`OnImmersionChanged` An event that is triggered when the user turns  the **Digital Crown** to change the immersion level. The VolumeCamera must be set to **Unbounded** **Mode** and the **Immersion Style** must be set to **Progressive** in Project Settings.
+`ImmersionChanged` An event that is triggered when the user turns  the **Digital Crown** to change the immersion level. The VolumeCamera must be set to **Unbounded** **Mode** and the **Immersion Style** must be set to **Progressive** in Project Settings.
 
-When the user rotates the dial, this event provides a decimal value in the range [0, 1] indicating the amount of immersion. A value of 1.0 means full, 100% immersion and the app will behave as if it had been set to **Full** immersion style.
+When the user rotates the dial, this event provides two optional decimal values in the range [0, 1] indicating the old and new immersion states. A value of 1.0 means full, 100% immersion and the app will behave as if it had been set to **Full** immersion style. A value of `null` means that immersion is disabled. When immersion is enabled, the initial value will be 0.55 before the user rotates the dial.
 
 > [!NOTE]
-> Apple visionOS 2.0 added support for the `ImmersionChanged` event. This event is not available in earlier visionOS versions. Refer to  [onImmersionChange](https://developer.apple.com/documentation/swiftui/view/onimmersionchange(_:)) for additional information.
+> Apple visionOS 2.0 added support for the `onImmersionChange` SwiftUI modifier. This modifier is not available in earlier visionOS versions. Refer to the [Developer Documentation](https://developer.apple.com/documentation) for additional information.
 
 <a id="volume-camera-window-configuration-assets"></a>
 ## Volume Camera Window Configuration assets
@@ -144,13 +144,13 @@ Volume Camera Window Configuration assets support the following properties:
 | **Min/Max Window Size**                                  | For **Bounded** volumes, determines the minimum and maximum volume window size when it is resized using the window's interface controls. If the minimum window size is higher than the **Output Dimensions**, or the maximum window size is lower than the **Output Dimensions**, then the values will be clamped to **Output Dimensions**. For best results, the minimum and maximum volume window size should have the same ratio as the **Output Dimensions**. |
 
 > [!NOTE]
-> The visionOS operating system is free to set the volume window dimensions as it sees fit. The actual window dimensions are reported in [OnWindowEvent](#volume-camera-events) when `WindowEvent` is Opened. This also applies to the Min/Max Window Size - setting a high maximum or low minimum window size does not necessarily guarantee the volume window can be resized to that value.
+> The visionOS operating system is free to set the volume window dimensions as it sees fit. The actual window dimensions are reported in [WindowStateChanged](#volume-camera-events) when `WindowEvent` is Opened. This also applies to the Min/Max Window Size - setting a high maximum or low minimum window size does not necessarily guarantee the volume window can be resized to that value.
 
 Create volume camera configuration assets using the **Create** menu: **Assets &gt; Create &gt; PolySpatial &gt; Volume Camera Window Configuration**. You must store these assets within a folder named `Resources` and they must exist when you start the build -- they cannot be added as a build process or post-process. Refer to [Special Folder names](xref:SpecialFolders) for more information about `Resources` folders in Unity. All volume camera configuration assets that you intend to use must be included in the build. You cannot create them dynamically at runtime.
 
-Within each project, there can only be a maximum of one Metal and one Unbounded **Volume Camera Window Configuration**. There can be multiple Bounded **Volume Camera Window Configuration**s within a project, but they all must have different `OutputDimensions`. During a build, if a duplicate is detected, a warning will be logged for the duplicate. 
+Within each project, there can only be a maximum of one Metal and one Unbounded **Volume Camera Window Configuration**. There can be multiple Bounded **Volume Camera Window Configuration**s within a project, but they all must have different `OutputDimensions`. During a build, if a duplicate is detected, a warning will be logged for the duplicate.
 
-Once created, you can swap between configurations at runtime, but you cannot modify the output properties of a Volume Camera directly. You can only change these properties by referencing a different volume camera configuration asset.  
+Once created, you can swap between configurations at runtime, but you cannot modify the output properties of a Volume Camera directly. You can only change these properties by referencing a different volume camera configuration asset.
 
 Switching between volume camera configurations is as easy as assigning a new volume camera configuration to your volume camera, either through script or through the inspector window.  It is possible to switch between an unbounded and a bounded volume configuration, and vice-versa.
 

@@ -22,7 +22,7 @@ To import the samples for the **RealityKit with PolySpatial** and **Hybrid - Swi
 2. Select the PolySpatial package (com.unity.polyspatial) from the list of packages in your project.
 
    ![The PackageManager window with the PolySpatial package selected](images/samples/import-samples.png)
-   
+
 3. Select the **Samples** tab to show the samples available for the package.
 4. Click the **Import** button for the **Unity PolySpatial Samples** item.
 5. Set the **Default Volume Camera Window Configuration**  (menu: **Edit &gt; Project Settings &gt; PolySpatial**) to use the configuration in `Assets/Samples/PolySpatial/Resources/Bounded_VolumeCameraConfiguration.asset`.
@@ -37,7 +37,7 @@ To import the samples for the **Virtual Reality - Fully Immersive Space** **App 
 2. Select the Apple visionOS XR Plugin package (com.unity.xr.visionos) from the list of packages in your project.
 
    ![The PackageManager window with the PolySpatial package selected](images/samples/import-metal-samples.png)
-   
+
 3. Select the **Samples** tab to show the samples available for the package.
 4. Click the **Import** button for either the **Metal Sample - Built-in** or the **Metal Sample - URP** item, depending on which rendering pipeline the project uses.
 

@@ -11,7 +11,7 @@ For detailed information, please review the comments in the following files in t
 
 * `SwiftUIDriver.cs`
   * A MonoBehaviour that drives the interop with SwiftUI. It uses `DllImport` to access methods defined in Swift.
-* `SwiftUISamplePlugin.swift` 
+* `SwiftUISamplePlugin.swift`
   * Swift code that interfaces with `SwiftUIDriver` to provide the ability to pass information back and forth between C# and Swift.
 * `SwiftUISampleInjectedScene.swift`
   * A Swift type that defines a SwiftUI `Scene` that is injected into the top-level App's Scenes. Swift files ending in `...InjectedScene.swift` are automatically injected, removing the need to modify the generated the top-level App.

@@ -1,7 +1,7 @@
 ---
 uid: psl-vos-samples
 ---
-# visionOS Samples 
+# visionOS Samples
 
 Unity’s **visionOS Samples** provides a starting point for visionOS development in Unity centered around specific use cases with both bounded volume and unbounded experiences.
 

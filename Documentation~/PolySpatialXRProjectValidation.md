@@ -21,9 +21,9 @@ When a component fails to pass one or more PolySpatial XR Scene Validation rules
 
 ### Inspector issues header (B)
 
-The Scene Validation system will automatically display an issue header in the Inspector of GameObjects that fail any validation rule. 
+The Scene Validation system will automatically display an issue header in the Inspector of GameObjects that fail any validation rule.
 
-The issues header has buttons to navigate between GameObjects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes. 
+The issues header has buttons to navigate between GameObjects with issues or lets you open the Project Validation window to see all issues in your project and opened scenes.
 
 The availability of some features and components is dependent on the visionOS application mode that your scene is targeting. The dropdown button labeled **Everything** in the image, allows you to choose the application modes to use for validation.
 
@@ -31,9 +31,9 @@ The **Fix this Object** button automatically fixes all validation issues in the 
 
 ### Per Component Inspector issue (C)
 
-The Scene Validation system automatically displays issue messages in the Inspector of Components that fail any Validation rules. 
+The Scene Validation system automatically displays issue messages in the Inspector of Components that fail any Validation rules.
 
-The Component at hand that has one or more issues will contain a message explaining the issue. 
+The Component at hand that has one or more issues will contain a message explaining the issue.
 
 When pressing the **Fix** button, Unity will automatically fix the issue in the Component at hand; When pressing the **Edit** button, Unity will take you to the appropriate place in the Editor where you can correct the problem in your project. Both the **Fix** and **Edit** buttons provide tool tips that explain steps to manually correct the issue.
 

@@ -28,4 +28,7 @@ Head tracking is provided by ARKit through the **VisionOS Package**. This can be
 
 ## XR Interaction Toolkit
 
-To use the XR Interaction Toolkit with PolySpatial, use the **XRTouchSpaceInteractor** provided in `com.unity.polyspatial.xr`. This custom interactor uses **SpatialPointerDevice** to "short-circuit" the normal raycast or collider overlap test to determine which **Interactable** is selected. Instead, it uses the `targetId` input control to obtain a direct reference to the **Interactable** which was targeted by the pinch/poke gesture.
+To use the XR Interaction Toolkit with PolySpatial, use the **XRSpatialPointerInteractor** provided in `com.unity.polyspatial.xr`. This custom [interactor](https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@latest?subfolder=/manual/architecture.html#interactors) uses the input raycast provided by the [SpatialPointerDevice](xref:psl-vos-polyspatial-input#spatial-pointer-device-data) in visionOS to determine which **Interactable** the user selected. It uses the `targetId` [InputControl](xref:UnityEngine.InputSystem.InputControl) to obtain a direct reference to the [Interactable](https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@latest?subfolder=/manual/interactable-components.html) that was targeted by the pinch or poke gesture.
+
+> [!TIP]
+> You should always use the `targetID` from the [SpatialPointerDevice](xref:psl-vos-polyspatial-input#spatial-pointer-device-data) on visionOS to avoid performing an additional raycast within Unity itself. Using the `targetID` not only avoids redundant operations, but also avoids the accidental selection of a different collider, which can happen if there are overlaps.

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR_OSX
+#if (UNITY_VISIONOS || UNITY_IOS || POLYSPATIAL_INTERNAL) && UNITY_EDITOR_OSX
 using System;
 using System.IO;
 using Unity.PolySpatial.Internals.Editor;
@@ -68,9 +68,6 @@ namespace Unity.PolySpatial.Internals.Editor
         /// <summary>
         /// Run an external build to create the Mac PolySpatial Plugin.
         /// </summary>
-#if POLYSPATIAL_INTERNAL
-        [MenuItem("Tools/Build PolySpatial macOS Plugin", false, 100)]
-#endif
         public static void BuildMacPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
@@ -79,9 +76,6 @@ namespace Unity.PolySpatial.Internals.Editor
             DoPluginBuild("macos");
         }
 
-#if POLYSPATIAL_INTERNAL
-        [MenuItem("Tools/Build PolySpatial macOS Plugin (New RealityKit)", false, 100)]
-#endif
         public static void BuildMacNewPlugin()
         {
             if (BuildUtils.IsPackageImmutable())

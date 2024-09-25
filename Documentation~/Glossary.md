@@ -17,7 +17,7 @@ uid: psl-vos-glossary
     - **(Unity) Sim Space**: The world space of a Unity Sim. While a typical Unity app simulates and renders objects in the same space, these may differ in a PolySpatial app.
     - **(Unity) Sim Physics**: The physics and colliders of the Unity Sim.
 
-- **Vanilla Unity**: In the context of PolySpatial, Vanilla Unity refers to a non-PolySpatial Unity app. 
+- **Vanilla Unity**: In the context of PolySpatial, Vanilla Unity refers to a non-PolySpatial Unity app.
 
 - **PolySpatial Host** (or Backend): The system that's responsible for actually rendering the objects controlled by the **Unity Sim**.
     - **Host (or Backend) Space**: The world space of the backend or Host in which a PolySpatial app is running. This may differ from **Unity Sim Space** because the host environment may allow apps to be moved around independently (for example, relocated to another position and volume in the real world).

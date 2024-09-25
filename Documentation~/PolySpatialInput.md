@@ -15,7 +15,7 @@ You can leverage the [Enhanced Touch API](https://docs.unity3d.com/Packages/com.
 The SpatialPointerDevice mirrors the [SpatialEventCollection](https://developer.apple.com/documentation/swiftui/spatialeventcollection/event) data from SwiftUI and is the primary way to interact with content on visionOS. The input data is limited depending on your app's mode (bounded vs unbounded) and when you are requesting the data. Some data is only valid for the first frame in which the input was performed.
 
 The input is registered by the user looking at an object and peforming a pinch gesture with their index finger and thumb. This type of input will register as an `Indirect Pinch`. Input can also be performed with a direct poke (`Touch`) or direct pinch (`Direct Pinch`) on an object.
-* Up to two inputs can be registered at the same time. 
+* Up to two inputs can be registered at the same time.
 * The object a user is looking at must have a collider on it to capture input.
 * The `inputDevicePosition` and `inputDeviceRotation` properties describe the pose of the input device controlling the interaction. Typically, this is based on the user's pinch (a point between their finger and thumb).
 * By default, the Interaction Ray is based on the user's eye gaze.

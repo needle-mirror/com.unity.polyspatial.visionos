@@ -3,7 +3,7 @@ uid: psl-vos-extensions-package
 ---
 # Extensions Package
 
-Unity’s **PolySpatial Extensions** package provides functionality that is either optional, or currently experimental. 
+Unity’s **PolySpatial Extensions** package provides functionality that is either optional, or currently experimental.
 
 > [!NOTE]
 > Experimental features are only being developed for Unity 6+ and URP with RenderGraph enabled.

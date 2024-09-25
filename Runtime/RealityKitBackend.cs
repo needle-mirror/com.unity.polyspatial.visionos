@@ -61,7 +61,7 @@ namespace Unity.PolySpatial.Internals
         {
 #if false // UNITY_EDITOR // Mac preview unfortunately doesn't work well in this way
             // if Mac preview is disabled in the editor, disable the platform
-            if (!PolySpatialSettings.instance.EnableMacRealityKitPreviewInPlayMode)
+            if (!PolySpatialSettings.Instance.EnableMacRealityKitPreviewInPlayMode)
             {
                 return -1;
             }

@@ -102,6 +102,17 @@ kernel void blendAndSkin(
     result.bitangent = normalize(cross(normal, tangent)) * baseVertex.tangent.w;
 }
 
+// A compute shader that writes the first three columns of a matrix to a texture.
+kernel void copyMatrixToTexture(
+    device const float4x4& inMatrix [[buffer(0)]],
+    texture2d<float, access::write> outTexture [[texture(1)]],
+    uint2 gid [[thread_position_in_grid]])
+{
+    outTexture.write(inMatrix[0], uint2(0, 0));
+    outTexture.write(inMatrix[1], uint2(1, 0));
+    outTexture.write(inMatrix[2], uint2(2, 0));
+}
+
 // A compute shader that simply flips in the input vertically and writes it to the output
 // (necessary because the CGImage constructor expects data with a lower-left origin).
 kernel void textureFlipVertical(

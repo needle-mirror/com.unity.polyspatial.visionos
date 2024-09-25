@@ -42,10 +42,10 @@ When in the `Specular` workflow and `Specular Highlights` are enabled, PolySpati
 
 For both workflows, the `Smoothness` intensity is respected, but smoothness from texture channel (e.g., from `Metallic Alpha`) is not supported. `Normal Map`[^1] is supported, but the normal scale is not. Likewise, `Occlusion Map` is supported, but occlusion intensity is not. `Emission` color *or* texture may be specified; if they are both given, the color is reduced to grayscale and acts as a multiplier.
 
-The `Opaque` and `Transparent` (with `Alpha` or `Additive` blend mode) surface types are supported. In `Transparent` mode, the `Preserve Specular` flag is respected. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing). If `Threshold` is equal to zero, the material will use [alpha-to-coverage](https://docs.unity3d.com/Manual/SL-AlphaToMask.html) mode on visionOS. 
+The `Opaque` and `Transparent` (with `Alpha` or `Additive` blend mode) surface types are supported. In `Transparent` mode, the `Preserve Specular` flag is respected. `Alpha Clipping` may be enabled; if the `Threshold` is greater than zero, no blending will be performed (only alpha testing). If `Threshold` is equal to zero, the material will use [alpha-to-coverage](https://docs.unity3d.com/Manual/SL-AlphaToMask.html) mode on visionOS.
 
 ### Universal Render Pipeline/Simple Lit
-For the URP simple lit material, the options supported are the same as for the lit material, except that there are no `Metallic` properties and no `Occlusion Map`. 
+For the URP simple lit material, the options supported are the same as for the lit material, except that there are no `Metallic` properties and no `Occlusion Map`.
 
 ### Universal Render Pipeline/Complex Lit
 For the URP complex lit material, the options supported are the same as for the lit material, with the addition of the `Clear Coat` option and its `Mask` and `Smoothness` properties.

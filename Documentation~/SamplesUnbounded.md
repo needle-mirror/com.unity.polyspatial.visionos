@@ -3,7 +3,7 @@ uid: psl-vos-unbounded-samples
 ---
 # Unbounded samples
 
-The unbounded samples demonstrate mixed reality using an unbounded volume camera. 
+The unbounded samples demonstrate mixed reality using an unbounded volume camera.
 
 These samples use ARKit features that are not supported by the Apple visionOS simulator. You must run these samples on an Apple Vision Pro device.
 

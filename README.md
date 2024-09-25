@@ -1,6 +1,6 @@
 # Unity PolySpatial -- Apple visionOS support
 
-The visionOS package for PolySpatial includes platform-specific support for visionOS and the Apple Vision Pro headset. 
+The visionOS package for PolySpatial includes platform-specific support for visionOS and the Apple Vision Pro headset.
 
 ## Platform Info
 
@@ -14,7 +14,7 @@ Building for visionOS and Apple Vision Pro currently requires a Mac computer run
 
 ### Building for visionOS
 
-This package introduces a new platform (visionOS) to the Unity build window (currently only shown on Mac). Select a destination folder and trigger a build; when the build completes, Unity will open a Finder window containing the build and an Xcode project (just as for iOS). Open this project and ensure you are targeting a visionOS simulator or device, then press the play button to build and launch. 
+This package introduces a new platform (visionOS) to the Unity build window (currently only shown on Mac). Select a destination folder and trigger a build; when the build completes, Unity will open a Finder window containing the build and an Xcode project (just as for iOS). Open this project and ensure you are targeting a visionOS simulator or device, then press the play button to build and launch.
 
 ## Resources
 

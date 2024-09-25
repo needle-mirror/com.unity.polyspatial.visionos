@@ -9,13 +9,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [2.0.0-pre.11] - 2024-08-12
+## [2.0.4] - 2024-09-25
 
 ### Added
 - PlayToDevice will now limit the editor framerate to 45 by default in order to lower network congestion. The editor sending too many packets over PlayToDevice could cause significant lag and latency for some users. This limit can be changed in the PlayToDevice window.
+- Fix issue of two scenes simultaneously existing for a frame when new scene is loaded.
+
+### Changed
+- XRTouchSpaceInteractor renamed to XRSpatialPointerInteractor.
+- Update minimum Editor version to 6000.0.22f1.
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Bones are now parented to the parent of the RootBone instead of to the SkinnedMeshRenderer entity. This fixes an issue where if the SkinnedMeshRenderer was on a different hierarchy than the RootBone, the bones might not be affected by any transforms applied to the RootBone.
+- Child colliders of XRBaseInteractables are now recognized when using XRTouchSpaceInteractor/XRSpatialPointerInteractor.
+
+### Security
+
+## [2.0.0-pre.11] - 2024-08-12
+
+### Added
 
 ### Changed
 - Duplicate VolumeCameraWindowConfigurations are not allowed - in each project, there can only be one of each of Metal and Unbounded configurations. There can be multiple Bounded configurations, but each Bounded configuration must have a different OutputDimension.
+- We have narrowed down the conditions under which the package will compile from UNITY_VISIONOS || UNITY_IOS || UNITY_EDITOR_OSX to (UNITY_VISIONOS || UNITY_IOS) && UNITY_EDITOR_OSX.  This should eliminate compile errors in the case where you had the OSX editor but not the visionOS or iOS platform dependencies.
 
 ### Deprecated
 
@@ -30,7 +50,7 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 
 ### Added
 - Added `Hybrid` app mode. This allows an application to switch between Metal and RealityKit mode at runtime. Hybrid mode requires PolySpatial. Refer to the **PolySpatial Hybrid apps on visionOS** section of the PolySpatial VisionOS documentation for more information.
-- Added the ability to create multiple volume cameras. Refer to the **Volume cameras** section of the PolySpatial VisionOS documentation for more information. 
+- Added the ability to create multiple volume cameras. Refer to the **Volume cameras** section of the PolySpatial VisionOS documentation for more information.
 
 ### Changed
 - Updated instructions for setting up 2.x prerelease packages. This currently requires manually pointing your project's manifest.json at the appropriate package versions.
@@ -103,19 +123,19 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 
 ### Added
 - Added installation instructions to the documentation.
-- Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused. 
+- Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused.
 - Added a "PolySpatial XR" Plug-in Provider to XR Plug-in Managment in Project Settings.  Allows you to view ARPlane's and hands from device in editor while using Play To Device.
 
 ### Changed
 - Improved documentation about samples.
 
 ### Deprecated
-- Volume camera events other than OnWindowEvent are now obsolete and will be removed in later releases. OnWindowEvent will supply all the information the other OnWindow events would normally supply. 
+- Volume camera events other than OnWindowEvent are now obsolete and will be removed in later releases. OnWindowEvent will supply all the information the other OnWindow events would normally supply.
 
 ### Removed
 
 ### Fixed
-- Updated ReplicateProperty Particle mode to better reflect opacity when using startColor or colorOverLifetime particle modules. Setting opacity to 0 at the start of a gradient or/and at the end will cause different opacityCurves to be applied to the RealityKit particle system. 
+- Updated ReplicateProperty Particle mode to better reflect opacity when using startColor or colorOverLifetime particle modules. Setting opacity to 0 at the start of a gradient or/and at the end will cause different opacityCurves to be applied to the RealityKit particle system.
 - Updated ReplicateProperty Particle mode to better reflect startSize and sizeOverLifetime module.
 - Corrected a few documentation errors.
 - Fixed a crash that could occur if a game object that was being used as a bone in a skinned mesh renderer was deleted during runtime.
@@ -208,9 +228,9 @@ For those who are testing on devices at Apple's developer labs or via a develope
 * Unity 2022 LTS (2022.3.11f1) and higher
 * Xcode 15.1 beta 1
     * The Xcode 15 Release Candidate will _not_ work
-* visionOS beta 4 (21N5259k) - SDK 
+* visionOS beta 4 (21N5259k) - SDK
 
-To learn more about Unity's visionOS beta program, please refer to [this post](https://discussions.unity.com/t/welcome-to-unitys-visionos-beta-program/270282). 
+To learn more about Unity's visionOS beta program, please refer to [this post](https://discussions.unity.com/t/welcome-to-unitys-visionos-beta-program/270282).
 
 ### Related Changelogs
 
@@ -234,7 +254,7 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 ## [0.6.0] - 2023-11-08
 
 ### Added
-- Particle property transfer render mode now supports StretchedBillboard->LengthScale, and has more accurate emitter shape representation.  
+- Particle property transfer render mode now supports StretchedBillboard->LengthScale, and has more accurate emitter shape representation.
 - Added `PolySpatialWindowManagerAccess.entityForIdentifier` in Swift and `PolySpatialObjectUtils.GetPolySpatialIdentifier` to C#, to allow accessing the RealityKit Entity corresponding to a Unity GameObject from Swift code. No guarantees are made about whether there is a RealityKit Entity for any given GameObject, or about the lifetime of the Entity.
 
 ### Changed
@@ -269,7 +289,7 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 
 ## [0.4.3] - 2023-10-13
 
-## Fixed
+### Fixed
 -- Slowdown in visionOS player introduced in 0.4.2 fixed.
 
 ## [0.4.2] - 2023-10-12
@@ -283,10 +303,10 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 
 ## [0.4.0] - 2023-10-04
 
-## Added
+### Added
 - Documentation for Volume Camera around configuration assets.
 - Build error if trying to build for Simulator SDK in Unity prior to 2022.3.11f1.
- 
+
 ## [0.4.0] - 2023-10-04
 
 ### Added

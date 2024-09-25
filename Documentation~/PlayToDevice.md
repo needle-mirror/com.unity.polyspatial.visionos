@@ -40,7 +40,7 @@ To install the host app for the visionOS simulator:
 
 To install the host app for an Apple Vision Pro device:
 
-1. Follow the TestFlight invite link in Safari on the device. You should see an invite code. See the **Compatibility Matrix** above to access a link compatible with your PolySpatial version. 
+1. Follow the TestFlight invite link in Safari on the device. You should see an invite code. See the **Compatibility Matrix** above to access a link compatible with your PolySpatial version.
 2. Open the TestFlight app on your Apple Vision Pro device, signing into your Apple account if necessary.
 3. Tap “**Redeem Code**” in the TestFlight app.
 4. Enter the code you saw in your browser after following the invite link.

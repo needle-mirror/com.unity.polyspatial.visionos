@@ -4,7 +4,7 @@ uid: psl-vos-shader-graph
 # Shader Graph support
 You can use the Unity Shader Graph to create custom materials for visionOS. These will previewed in their compiled form within Unity, but converted to MaterialX for display in simulator and on device. While MaterialX is very expressive, some Shader Graph nodes have no analog in materialX. Within the Shader Graph editor, unsupported nodes will be indicated by the presence of a `#` symbol.
 
-For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough. 
+For technical, security, and privacy reasons, visionOS does not allow Metal-based shaders or other low level shading languages to run when using AR passthrough.
 
 ## Debugging shader graphs
 PolySpatial provides two methods useful for debugging shader graph conversion when using [Play to Device](PlayToDevice.md) to test your scenes on the visionOS simulator/device.
@@ -25,7 +25,7 @@ To obtain positions, normals, tangents, or bitangents in the world space of the 
 The matrices returned by the `Transformation Matrix` node and used by the `Transform` node are obtained directly from visionOS and currently assume a world space that does not match either the simulation scene or the output of the `Position`, `Normal Vector`, `Tangent Vector`, or `Bitangent Vector` nodes.  The "world space" output of those nodes is relative to the transform of the output volume--that is, it does not change when a bounded app volume is dragged around.  The `Transform` and `Transformation Matrix` nodes, on the other hand, assume a world space that is shared between all app volumes.  To get geometry in this world space, use the geometry (e.g., `Position`) node with `Space`: `Object` and transform it with the `Transform` node set to `From`: `Object` and `To`: `World`.
 
 ## Global properties
-Global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).  
+Global values must be set in C# using the methods of [PolySpatialShaderGlobals](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialShaderGlobals.html#methods).
 
 ### Time-based animation
 Note that visionOS materials do not support global properties natively, and thus PolySpatial must apply global properties separately to all material instances, which may affect performance.  For animation, consider using the `PolySpatial Time` node rather than the standard Unity shader graph `Time`.  While `PolySpatial Time` will not be exactly synchronized with [Time.time](https://docs.unity3d.com/ScriptReference/Time-time.html) (notably, it will not reflect changes to [Time.timeScale](https://docs.unity3d.com/ScriptReference/Time-timeScale.html)), it is supported natively in visionOS and does not require per-frame property updates.
@@ -44,7 +44,7 @@ Additional options for MaterialX conversion may be configured in the `Data Exten
 | **Unlit Tone Mapping** | If true, apply tone mapping to unlit targets.  |
 
 ## Shader Graph nodes
-The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats. 
+The following tables show the [current support status for Shader Graph nodes](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest?subfolder=/manual/Built-In-Blocks.html) in PolySpatial for visionOS including a list of supported nodes and their various caveats.
 
 If a node doesn't appear here it means that it's not currently supported. *Note that this list will be updated as we continue to add support for more nodes.*
 
@@ -126,7 +126,7 @@ If a node doesn't appear here it means that it's not currently supported. *Note 
   |           | Metal Reflectance        | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   | Scene     | Camera                   | `Position` and `Direction` outputs supported (non-standard).                                                           |
   |           | Eye Index                | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
-  |           | Fog                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |  
+  |           | Fog                      | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Object                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |
   |           | Scene Depth              | Platform doesn't allow have access to the depth buffer, this is just the camera distance in either clip or view space. |
   |           | Screen                   | <span style="color: green; font-weight: bold;">&#x2713; Supported</span>                                               |

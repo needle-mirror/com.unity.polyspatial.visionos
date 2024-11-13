@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [1.3.11] - 2024-11-13
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Fixed issue where raycastable UGUI components would not be removed from scene when hidden (when scrolling, e.g.)
+
+### Security
+
 ## [1.3.9] - 2024-08-26
 
 ### Changed
@@ -16,7 +31,7 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 
 ### Fixed
 - Wrap all MonoPInvokeCallback methods in try/catch to avoid potential crashes in player builds.
-- Parent SkinnedMeshRenderer bones to parent of the RootBone (so that it's a sibling with the RootBone) rather than to the SkinnedMeshRenderer itself - this fixes an issue where the RootBone was on a different hierarchy than the SkinnedMeshRenderer, and changes applied to the RootBone GameObject didn't affect the bones. 
+- Parent SkinnedMeshRenderer bones to parent of the RootBone (so that it's a sibling with the RootBone) rather than to the SkinnedMeshRenderer itself - this fixes an issue where the RootBone was on a different hierarchy than the SkinnedMeshRenderer, and changes applied to the RootBone GameObject didn't affect the bones.
 
 ## [1.3.1] - 2024-07-09
 
@@ -90,19 +105,19 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 
 ### Added
 - Added installation instructions to the documentation.
-- Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused. 
+- Added VolumeCamera OnWindowEvent event handler. This is invoked whenever a volume camera's window has state changes, such as opening or becoming unfocused.
 - Added a "PolySpatial XR" Plug-in Provider to XR Plug-in Managment in Project Settings.  Allows you to view ARPlane's and hands from device in editor while using Play To Device.
 
 ### Changed
 - Improved documentation about samples.
 
 ### Deprecated
-- Volume camera events other than OnWindowEvent are now obsolete and will be removed in later releases. OnWindowEvent will supply all the information the other OnWindow events would normally supply. 
+- Volume camera events other than OnWindowEvent are now obsolete and will be removed in later releases. OnWindowEvent will supply all the information the other OnWindow events would normally supply.
 
 ### Removed
 
 ### Fixed
-- Updated ReplicateProperty Particle mode to better reflect opacity when using startColor or colorOverLifetime particle modules. Setting opacity to 0 at the start of a gradient or/and at the end will cause different opacityCurves to be applied to the RealityKit particle system. 
+- Updated ReplicateProperty Particle mode to better reflect opacity when using startColor or colorOverLifetime particle modules. Setting opacity to 0 at the start of a gradient or/and at the end will cause different opacityCurves to be applied to the RealityKit particle system.
 - Updated ReplicateProperty Particle mode to better reflect startSize and sizeOverLifetime module.
 - Corrected a few documentation errors.
 - Fixed a crash that could occur if a game object that was being used as a bone in a skinned mesh renderer was deleted during runtime.
@@ -195,9 +210,9 @@ For those who are testing on devices at Apple's developer labs or via a develope
 * Unity 2022 LTS (2022.3.11f1) and higher
 * Xcode 15.1 beta 1
     * The Xcode 15 Release Candidate will _not_ work
-* visionOS beta 4 (21N5259k) - SDK 
+* visionOS beta 4 (21N5259k) - SDK
 
-To learn more about Unity's visionOS beta program, please refer to [this post](https://discussions.unity.com/t/welcome-to-unitys-visionos-beta-program/270282). 
+To learn more about Unity's visionOS beta program, please refer to [this post](https://discussions.unity.com/t/welcome-to-unitys-visionos-beta-program/270282).
 
 ### Related Changelogs
 
@@ -221,7 +236,7 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 ## [0.6.0] - 2023-11-08
 
 ### Added
-- Particle property transfer render mode now supports StretchedBillboard->LengthScale, and has more accurate emitter shape representation.  
+- Particle property transfer render mode now supports StretchedBillboard->LengthScale, and has more accurate emitter shape representation.
 - Added `PolySpatialWindowManagerAccess.entityForIdentifier` in Swift and `PolySpatialObjectUtils.GetPolySpatialIdentifier` to C#, to allow accessing the RealityKit Entity corresponding to a Unity GameObject from Swift code. No guarantees are made about whether there is a RealityKit Entity for any given GameObject, or about the lifetime of the Entity.
 
 ### Changed
@@ -273,7 +288,7 @@ To learn more about Unity's visionOS beta program, please refer to [this post](h
 ## Added
 - Documentation for Volume Camera around configuration assets.
 - Build error if trying to build for Simulator SDK in Unity prior to 2022.3.11f1.
- 
+
 ## [0.4.0] - 2023-10-04
 
 ### Added

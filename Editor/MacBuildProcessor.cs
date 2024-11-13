@@ -1,4 +1,4 @@
-#if (UNITY_VISIONOS || UNITY_IOS || POLYSPATIAL_INTERNAL) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
+#if (UNITY_VISIONOS || UNITY_IOS || (POLYSPATIAL_INTERNAL && UNITY_EDITOR_OSX)) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
 #if POLYSPATIAL_INTERNAL
 using System;
 using System.Diagnostics;
@@ -21,22 +21,14 @@ namespace Unity.PolySpatial.Internals.Editor
 
         public int callbackOrder => 150;
 
-        bool m_isNewPlugin = false;
-
         readonly static string k_PackageLibPath = "Packages/com.unity.polyspatial.visionos/Lib~";
-        readonly static string k_NewPluginName = "PolySpatial-macOSNew.bundle";
-        readonly static string k_OldPluginName = "PolySpatial-macOS.bundle";
+        readonly static string k_PluginName = "PolySpatial-macOS.bundle";
 
-        string PluginName => m_isNewPlugin ? k_NewPluginName : k_OldPluginName;
+        string PluginName => k_PluginName;
 
-        internal static bool HasNewPlugin()
+        internal static bool HasPlugin()
         {
-            return Directory.Exists(Path.Combine(k_PackageLibPath, k_NewPluginName));
-        }
-
-        internal static bool HasOldPlugin()
-        {
-            return Directory.Exists(Path.Combine(k_PackageLibPath, k_OldPluginName));
+            return Directory.Exists(Path.Combine(k_PackageLibPath, k_PluginName));
         }
 
         public void OnPostprocessBuild(BuildReport report)
@@ -59,26 +51,17 @@ namespace Unity.PolySpatial.Internals.Editor
                 bootConfig.Write();
             }
 
-            m_isNewPlugin = HasNewPlugin();
-
-            if (!m_isNewPlugin && !HasOldPlugin())
+            if (!HasPlugin())
             {
 #if POLYSPATIAL_INTERNAL
-                Debug.LogWarning($"Expected to find {k_OldPluginName} or {k_NewPluginName} in {k_PackageLibPath}, but it doesn't exist");
+                Debug.LogWarning($"Expected to find {k_PluginName} in {k_PackageLibPath}, but it doesn't exist");
 #endif
                 return;
-            }
-
-            if (m_isNewPlugin)
-            {
-                Debug.Log($"Using {PluginName}");
             }
 
             try
             {
                 CopyMacPlugin(report);
-                if (m_isNewPlugin)
-                    AddEnvironmentForXcode15b8(report);
             }
             catch (Exception e)
             {

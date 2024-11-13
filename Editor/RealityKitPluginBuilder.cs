@@ -139,11 +139,6 @@ namespace Unity.PolySpatial.Internals.Editor
                     {
 #if POLYSPATIAL_INTERNAL
                         BuildMacPlugin();
-
-                        if (PolySpatialMacBuildProcessor.HasNewPlugin())
-                        {
-                            BuildMacNewPlugin();
-                        }
 #endif
                     }
                 }

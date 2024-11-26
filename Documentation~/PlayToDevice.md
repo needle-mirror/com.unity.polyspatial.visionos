@@ -163,3 +163,13 @@ As explained above, you must use a version of the Play to Device Host app that m
   * In the build details view, tap `Install`.
 
 You can find more information about TestFlight and how to test previous builds in the [official documentation](https://testflight.apple.com/#testing-previous-builds).
+
+## Limitations of using Play To Device
+
+Even though the Play to Device feature is a powerful tool for iterating on your content, it will not replace how some features will work in a real device. Here are some limitations to keep in mind:
+
+* Video Component: The [VisionOSVideoComponent](VideoComponent.md#visionosvideocomponent) may not work as expected when connected to a PlayToDevice host. Over a network, the VisionOSVideoComponent will not work, while the Unity VideoPlayer component will work, albeit with a performance cost.
+* PlayToDevice may incur a performance hit when using render textures, and render textures may render slowly or may stutter while connected.
+* Play to Device may not be able to accommodate your `VolumeCamera`'s specific `Output Dimension`. The number of available `VolumeCamera` window sizes (`OutputDimension`) is limited in PlayToDevice, and PlayToDevice will attempt to match user requested dimensions to available window sizes.
+* Object tracking is not supported in the Play to Device app.
+* XR Meshes over windows are not supported over Play to Device.

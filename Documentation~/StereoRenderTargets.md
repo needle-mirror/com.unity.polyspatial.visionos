@@ -14,11 +14,9 @@ Enables a camera to render into a single-pass stereo framebuffer and then displa
 1. You must be on Unity 6.
 2. URP must be installed in your project.
 3. URP needs to be set to use the RenderGraph. Ensure **Project Settings > Graphics > Render Graph > Compatibility Mode (Render Graph Disabled)** is **unchecked**.
-4. Stereo render targets rely on a custom **ScriptableRendererFeature** called **PolySpatialStereoFramebufferFeature**. You can add this to your URP
-   Renderer Features list yourself. Or place the preconfigured asset `Samples/StereoRenderer/Settings/StereoRendererURPAsset`
-   into **Project Settings > Graphics > Default Render Pipeline** and **Project Settings > Quality > Rendering > Render Pipeline Asset**.
+4. Stereo render targets rely on a custom **ScriptableRendererFeature** called **PolySpatialStereoFramebufferFeature**. You can add this to your URP Renderer Features list yourself. Or place the preconfigured asset `Samples/StereoRenderer/Settings/StereoRendererURPAsset` into **Project Settings > Graphics > Default Render Pipeline** and **Project Settings > Quality > Rendering > Render Pipeline Asset**. Ensure under **Project Settings > Quality > Levels** you have selected the **Quality Level** which you are using on device before you fill in the **Render Pipeline Asset** reference.
 5. Add all of the sample scenes within `PolySpatial Extensions/Samples/StereoRenderer/Scenes` to your **Build Settings** list.
-6. Name **User Layer 20** to `StereoRender+DisabledTracking`. Then set **Project Settings > PolySpatial > Ignored Objects Layer Mask** to include the `StereoRender+DisabledTracking` layer.
+6. Name **User Layer 20** to `DisabledTracking`. Then set **Project Settings > PolySpatial > Ignored Objects Layer Mask** to include the `DisabledTracking` layer.
 7. Build and deploy to visionOS.
 
 | Sample Scene Name                          | Description                                                                                                                                                                                                                                                                                                                                                                                                       |

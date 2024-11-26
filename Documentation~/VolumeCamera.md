@@ -90,8 +90,8 @@ The `WindowState` struct has the following properties:
 | &nbsp;&nbsp;&nbsp;&nbsp;*Focused*      | The volume camera window either received focus or lost focus.|
 | &nbsp;&nbsp;&nbsp;&nbsp;*Backgrounded* | The volume camera window was closed due to being backgrounded.|
 | &nbsp;&nbsp;&nbsp;&nbsp;*Closed*       | The volume camera window was closed due to being dismissed.|
-| **OutputDimensions**                   | The actual dimensions of the window in world space, or `Vector3.zero` if the volume is unbounded. |
-| **ContentDimensions**                  | The actual dimensions of the content, which may be different due to aspect ratio mapping, in world space, or `Vector3.zero` if the volume is unbounded. |
+| **OutputDimensions**                   | The actual dimensions of the window in world space, or `Vector3.One` if the volume is unbounded. |
+| **ContentDimensions**                  | The scale of the content with respect to Unity. The content scale in visionOS may differ from Unity’s due to a variety of reasons, such as aspect ratio, window size, or even the `Dimensions` and `Transform.localScale` property of the `VolumeCamera`. If the volume is unbounded, only`Transform.localScale` affects the scale of the content.     |
 | **Mode**                               | The mode this volume camera will display its content in, Bounded or Unbounded. |
 | **IsFocused**                          | When windowEvent is set to `WindowEvent.Focused`, this will indicate whether it has received focus or lost it. |
 | **SessionID**                          | A value to identify the PolySpatial session that the volume camera generating the event belongs to. This is useful for multi-session applications (such as Play-to-Device), where the scene exists both locally and on the device. When the Session ID is 0, the event came from a volume in the local session. When the ID is greater than 0, it came from a volume in a remote session (such as on the device). |
@@ -114,6 +114,8 @@ Additionally, some of the ordering may be subject to change in the future, parti
 `ViewpointChanged` An event that is triggered when the user's viewpoint of the volume changes. This event will only trigger for volumes with the bounded window configuration mode. The possible viewpoints are left, right, front, and back. When the user steps to the left of the bounded volume, this event will trigger and indicate that the user is to the left of the volume.
 
 This event will only trigger once a viewpoint change has happened. Currently, when the volume is first created, this event will not trigger.
+
+This event will not trigger for unbounded volumes.
 
 `ImmersionChanged` An event that is triggered when the user turns  the **Digital Crown** to change the immersion level. The VolumeCamera must be set to **Unbounded** **Mode** and the **Immersion Style** must be set to **Progressive** in Project Settings.
 

@@ -129,6 +129,9 @@ extension SwiftUICore.EnvironmentValues {
 extension Swift.Float {
   public func approximatelyEqual(_ other: Swift.Float, _ epsilon: Swift.Float = 1e-6) -> Swift.Bool
 }
+extension CoreFoundation.CGFloat {
+  public func approximatelyEqual(_ other: CoreFoundation.CGFloat, _ epsilon: CoreFoundation.CGFloat = 1e-6) -> Swift.Bool
+}
 extension simd.simd_quatf {
   public func approximatelyEqual(_ other: simd.simd_quatf, _ epsilon: Swift.Float = 1e-6) -> Swift.Bool
   public func eulerAngles() -> Swift.SIMD3<Swift.Float>
@@ -161,6 +164,21 @@ extension Swift.String : Foundation.LocalizedError {
     get
   }
 }
+public struct PackedIdentifier : Swift.CustomStringConvertible {
+  public init(id0: Swift.UInt64, id1: Swift.UInt64)
+  public var description: Swift.String {
+    get
+  }
+  public var unityInstanceId: Swift.Int32 {
+    get
+  }
+  public var id0: Swift.UInt64 {
+    get
+  }
+  public var id1: Swift.UInt64 {
+    get
+  }
+}
 @_Concurrency.MainActor @preconcurrency public struct PolySpatialContentViewWrapper : SwiftUICore.View {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
     get
@@ -179,6 +197,9 @@ public protocol PolySpatialWindowManagerDelegate {
 }
 @_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialWindowManagerAccess {
   @_Concurrency.MainActor public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
+  @_Concurrency.MainActor public static func entitiesForUnityInstanceId(id: Swift.Int32) -> [RealityFoundation.Entity]
+  @_Concurrency.MainActor public static func entityForIdentifier(id: PolySpatialRealityKit.PackedIdentifier) -> RealityFoundation.Entity?
+  @_Concurrency.MainActor public static func identifierForEntity(entity: RealityFoundation.Entity) -> PolySpatialRealityKit.PackedIdentifier?
   @_Concurrency.MainActor public static func onCompositorSpaceOpened(_ window: PolySpatialRealityKit.PolySpatialWindow)
   @_Concurrency.MainActor public static func onCompositorSpaceDismissed(_ window: PolySpatialRealityKit.PolySpatialWindow)
   @_Concurrency.MainActor public static func onImmersionChange(_ oldAmount: Swift.Double?, _ newAmount: Swift.Double?)

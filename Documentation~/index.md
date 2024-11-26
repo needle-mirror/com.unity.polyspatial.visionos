@@ -11,10 +11,10 @@ visionOS enables 3D multi-tasking experiences that seamlessly integrate with the
 ## Requirements
 Unity PolySpatial and visionOS support is only available to Unity Pro, Unity Enterprise, and Unity Industry users. [Learn more about these plans](https://unity.com/pricing).
 
-To learn about the requirements for visionOS and PolySpatial in Unity, see [visionOS PolySpatial Requirements & Limitations](Requirements.md).
+To learn about the requirements for visionOS and PolySpatial in Unity, see [Requirements](Requirements.md).
 
 ## visionOS Platform Overview
-You can find information about Unity's support for visionOS in the [visionOSPlatformOverview](visionOSPlatformOverview.md).
+You can find information about Unity's support for visionOS in the [visionOS Platform Overview](visionOSPlatformOverview.md).
 
 ### visionOS Application Modes
 Unity supports several different application modes on visionOS, each with their own advantages:

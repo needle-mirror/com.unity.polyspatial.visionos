@@ -1,0 +1,25 @@
+{
+    "name": "Unity.PolySpatial.RealityKitTests",
+    "rootNamespace": "",
+    "references": [
+        "Unity.PolySpatial",
+        "Unity.PolySpatial.Core",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.PolySpatial.RealityKit"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Unity.PolySpatial.Core.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

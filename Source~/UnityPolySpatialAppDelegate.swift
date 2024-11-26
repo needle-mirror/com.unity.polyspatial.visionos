@@ -36,6 +36,12 @@ class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableOb
         PolySpatialRealityKitAccess.register()
     }
 
+    // Called by UnityTest.
+    @objc
+    func setQuitHandler(_ handler: @escaping () -> Void) {
+        UnityFramework.getInstance().appController().quitHandler = handler
+    }
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         var arguments = CommandLine.arguments
 

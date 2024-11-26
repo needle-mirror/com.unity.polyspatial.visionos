@@ -18,7 +18,7 @@ The **XR Interaction Toolkit** is required by the sample scenes, but the **XR Ha
 
 ## Scene elements
 
-The [ARSession](xref:arfoundation-session) and [ARInputManager](xref:arfoundation-session#ar-input-manager) components must exist in all Metal and Hybrid scenes on visionOS. These components are required because the visionOS platform provides head and hand tracking data through Apple's ARKit. These components can be on any GameObject in your scene, but only one of each should be present. In the Metal Sample scene, the components are on the GameObject named "AR Session." In addition to head and hand tracking data, ARKit on visionOS provides world meshes, planes, and image markers tracked by the device.
+The [ARSession](xref:arfoundation-session) and [ARInputManager](xref:arfoundation-session#ar-input-manager) components must exist in all Metal and Hybrid scenes on visionOS. These components are required because the visionOS platform provides head and hand tracking data through Apple's ARKit. These components can be on any GameObject in your scene, but only one of each should be present. In the Metal Sample scene, the components are on the GameObject named "AR Session." In addition to head and hand tracking data, ARKit on visionOS provides world meshes, planes, and image markers tracked by the device.  With visionOS 2.0 we support object tracking and environment probes as well.
 
 > [!NOTE]
 > On visionOS, Apple ARKit features are implemented by the [Apple visionOS XR Plugin](https://docs.unity3d.com/Packages/com.unity.xr.visionos@latest) package (com.unity.xr.visionos). You do not need the [Apple ARKit](https://docs.unity3d.com/Packages/com.unity.xr.arkit@latest) package (com.unity.xr.arkit), which implements ARKit features for iOS.

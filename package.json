@@ -1,26 +1,26 @@
 {
   "name": "com.unity.polyspatial.visionos",
   "displayName": "PolySpatial visionOS",
-  "version": "2.0.4",
+  "version": "2.1.2",
   "unity": "6000.0",
   "unityRelease": "22f1",
   "description": "Unity PolySpatial integration package to support shared and immersive mode rendering on Apple visionOS.\nUnity PolySpatial and visionOS support is only available to Unity Pro, Unity Enterprise, and Unity Industry users. Learn more about these plans at unity.com/pricing.",
   "dependencies": {
-    "com.unity.polyspatial": "2.0.4",
-    "com.unity.polyspatial.xr": "2.0.4",
-    "com.unity.xr.visionos": "2.0.4",
+    "com.unity.polyspatial": "2.1.2",
+    "com.unity.polyspatial.xr": "2.1.2",
+    "com.unity.xr.visionos": "2.1.2",
     "com.unity.xr.management": "4.5.0"
   },
   "_upm": {
-    "changelog": "### Added\n- PlayToDevice will now limit the editor framerate to 45 by default in order to lower network congestion. The editor sending too many packets over PlayToDevice could cause significant lag and latency for some users. This limit can be changed in the PlayToDevice window.\n- Fix issue of two scenes simultaneously existing for a frame when new scene is loaded.\n\n### Changed\n- XRTouchSpaceInteractor renamed to XRSpatialPointerInteractor.\n- Update minimum Editor version to 6000.0.22f1.\n\n### Deprecated\n\n### Removed\n\n### Fixed\n- Bones are now parented to the parent of the RootBone instead of to the SkinnedMeshRenderer entity. This fixes an issue where if the SkinnedMeshRenderer was on a different hierarchy than the RootBone, the bones might not be affected by any transforms applied to the RootBone.\n- Child colliders of XRBaseInteractables are now recognized when using XRTouchSpaceInteractor/XRSpatialPointerInteractor.\n\n### Security"
+    "changelog": "### Added\n\n### Changed\n- Restored `PolySpatialWindowManagerAccess.entityForIdentifier`/`identifierForEntity` that was removed when adding multi-volume support and added `entitiesForUnityInstanceId` to return Entities from all volumes.\n- Improved performance of blend shapes by enabling asynchronous processing.\n- Entities merged via static batching now include the source entities' synchronized components (sort groups, image based light receivers, environment lighting configurations, grounding shadows, and hover effects).\n- Updated Metal Samples presentation image and added known limitations section to the Play to Device Section.\n\n### Deprecated\n\n### Removed\n\n### Fixed\n- Fixed edge cases with blend shape support: support meshes with no vertices and meshes with no bone weights.\n- Fixed issue where raycastable UGUI components would not be removed from scene when hidden (when scrolling, e.g.)\n- Fixed a bug with tracked images over play to device.\n\n### Security"
   },
   "upmCi": {
-    "footprint": "d19a147d5ddd3086944c62214d38c60d250273b9"
+    "footprint": "609cbb5d6e3a625197556e73b9d113fb970ee652"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@2.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.polyspatial.visionos@2.1/manual/index.html",
   "repository": {
-    "url": "https://github.cds.internal.unity3d.com/unity/quantum.git",
+    "url": "https://github.cds.internal.unity3d.com/unity/polyspatial.git",
     "type": "git",
-    "revision": "f1ff4502685c7c85fb07a1997f1cd553ba4dcbe6"
+    "revision": "83504314d8b6c254f26c60939db39a20d96757ac"
   }
 }

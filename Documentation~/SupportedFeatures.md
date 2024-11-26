@@ -72,7 +72,7 @@ Support for Unity's built-in particles under PolySpatial is actively being devel
 
 - **Bake to Mesh**: In this mode, a dynamic mesh is baked for every particle system every frame. It closely aligns the visuals with Unity rendering, allowing leverage of most features of Unity's built-in particle systems, including custom shaders authored with ShaderGraph. However, this mode currently imposes a significant performance overhead. We are actively working to improve performance for baked particles.
 
-**Note:** Baked Mesh billboard particles only face the camera if there's an unbounded volume camera and ARSession in the scene. You can add an ARSession to the scene by right-clicking in the Editor **Hierarchy** window and selecting **XR &gt; AR Session** from the context menu.
+**Note:** Baked Mesh billboard particles only face the camera when in an unbounded volume camera and an ARSession exists in the scene. You can add an ARSession to the scene by right-clicking in the Editor **Hierarchy** window and selecting **XR &gt; AR Session** from the context menu.
 
 - **Bake to Texture**: In this mode, a texture is baked for every particle system every frame. This mode is more performant for large particle systems than Bake to Mesh, while maintaining close visual parity with Unity rendering. This mode is currently limited to billboard and mesh particle render modes, and incurs a longer shader warm time. Billboarded particles in this mode will orient toward the camera properly.
 

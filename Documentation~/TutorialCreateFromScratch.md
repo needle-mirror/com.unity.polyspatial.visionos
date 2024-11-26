@@ -1,7 +1,7 @@
 ---
 uid: psl-vos-tutorial-new-project
 ---
-# Starting a new visionOS project from scratch
+# Start a new visionOS project from scratch
 
 This page describes how to start a project from scratch using one or more of the available modes.
 
@@ -21,8 +21,9 @@ Before starting, ensure you meet the [Hardware and Software Requirements](Requir
 
 By default, Unity builds that target visionOS will be set up to run in windowed mode. If you install XR or PolySpatial support (by following steps 1-8 from **Fully Immersive Virtual Reality** below), you need to manually configure your App Mode in order to build and deploy a 2D windowed application:
 
-1. Open Project Settings.
-2. Change the app mode under `XR Plug-in Management > Apple visionOS > App Mode` to `Windowed - 2D Window`.
+1. Open the **Project Settings** window (menu:**Edit &gt; Project Settings**).
+2. Select the **Apple visionOS** settings section under **XR Plug-in Management**.
+3. Set the **App Mode** to **Windowed - 2D Window**.
 
 Windowed Apps use Unity's own rendering pipeline, such as the Built-in Render Pipeline or Universal Render Pipeline. See [Windowed Apps](WindowedApps.md) for details.
 
@@ -33,10 +34,17 @@ Windowed Apps use Unity's own rendering pipeline, such as the Built-in Render Pi
 3. If necessary, click the button to **Install XR Plug-in Management**.
 4. Select the tab for the **visionOS** target build platform.
 5. Enable the **Apple visionOS** Plug-in Provider.
-6. Open the **Package Manager** to ensure that the latest version of `com.unity.xr.visionos` has been installed. This should be <code class="long_version">X.Y.Z</code>. If not, then upgrade to this version by using `Install Package By Name...` and specifying the version.
-7. Return to the **Project Settings** window and select the **Apple visionOS** settings section under **XR Plug-in Management**.
+7. Select the **Apple visionOS** settings section under **XR Plug-in Management**..
 8. Set the **App Mode** to **Metal Rendering with Compositor Services**.
-9. Open the **Build Profiles** window (menu: **File &gt; Build Profiles**).
+9. Correct any errors listed under **Project Validation**.
+
+   1. Select **Project Validation** under **XR Plug-in Management** on the **Player Settings** window.
+   2. Review and correct any errors listed.
+
+   > [!TIP]
+   > In many cases, you can click **Fix All** to resolve any validation problems.
+
+10. Open the **Build Profiles** window (menu: **File &gt; Build Profiles**).
     1. Select the **visionOS** platform.
     2. If necessary, click **Switch Platform** to change to the visionOS platform.
     3. Add and select any Scenes you want to include in the build. (For example, SampleScene.)
@@ -46,6 +54,10 @@ Windowed Apps use Unity's own rendering pipeline, such as the Built-in Render Pi
 Your app will render a full immersive space and you should see the Unity skybox (or your app) running in the Apple Vision Pro simulator.
 
 Refer to [Metal-based Apps on visionOS](MetalApps.md) docs for more information
+
+> [!NOTE]
+> To ensure that the latest version of `com.unity.xr.visionos` has been installed, open the **Package Manager**. This should be <code class="long_version">X.Y.Z</code>. If not, then upgrade to this version by using `Install Package By Name...` and specifying the version.
+
 
 ## RealityKit with PolySpatial (Shared and Immersive MR Spaces)
 

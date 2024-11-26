@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [2.1.2] - 2024-11-26
+
+### Added
+
+### Changed
+- Restored `PolySpatialWindowManagerAccess.entityForIdentifier`/`identifierForEntity` that was removed when adding multi-volume support and added `entitiesForUnityInstanceId` to return Entities from all volumes.
+- Improved performance of blend shapes by enabling asynchronous processing.
+- Entities merged via static batching now include the source entities' synchronized components (sort groups, image based light receivers, environment lighting configurations, grounding shadows, and hover effects).
+- Updated Metal Samples presentation image and added known limitations section to the Play to Device Section.
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Fixed edge cases with blend shape support: support meshes with no vertices and meshes with no bone weights.
+- Fixed issue where raycastable UGUI components would not be removed from scene when hidden (when scrolling, e.g.)
+- Fixed a bug with tracked images over play to device.
+
+### Security
+
 ## [2.0.4] - 2024-09-25
 
 ### Added

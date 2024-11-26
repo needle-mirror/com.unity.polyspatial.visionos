@@ -7,13 +7,14 @@
         * Advanced Features
             * [PolySpatial Hybrid Apps on visionOS](PolySpatialHybridApps.md)
             * [Stereo Render Targets](StereoRenderTargets.md)
-    * [Requirements](Requirements.md)
+    * [visionOS Settings](VisionOSSettings)
     * [Development & Iteration](DevelopmentAndIteration.md)
         * [Project Validation](PolySpatialXRProjectValidation.md)
 * [Getting Started](GettingStarted.md)
+    * [Requirements](Requirements.md)
     * [Installation](install.md)
-    * [Create a visionOS project from scratch](TutorialCreateFromScratch.md)
-    * [Create a visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md)
+    * [Start a visionOS project from scratch](TutorialCreateFromScratch.md)
+    * [Start a visionOS project from the Immersive App Template](TutorialCreateFromTemplate.md)
     * [Preview an application with the Play To Device feature](PlayToDevice.md)
 * Reference Documentation
     * [PolySpatial Settings](PolySpatialSettings.md)

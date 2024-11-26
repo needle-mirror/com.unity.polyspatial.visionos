@@ -3,12 +3,12 @@ uid: psl-vos-polyspatial-lighting
 ---
 
 # Unity PolySpatial Lighting Support
-VisionOS provides image based lighting as well as dynamic point, spot, and directional lights.  PolySpatial also includes a lighting solution available to shader graphs that provides a subset of the lighting features available in Unity.  The PolySpatial Lighting Node supports directional lightmaps, light probes, and up to four dynamic lights (point, spot, or directional).
+VisionOS provides image based lighting as well as dynamic point, spot, and directional lights.  PolySpatial also includes a lighting solution available to shader graphs that provides a subset of the lighting features available in Unity.  The `PolySpatial Lighting Data Extension` and `PolySpatial Lighting Node` support directional lightmaps, light probes, and up to four dynamic lights (point, spot, or directional).
 
 ## VisionOS Lighting
 Lit materials (both standard shaders such as `Universal Render Pipeline/Lit` and shader graphs using Lit targets) use visionOS lighting by default.  This lighting comprises [image based lighting](ImageBasedLight.md) (derived from the device cameras and/or environment maps) and, optionally, dynamic point, spot, and directional lights.  Spot and directional lights support shadows.
 
-Because visionOS uses different lighting calculations from Unity, the appearance of lit objects in visionOS will not exactly match that of objects rendered in the Unity editor.  To achieve a closer match for dynamic lights, you may wish to use the `PolySpatial Lighting Node`.
+Because visionOS uses different lighting calculations from Unity, the appearance of lit objects in visionOS will not exactly match that of objects rendered in the Unity editor.  To achieve a closer match for dynamic lights, you may wish to use the `PolySpatial Lighting Data Extension` or `PolySpatial Lighting Node`.
 
 ### VisionOS Light Settings
 To control the default behavior for dynamic lights in visionOS, use the `Default VisionOS Lighting` option under `PolySpatial` in `Project Settings`.  This defaults to `Image Based Only`, but you can change it to `Image Based and Dynamic Lights` to enable point/spot/directional lights for standard Lit materials in visionOS, or to `Image Based, Dynamic Lights, and Shadows` to enable spot/directional shadows as well.
@@ -19,8 +19,22 @@ There are two additional settings that control shadow behavior specific to visio
 
 To control visionOS light behavior on a per-light basis, add an instance of the `VisionOS Light Settings` component to the `GameObject` containing the `Light` instance.  This has the same options as the defaults in the `PolySpatial` project settings.
 
+## PolySpatial Lighting Data Extension
+To add PolySpatial lighting to a shader graph with a `Lit` material, add the `PolySpatial Lighting` data extension to the `Data Extension Settings` section, located under `Target Settings` in the `Graph Inspector`.  This will cause the MaterialX version of the shader graph used in visionOS to include lighting functionality as determined by the extension options:
+
+| **Option** | **Description** |
+| --- | --- |
+| **Baked Lighting** | The Unity baked lighting to include: either `None`, `Lightmap` or `LightProbes`. |
+| **Reflection Probes** | The Unity reflection probe contribution: either `None`, `Simple`, or `Blended`. |
+| **Dynamic Lighting** | If true, apply dynamic Unity point/spot/directional light contribution. |
+| **VisionOS Lighting** | If true, *also* apply visionOS lighting (imaged based and dynamic point/spot/directional lights, as described in the previous section). |
+
+In the Unity editor view (in or out of play mode), the `PolySpatial Lighting Data Extension` will have no visible effect: lit shader graphs will simply use Unity's standard lighting model.  The options in the extension apply only to the appearance of the shader graph in visionOS.  Without the extension, in visionOS, lit shader graphs will behave as if only the `VisionOS Lighting` option was enabled.
+
+The Unity-specific lightmap, light probe, reflection probe, and dynamic lighting is subject to the limitations of the `PolySpatial Lighting Node` described in the following section.
+
 ## PolySpatial Lighting Node
-To add PolySpatial lighting to a shader graph, create an instance of the `PolySpatial Lighting Node` using the `Create Node` command in the shader graph editor.
+As an alternative to the `PolySpatial Lighting Data Extension`, you may instead include PolySpatial lighting by creating an instance of the `PolySpatial Lighting Node` using the `Create Node` command in the shader graph editor.  This allows you to process the lighting output before routing it to an output block (such as `Base Color` or `Emission`), but it requires that you explicitly provide the lighting inputs such as `Metallic` and `Smoothness` to the node and it *will only appear correctly in builds and in play mode*.  Because it requires information from the PolySpatial runtime, it will not appear correctly in material previews or the editor scene view.
 
 ### Inputs
 The inputs to the lighting node are largely the same as the inputs to the `Lit` shader graph target--`Base Color` (albedo), `Normal` (in tangent space), `Metallic`, `Smoothness`, `Emission`, and `Ambient Occlusion`--with the additional of a `Lightmap UV` input for lightmap texture coordinates.

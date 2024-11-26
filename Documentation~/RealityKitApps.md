@@ -35,3 +35,7 @@ Additionally, the VolumeCamera will dispatch an event called **ImmersionChanged*
 
 > [!NOTE]
 > Apple visionOS 2.0 added support for the `ImmersionChanged` event. This event is not available in earlier visionOS versions. Refer to  [onImmersionChange](https://developer.apple.com/documentation/swiftui/view/onimmersionchange(_:)) for additional information.
+
+## visionOS Settings
+
+The [visionOS project settings](VisionOSSettings.md) menu has a few properties pertaining to the **RealityKit with PolySpatial** app mode.

@@ -41,33 +41,29 @@ struct BlendResult
     float3 bitangent;
 };
 
-// Compute shader to perform blend shape blending and skinning.
-kernel void blendAndSkin(
-    device const uint& vertexCount [[buffer(0)]],
-    device const BaseVertex* baseVertices [[buffer(1)]],
-    device const int32_t* blendShapeVertices [[buffer(2)]],
-    device const float* blendFrameWeights [[buffer(3)]],
-    device const JointInfluence* jointInfluences [[buffer(4)]],
-    device const uint& jointInfluencesPerVertex [[buffer(5)]],
-    device const float4x4* jointMatrices [[buffer(6)]],
-    device const float3x3* jointNormalMatrices [[buffer(7)]],
-    device BlendResult* results [[buffer(8)]],
+// Compute shader to perform blend shape blending (without skinning).
+kernel void blend(
+    device BlendResult* results [[buffer(0)]],
+    device const uint& vertexCount [[buffer(1)]],
+    device const BaseVertex* baseVertices [[buffer(2)]],
+    device const int32_t* blendShapeVertices [[buffer(3)]],
+    device const float* blendFrameWeights [[buffer(4)]],
     uint index [[thread_position_in_grid]])
 {
     if (index >= vertexCount)
         return;
-    
+
     // Start with the base vertex attributes.
     device auto& result = results[index];
     device auto& baseVertex = baseVertices[index];
     auto blendedPosition = baseVertex.position;
     auto blendedNormal = baseVertex.normal;
     auto blendedTangent = baseVertex.tangent.xyz;
-    
+
     // Extract the blend shape vertex range for the current index.
     auto startVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index]);
     auto endVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index + 1]);
-    
+
     // Add each blend shape vertex multiplied by its weight in the array.
     for (auto currentVertex = startVertex; currentVertex != endVertex; ++currentVertex)
     {
@@ -76,25 +72,68 @@ kernel void blendAndSkin(
         blendedNormal += currentVertex->normalDelta * weight;
         blendedTangent += currentVertex->tangentDelta * weight;
     }
-    
+
+    // Normalize and set the results and apply the tangent sign.
+    result.position = blendedPosition;
+    result.normal = normalize(blendedNormal);
+    result.tangent = normalize(blendedTangent);
+    result.bitangent = normalize(cross(blendedNormal, blendedTangent)) * baseVertex.tangent.w;
+}
+
+// Compute shader to perform blend shape blending and skinning.
+kernel void blendAndSkin(
+    device BlendResult* results [[buffer(0)]],
+    device const uint& vertexCount [[buffer(1)]],
+    device const BaseVertex* baseVertices [[buffer(2)]],
+    device const int32_t* blendShapeVertices [[buffer(3)]],
+    device const float* blendFrameWeights [[buffer(4)]],
+    device const JointInfluence* jointInfluences [[buffer(5)]],
+    device const uint& jointInfluencesPerVertex [[buffer(6)]],
+    device const float4x4* jointMatrices [[buffer(7)]],
+    device const float3x3* jointNormalMatrices [[buffer(8)]],
+    uint index [[thread_position_in_grid]])
+{
+    if (index >= vertexCount)
+        return;
+
+    // Start with the base vertex attributes.
+    device auto& result = results[index];
+    device auto& baseVertex = baseVertices[index];
+    auto blendedPosition = baseVertex.position;
+    auto blendedNormal = baseVertex.normal;
+    auto blendedTangent = baseVertex.tangent.xyz;
+
+    // Extract the blend shape vertex range for the current index.
+    auto startVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index]);
+    auto endVertex = (device const BlendShapeVertex*)(blendShapeVertices + blendShapeVertices[index + 1]);
+
+    // Add each blend shape vertex multiplied by its weight in the array.
+    for (auto currentVertex = startVertex; currentVertex != endVertex; ++currentVertex)
+    {
+        auto weight = blendFrameWeights[currentVertex->index];
+        blendedPosition += currentVertex->positionDelta * weight;
+        blendedNormal += currentVertex->normalDelta * weight;
+        blendedTangent += currentVertex->tangentDelta * weight;
+    }
+
     auto position = float3(0, 0, 0);
     auto normal = float3(0, 0, 0);
     auto tangent = float3(0, 0, 0);
-    
+
     auto startInfluence = jointInfluences + index * jointInfluencesPerVertex;
     auto endInfluence = startInfluence + jointInfluencesPerVertex;
-    
+
     // Apply the joint influences to the results of blending.
     for (auto currentInfluence = startInfluence; currentInfluence != endInfluence; ++currentInfluence)
     {
         auto jointMatrix = jointMatrices[currentInfluence->index];
         auto jointNormalMatrix = jointNormalMatrices[currentInfluence->index];
-        
+
         position += (jointMatrix * float4(blendedPosition, 1)).xyz * currentInfluence->weight;
         normal += jointNormalMatrix * blendedNormal * currentInfluence->weight;
         tangent += jointNormalMatrix * blendedTangent * currentInfluence->weight;
     }
-    
+
     // Normalize and set the results and apply the tangent sign.
     result.position = position;
     result.normal = normalize(normal);
@@ -142,7 +181,7 @@ kernel void textureCubeToEquirectangular(
     // Convert lat/long to unit direction.
     float sinLongitude = sin(longitude);
     float3 dir = float3(-sinLongitude * sin(latitude), cos(longitude), -sinLongitude * cos(latitude));
-    
+
     constexpr sampler textureSampler(mag_filter::linear, min_filter::linear);
     outTexture.write(inTexture.sample(textureSampler, dir), gid);
 }

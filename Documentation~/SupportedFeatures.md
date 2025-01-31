@@ -10,54 +10,54 @@ For more information about converting legacy projects, see also [Porting Unity P
 ## Unity Simulation Components / Systems
 It's impossible to list all the systems and packages that Unity exposes in this page but the table below lists the status of support for a range of core Unity features: 
 
-| **Component**             | **Status**               |
-|---------------------------|--------------------------|
-| **Transform**             | Supported                |
-| **Audio**                 | Not fully spatialized    |
-| **MeshFilter**            | Supported                |
-| **Animation / Animators** | Supported                |
-| **2D Physics**            | Supported                |
-| **3D Physics**            | Supported                |
-| **Scripts**               | Supported                |
-| **AI & Navmesh**          | Supported                |
-| **Terrain**               | Experimental support     |
+| **Component**             | **Status**            |
+|---------------------------|-----------------------|
+| **Transform**             | Supported             |
+| **Audio**                 | Not Fully Spatialized |
+| **MeshFilter**            | Supported             |
+| **Animation / Animators** | Supported             |
+| **2D Physics**            | Supported             |
+| **3D Physics**            | Supported             |
+| **Scripts**               | Supported             |
+| **AI & Navmesh**          | Supported             |
+| **Terrain**               | Experimental Support  |
 
 `MonoBehaviours` are expected to work but they will depend on a case by case basis depending on which other components your scripts interact with.
 
 ## Rendering Components / Systems
 <a name="rendering-components-systems"></a>
 
-| **Component**             | **Status**               |
-|---------------------------|--------------------------|
+| **Component**             | **Status**                                                                                                                                                              |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **MeshRenderer**          | Lighting must be set up via material      No support for this component in Immediate mode     No support for "Additional Settings" (dynamic occlusion, rendering layer) |
-| **SkinnedMeshRenderer**   |  Unoptimized animation only (the **Optimize Game Objects** option on the Rig tab of the Model Import inspector must be ticked off if it appears.) |
-| **Particle Systems**      | Partial support; see [Particle Systems](#particle-systems) below |
-| **Trail Renderer**        | Partial support; see [Particle Systems](#particle-systems) below |
-| **Light**                 | Up to 4 dynamic lights only, and requires each affected material to include a [PolySpatial Lighting Node](PolySpatialLighting.md) in its shadergraph |
-| **Camera**                | Not supported |
-| **Halo**                  | Not supported |
-| **Lens Flare**            | Not supported |
-| **Line Rendering**        | Not supported |
-| **Projector**             | Not supported |
-| **Visual Effects**        | Not supported |
-| **Lens Flare**            | Not supported |
-| **Level of Detail (LoD)** | Not supported |
-| **Occlusion Area**        | Not supported |
-| **Occlusion Portal**      | Not supported |
-| **Skybox**                | Not supported |
-| **URP Decal projector**   | Not supported |
-| **Tilemap Renderer**      | Not supported |
-| **Video Player**          | Limited support |
-| **Graphics Raycaster**    | Not supported |
-| **Shaderlab Shaders**     | Not supported |
-| **Post Processors**       | Not supported |
-| **Lightmapping**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
-| **Baked Lighting**        | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
-| **Enlighten**             | Not supported |
-| **Light Probes**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
-| **Reflection Probes**     | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md) |
-| **Trees**                 | Not supported |
-| **Fog**                   | Not supported |
+| **SkinnedMeshRenderer**   | Unoptimized animation only (the **Optimize Game Objects** option on the Rig tab of the Model Import inspector must be ticked off if it appears.)                        |
+| **Particle Systems**      | Partial Support; see [Particle Systems](#particle-systems) below                                                                                                        |
+| **Trail Renderer**        | Partial Support; see [Particle Systems](#particle-systems) below                                                                                                        |
+| **Light**                 | Up to 4 dynamic lights only, and requires each affected material to include a [PolySpatial Lighting Node](PolySpatialLighting.md) in its shadergraph                    |
+| **Camera**                | Not Supported                                                                                                                                                           |
+| **Halo**                  | Not Supported                                                                                                                                                           |
+| **Lens Flare**            | Not Supported                                                                                                                                                           |
+| **Line Renderer**         | Partial Support; View-Aligned Line Renderers will only achieve proper alignment in unbounded mode with an ARSession in the scene                                        |
+| **Projector**             | Not Supported                                                                                                                                                           |
+| **Visual Effects**        | Not Supported                                                                                                                                                           |
+| **Lens Flare**            | Not Supported                                                                                                                                                           |
+| **Level of Detail (LoD)** | Not Supported                                                                                                                                                           |
+| **Occlusion Area**        | Not Supported                                                                                                                                                           |
+| **Occlusion Portal**      | Not Supported                                                                                                                                                           |
+| **Skybox**                | Not Supported                                                                                                                                                           |
+| **URP Decal projector**   | Not Supported                                                                                                                                                           |
+| **Tilemap Renderer**      | Not Supported                                                                                                                                                           |
+| **Video Player**          | Limited Support                                                                                                                                                         |
+| **Graphics Raycaster**    | Not Supported                                                                                                                                                           |
+| **Shaderlab Shaders**     | Not Supported                                                                                                                                                           |
+| **Post Processors**       | Not Supported                                                                                                                                                           |
+| **Lightmapping**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md)                                                                                             |
+| **Baked Lighting**        | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md)                                                                                             |
+| **Enlighten**             | Not Supported                                                                                                                                                           |
+| **Light Probes**          | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md)                                                                                             |
+| **Reflection Probes**     | Limited support through [PolySpatial Lighting Node](PolySpatialLighting.md)                                                                                             |
+| **Trees**                 | Not Supported                                                                                                                                                           |
+| **Fog**                   | Not Supported                                                                                                                                                           |
 
 Some of these features are not supported due to platforms constraints (for example, full screen graphics post processors aren't compatible with the idea of a shared rendering system), while others are areas of ongoing or planned development.
 
@@ -77,32 +77,36 @@ Support for Unity's built-in particles under PolySpatial is actively being devel
 **Note:** VFXGraph is not currently supported in PolySpatial.
 
 #### Replicate Properties Support
-When using the "Replicate Properties" particle mode in PolySpatial, Particle System modules are supported to varying degrees, as summarized in the table below:
+When using the "Replicate Properties" particle mode in PolySpatial, Particle System modules are supported to varying degrees. Other modes will not have these limitations, but may come with heavier performance costs. These limitations are summarized in the table below:
 
-| **Module**                       | **Status**          |
-|----------------------------------|---------------------|
-| **Emission**                     | Partially supported |
-| **Shape**                        | Partially supported |
-| **Velocity over lifetime**       | Partially supported |
-| **Limit Velocity over lifetime** | Partially supported |
-| **Inherit velocity**             | Partially supported |
-| **Force over lifetime**          | Partially supported |
-| **Color over lifetime**          | Partially supported |
-| **Color by speed**               | Not Supported       |
-| **Size over lifetime**           | Partially supported |
-| **Size by speed**                | Not Supported       |
-| **Rotation over lifetime**       | Partially supported |
-| **Rotation by speed**            | Not Supported       |
-| **External Forces**              | Not Supported       |
-| **Noise**                        | Partially supported |
-| **Collision**                    | Partially supported |
-| **Triggers**                     | Not Supported       |
-| **Sub Emitters**                 | Partially supported |
-| **Texture sheet animation**      | Partially supported |
-| **Lights**                       | Not Supported       |
-| **Trails**                       | Not Supported       |
-| **Custom Data**                  | Not Supported       |
-| **Renderer**                     | Partially supported |
+| **Module**                       | **Status**                                                                                                                                                                                                                                                                                       |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Main Module**                  | Partially Supported <br/>- Duration<br/>- Looping<br/>- Prewarm<br/>- StartSpeed<br/>- StartLifetime<br/> - StartSize<br/>- IsStartRotation3D<br/>- StartRotation<br/>- StartColor<br/>- GravityModifier<br/>- SimulationSpace                                                                   |
+| **Emission**                     | Partially Supported <br/>- RateOverTime                                                                                                                                                                                                                                                          |
+| **Shape**                        | Partially Supported <br/>- Shape (with some approximations)<br/> - DonutRadius<br/>- Angle (used to compute SpreadingAngle in RK for Cone and ConeVolume shapes)<br/>- Arc (used to compute RadialAmount in RK for Cone, ConeVolume, and Donut shapes)<br/>- Position<br/>- Rotation<br/>- Scale |
+| **Velocity over lifetime**       | Partially Supported <br/>- Linear Speed (X, Y, Z)<br/>- Space                                                                                                                                                                                                                                    |
+| **Limit Velocity over lifetime** | Partially Supported <br/>- Speed (no separate axes support)  <br/>- Dampen<br/>- Drag                                                                                                                                                                                                            |
+| **Inherit velocity**             | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Force over lifetime**          | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Color over lifetime**          | Partially Supported <br/>- Color                                                                                                                                                                                                                                                                 |
+| **Color by speed**               | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Size over lifetime**           | Partially Supported <br/>- Size (no separate axes support)                                                                                                                                                                                                                                       |
+| **Size by speed**                | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Rotation over lifetime**       | Partially Supported <br/>- AngularVelocity (no separate axes support)                                                                                                                                                                                                                            |
+| **Rotation by speed**            | Not Supported                                                                                                                                                                                                                                                                                    |
+| **External Forces**              | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Noise**                        | Partially Supported <br/>- Strength (no separate axes support) <br/>- PositionAmount<br/>- ScrollSpeed                                                                                                                                                                                           |
+| **Collision**                    | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Triggers**                     | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Sub Emitters**                 | Partially Supported; Only one subemitter is supported in RealityKit, and is limited to a few number of exposed properties. Namely, speed or emitter shape on a sub-emitter in RK.                                                                                                                |
+| **Texture sheet animation**      | Partially Supported <br/>- TilesX<br/>- TilesY<br/>- Animation<br/>- StartFrame<br/>- TimeMode<br/>- FPS                                                                                                                                                                                         |
+| **Lights**                       | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Trails**                       | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Custom Data**                  | Not Supported                                                                                                                                                                                                                                                                                    |
+| **Renderer**                     | Partially Supported <br/>- SortMode<br/>- RenderMode (limited to Billboard, HorizontalBillboard, and VerticalBillboard)<br/>- RenderingLayerMask<br/>- ShadowCastingMode <br/>- Material (limited to particle lit/unlit shaders)                                                                 |
+
+
+**Note:** MinMaxCurves have limited support. In most cases only the first value in the curve is used. The exceptions are when the last value in the curve can be utilized for a separate property to approximate the same result. This is currently only the case for startSize and sizeOverLifetime curves, as the final values in the curves can be used to compute RealityKit’s sizeMultiplierAtEndOfLifespan.
 
 ## User Interface (UI)
 [Unity UI](https://docs.unity3d.com/Manual/com.unity.ugui.html) works in world space, but screen space UI and advanced visual features like masking, shadowing, etc do not currently work. The table below summarizes the supprot status for other UI features:

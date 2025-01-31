@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [1.3.12] - 2025-01-31
+
+### Changed
+- Updated Particle System documentation to include more detailed limitations of ReplicateProperty mode.
+
 ## [1.3.11] - 2024-11-13
 
 ### Added

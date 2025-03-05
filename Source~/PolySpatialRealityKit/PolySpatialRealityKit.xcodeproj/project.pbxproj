@@ -1,0 +1,838 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3374142B2BD8042C005608F2 /* PolySpatialConsoleLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337414282BD8042C005608F2 /* PolySpatialConsoleLog.swift */; };
+		350172632B62B743007B73E4 /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350172612B62B743007B73E4 /* ColorExtensions.swift */; };
+		3538B4702C12316900729328 /* LineRendererManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3538B46D2C12316900729328 /* LineRendererManager.swift */; };
+		35882B132BA3505B00AB1531 /* MeshResourceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35882B102BA3505A00AB1531 /* MeshResourceExtensions.swift */; };
+		6522D7662B96895600F93218 /* ShaderGlobalProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7632B96895600F93218 /* ShaderGlobalProperty.swift */; };
+		6522D76A2B96898300F93218 /* CachedShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7672B96898300F93218 /* CachedShaderGraph.swift */; };
+		6522D76E2B9689A000F93218 /* LoadingShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D76B2B9689A000F93218 /* LoadingShaderGraph.swift */; };
+		6522D7722B968A0200F93218 /* ValidShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D76F2B968A0200F93218 /* ValidShaderGraph.swift */; };
+		6522D7762B968A1500F93218 /* InvalidShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7732B968A1500F93218 /* InvalidShaderGraph.swift */; };
+		6522D77A2B968A5F00F93218 /* ShaderGraphInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7772B968A5F00F93218 /* ShaderGraphInstance.swift */; };
+		6522D77E2B968A7600F93218 /* LoadingShaderGraphInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D77B2B968A7600F93218 /* LoadingShaderGraphInstance.swift */; };
+		6522D7822B968A8800F93218 /* ValidShaderGraphInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D77F2B968A8800F93218 /* ValidShaderGraphInstance.swift */; };
+		6522D7862B9692B800F93218 /* ShaderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7832B9692B800F93218 /* ShaderManager.swift */; };
+		6522D78A2B97869600F93218 /* UnityParticleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7872B97869600F93218 /* UnityParticleExtensions.swift */; };
+		655504822B642A7100E7126E /* SkinnedMeshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655504812B642A7100E7126E /* SkinnedMeshManager.swift */; };
+		6555049A2B6DBFEA00E7126E /* ParticleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655504972B6DBFEA00E7126E /* ParticleManager.swift */; };
+		682697ED2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682697EA2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift */; };
+		68D728532999CBEB009A19D3 /* PolySpatialImplParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D728502999CBEB009A19D3 /* PolySpatialImplParticle.swift */; };
+		8BAA488A29F1F661000F979C /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486D29F1F615000F979C /* Root.swift */; };
+		8BAA488B29F1F661000F979C /* Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486329F1F615000F979C /* Offset.swift */; };
+		8BAA488C29F1F661000F979C /* FlatBufferBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */; };
+		8BAA488D29F1F661000F979C /* Struct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487529F1F615000F979C /* Struct.swift */; };
+		8BAA488E29F1F661000F979C /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487229F1F615000F979C /* String+extension.swift */; };
+		8BAA488F29F1F661000F979C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486229F1F615000F979C /* Constants.swift */; };
+		8BAA489029F1F661000F979C /* ByteBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486B29F1F615000F979C /* ByteBuffer.swift */; };
+		8BAA489129F1F661000F979C /* FlatbuffersErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */; };
+		8BAA489229F1F661000F979C /* NativeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487129F1F615000F979C /* NativeObject.swift */; };
+		8BAA489329F1F661000F979C /* FlatBufferObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487329F1F615000F979C /* FlatBufferObject.swift */; };
+		8BAA489429F1F661000F979C /* Int+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486529F1F615000F979C /* Int+extension.swift */; };
+		8BAA489529F1F661000F979C /* TableVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486C29F1F615000F979C /* TableVerifier.swift */; };
+		8BAA489629F1F661000F979C /* Verifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486929F1F615000F979C /* Verifier.swift */; };
+		8BAA489729F1F661000F979C /* VeriferOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486E29F1F615000F979C /* VeriferOptions.swift */; };
+		8BAA489829F1F661000F979C /* Table.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486F29F1F615000F979C /* Table.swift */; };
+		8BAA489929F1F661000F979C /* Mutable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486429F1F615000F979C /* Mutable.swift */; };
+		8BAA489A29F1F661000F979C /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486829F1F615000F979C /* Message.swift */; };
+		8BAA489B29F1F661000F979C /* Verifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487029F1F615000F979C /* Verifiable.swift */; };
+		8BAA489C29F1F661000F979C /* FlatBuffersUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486A29F1F615000F979C /* FlatBuffersUtils.swift */; };
+		8BAA489D29F1F661000F979C /* Enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487429F1F615000F979C /* Enum.swift */; };
+		93490F772C98B00400B6EF75 /* PolySpatialImplStateVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93490F752C98B00400B6EF75 /* PolySpatialImplStateVerifier.swift */; };
+		936334B62BD1B2A30014038E /* PolySpatialImplAlignmentMarker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936334B32BD1B2A30014038E /* PolySpatialImplAlignmentMarker.swift */; };
+		937CBA932B5F3E8C00ADA956 /* PolySpatialImplCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 937CBA902B5F3E8C00ADA956 /* PolySpatialImplCanvas.swift */; };
+		938298BB2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938298BA2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift */; };
+		938CB60C2B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938CB6082B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift */; };
+		93BBCC1F2B8D5759003E1AB9 /* StaticBatchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BBCC1C2B8D5759003E1AB9 /* StaticBatchManager.swift */; };
+		BC498A042B0C56BE00A9A7DE /* PolySpatialImplText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC498A002B0C56BE00A9A7DE /* PolySpatialImplText.swift */; };
+		E72FFD782A85763300B5A77F /* PolySpatialSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FFD752A85763300B5A77F /* PolySpatialSceneDelegate.swift */; };
+		E72FFD7C2A85767F00B5A77F /* PolySpatialWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FFD792A85767E00B5A77F /* PolySpatialWindow.swift */; };
+		E795B72F2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E795B72C2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift */; };
+		E7B720BB2981A52B00655168 /* PolySpatialAPI.gen.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABEE3E8F2922DC9500858FB4 /* PolySpatialAPI.gen.swift */; };
+		E7B720BC2981A52B00655168 /* PolySpatialResourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2DB1E728F4C50900C84852 /* PolySpatialResourcesView.swift */; };
+		E7B720BF2981A52B00655168 /* PolySpatialDebugHierarchyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB693FE28D4D90E00925774 /* PolySpatialDebugHierarchyView.swift */; };
+		E7B720C02981A52B00655168 /* PolySpatialFPSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB693F828D4CFE600925774 /* PolySpatialFPSView.swift */; };
+		E7B720C12981A52B00655168 /* PolySpatialImplSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF7A9CF2926D4470019D33C /* PolySpatialImplSprite.swift */; };
+		E7B720C22981A52B00655168 /* PolySpatialStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB693FA28D4D3C100925774 /* PolySpatialStatistics.swift */; };
+		E7B720C32981A52B00655168 /* PolySpatialStatisticsSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB693FC28D4D57100925774 /* PolySpatialStatisticsSystem.swift */; };
+		E7B720C42981A52B00655168 /* PolySpatialStatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCFC97A328D5117100FE3A71 /* PolySpatialStatisticsView.swift */; };
+		E7B720C52981A52B00655168 /* PolySpatialImplInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7A9CD2D28D22A7100148658 /* PolySpatialImplInput.swift */; };
+		E7B720C62981A52B00655168 /* PolySpatialImplMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2456DCA2A49EE471094A67 /* PolySpatialImplMaterial.swift */; };
+		E7B720C72981A52B00655168 /* PolySpatialImplMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245A092BB676F4475A9A57 /* PolySpatialImplMesh.swift */; };
+		E7B720C82981A52B00655168 /* PolySpatialImplTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE24545920F587F2EAF2ACEB /* PolySpatialImplTexture.swift */; };
+		E7B720C92981A52B00655168 /* MathExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75D034028BE936900D1E768 /* MathExtensions.swift */; };
+		E7B720CA2981A52B00655168 /* PolySpatialRealityKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75D034928BE936900D1E768 /* PolySpatialRealityKit.swift */; };
+		E7B720CB2981A52B00655168 /* PolySpatialRealityKitAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75D034B28BE936900D1E768 /* PolySpatialRealityKitAccess.swift */; };
+		E7B720CC2981A52B00655168 /* UnityExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75D034228BE936900D1E768 /* UnityExtensions.swift */; };
+		E7B720CD2981A52B00655168 /* PolySpatialComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245A581C17A63C83F50D2E /* PolySpatialComponents.swift */; };
+		E7B720CE2981A52B00655168 /* PolySpatialEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2455CDD658B73BA7C43597 /* PolySpatialEntity.swift */; };
+		E7B720CF2981A52B00655168 /* PolySpatialImplUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245902366E81D20D9BF0A9 /* PolySpatialImplUtils.swift */; };
+		E7B720D02981A52B00655168 /* UnityGraphicsFormat.mm in Sources */ = {isa = PBXBuildFile; fileRef = E799B79B2919F7E5009E85D7 /* UnityGraphicsFormat.mm */; };
+		E7C476AA2AAF74F5008BEB5D /* PolySpatialImplSortingGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7C476A72AAF74F5008BEB5D /* PolySpatialImplSortingGroup.swift */; };
+		E7E8012A2A82D88900D2C77A /* PolySpatialWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E801272A82D88900D2C77A /* PolySpatialWindowManager.swift */; };
+		E855B9A42981C58800777639 /* PolySpatialRealityKitOverrides.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A12981C58800777639 /* PolySpatialRealityKitOverrides.swift */; };
+		E855B9A62981C58800777639 /* PolySpatialRealityKitExtra.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A32981C58800777639 /* PolySpatialRealityKitExtra.swift */; };
+		E855B9AA2981C63300777639 /* XROSPolySpatialContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A72981C63300777639 /* XROSPolySpatialContentView.swift */; };
+		E855B9AB2981C63300777639 /* PolySpatialVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A82981C63300777639 /* PolySpatialVolume.swift */; };
+		E868C12D2983118000F4BE5E /* libFlatBuffers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E868C1102983114D00F4BE5E /* libFlatBuffers.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E75B86902A573037008218A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E75D032D28BE933400D1E768 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E868C10F2983114D00F4BE5E;
+			remoteInfo = FlatBuffers;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		337414282BD8042C005608F2 /* PolySpatialConsoleLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialConsoleLog.swift; sourceTree = "<group>"; };
+		350172612B62B743007B73E4 /* ColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
+		3538B46D2C12316900729328 /* LineRendererManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineRendererManager.swift; sourceTree = "<group>"; };
+		35882B102BA3505A00AB1531 /* MeshResourceExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeshResourceExtensions.swift; sourceTree = "<group>"; };
+		6023CB8F28F4D18300EDD17B /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		6522D7632B96895600F93218 /* ShaderGlobalProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGlobalProperty.swift; sourceTree = "<group>"; };
+		6522D7672B96898300F93218 /* CachedShaderGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedShaderGraph.swift; sourceTree = "<group>"; };
+		6522D76B2B9689A000F93218 /* LoadingShaderGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingShaderGraph.swift; sourceTree = "<group>"; };
+		6522D76F2B968A0200F93218 /* ValidShaderGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidShaderGraph.swift; sourceTree = "<group>"; };
+		6522D7732B968A1500F93218 /* InvalidShaderGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidShaderGraph.swift; sourceTree = "<group>"; };
+		6522D7772B968A5F00F93218 /* ShaderGraphInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderGraphInstance.swift; sourceTree = "<group>"; };
+		6522D77B2B968A7600F93218 /* LoadingShaderGraphInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingShaderGraphInstance.swift; sourceTree = "<group>"; };
+		6522D77F2B968A8800F93218 /* ValidShaderGraphInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidShaderGraphInstance.swift; sourceTree = "<group>"; };
+		6522D7832B9692B800F93218 /* ShaderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderManager.swift; sourceTree = "<group>"; };
+		6522D7872B97869600F93218 /* UnityParticleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityParticleExtensions.swift; sourceTree = "<group>"; };
+		655504812B642A7100E7126E /* SkinnedMeshManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkinnedMeshManager.swift; sourceTree = "<group>"; };
+		655504972B6DBFEA00E7126E /* ParticleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticleManager.swift; sourceTree = "<group>"; };
+		682697EA2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplVideoPlayer.swift; sourceTree = "<group>"; };
+		68D728502999CBEB009A19D3 /* PolySpatialImplParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplParticle.swift; sourceTree = "<group>"; };
+		8BAA486229F1F615000F979C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		8BAA486329F1F615000F979C /* Offset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Offset.swift; sourceTree = "<group>"; };
+		8BAA486429F1F615000F979C /* Mutable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mutable.swift; sourceTree = "<group>"; };
+		8BAA486529F1F615000F979C /* Int+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Int+extension.swift"; sourceTree = "<group>"; };
+		8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBufferBuilder.swift; sourceTree = "<group>"; };
+		8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatbuffersErrors.swift; sourceTree = "<group>"; };
+		8BAA486829F1F615000F979C /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		8BAA486929F1F615000F979C /* Verifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Verifier.swift; sourceTree = "<group>"; };
+		8BAA486A29F1F615000F979C /* FlatBuffersUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBuffersUtils.swift; sourceTree = "<group>"; };
+		8BAA486B29F1F615000F979C /* ByteBuffer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteBuffer.swift; sourceTree = "<group>"; };
+		8BAA486C29F1F615000F979C /* TableVerifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableVerifier.swift; sourceTree = "<group>"; };
+		8BAA486D29F1F615000F979C /* Root.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
+		8BAA486E29F1F615000F979C /* VeriferOptions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VeriferOptions.swift; sourceTree = "<group>"; };
+		8BAA486F29F1F615000F979C /* Table.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Table.swift; sourceTree = "<group>"; };
+		8BAA487029F1F615000F979C /* Verifiable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Verifiable.swift; sourceTree = "<group>"; };
+		8BAA487129F1F615000F979C /* NativeObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NativeObject.swift; sourceTree = "<group>"; };
+		8BAA487229F1F615000F979C /* String+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
+		8BAA487329F1F615000F979C /* FlatBufferObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBufferObject.swift; sourceTree = "<group>"; };
+		8BAA487429F1F615000F979C /* Enum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enum.swift; sourceTree = "<group>"; };
+		8BAA487529F1F615000F979C /* Struct.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Struct.swift; sourceTree = "<group>"; };
+		93490F752C98B00400B6EF75 /* PolySpatialImplStateVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplStateVerifier.swift; sourceTree = "<group>"; };
+		936334B32BD1B2A30014038E /* PolySpatialImplAlignmentMarker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplAlignmentMarker.swift; sourceTree = "<group>"; };
+		937CBA902B5F3E8C00ADA956 /* PolySpatialImplCanvas.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplCanvas.swift; sourceTree = "<group>"; };
+		938298BA2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplEnvironmentLighting.swift; sourceTree = "<group>"; };
+		938CB6082B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplImageBasedLight.swift; sourceTree = "<group>"; };
+		93BBCC1C2B8D5759003E1AB9 /* StaticBatchManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticBatchManager.swift; sourceTree = "<group>"; };
+		ABEE3E8F2922DC9500858FB4 /* PolySpatialAPI.gen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialAPI.gen.swift; sourceTree = "<group>"; };
+		BC2DB1E728F4C50900C84852 /* PolySpatialResourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialResourcesView.swift; sourceTree = "<group>"; };
+		BC498A002B0C56BE00A9A7DE /* PolySpatialImplText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplText.swift; sourceTree = "<group>"; };
+		BCB693F828D4CFE600925774 /* PolySpatialFPSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialFPSView.swift; sourceTree = "<group>"; };
+		BCB693FA28D4D3C100925774 /* PolySpatialStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialStatistics.swift; sourceTree = "<group>"; };
+		BCB693FC28D4D57100925774 /* PolySpatialStatisticsSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialStatisticsSystem.swift; sourceTree = "<group>"; };
+		BCB693FE28D4D90E00925774 /* PolySpatialDebugHierarchyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialDebugHierarchyView.swift; sourceTree = "<group>"; };
+		BCF7A9CF2926D4470019D33C /* PolySpatialImplSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplSprite.swift; sourceTree = "<group>"; };
+		BCFC97A328D5117100FE3A71 /* PolySpatialStatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialStatisticsView.swift; sourceTree = "<group>"; };
+		DE24545920F587F2EAF2ACEB /* PolySpatialImplTexture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplTexture.swift; sourceTree = "<group>"; };
+		DE2455CDD658B73BA7C43597 /* PolySpatialEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialEntity.swift; sourceTree = "<group>"; };
+		DE2456DCA2A49EE471094A67 /* PolySpatialImplMaterial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplMaterial.swift; sourceTree = "<group>"; };
+		DE245902366E81D20D9BF0A9 /* PolySpatialImplUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplUtils.swift; sourceTree = "<group>"; };
+		DE245A092BB676F4475A9A57 /* PolySpatialImplMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplMesh.swift; sourceTree = "<group>"; };
+		DE245A581C17A63C83F50D2E /* PolySpatialComponents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialComponents.swift; sourceTree = "<group>"; };
+		E72FFD732A83E5F000B5A77F /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E72FFD752A85763300B5A77F /* PolySpatialSceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialSceneDelegate.swift; sourceTree = "<group>"; };
+		E72FFD792A85767E00B5A77F /* PolySpatialWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialWindow.swift; sourceTree = "<group>"; };
+		E75D034028BE936900D1E768 /* MathExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathExtensions.swift; sourceTree = "<group>"; };
+		E75D034228BE936900D1E768 /* UnityExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnityExtensions.swift; sourceTree = "<group>"; };
+		E75D034928BE936900D1E768 /* PolySpatialRealityKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialRealityKit.swift; sourceTree = "<group>"; };
+		E75D034B28BE936900D1E768 /* PolySpatialRealityKitAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialRealityKitAccess.swift; sourceTree = "<group>"; };
+		E75D036A28BE944200D1E768 /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
+		E795B72C2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialContentViewWrapper.swift; sourceTree = "<group>"; };
+		E799B79B2919F7E5009E85D7 /* UnityGraphicsFormat.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UnityGraphicsFormat.mm; sourceTree = "<group>"; };
+		E799B79C2919F7E5009E85D7 /* UnityGraphicsFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnityGraphicsFormat.h; sourceTree = "<group>"; };
+		E7A9CD2D28D22A7100148658 /* PolySpatialImplInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplInput.swift; sourceTree = "<group>"; };
+		E7B720DE2981A52B00655168 /* libPolySpatial_xros.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPolySpatial_xros.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7C476A72AAF74F5008BEB5D /* PolySpatialImplSortingGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplSortingGroup.swift; sourceTree = "<group>"; };
+		E7E801272A82D88900D2C77A /* PolySpatialWindowManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialWindowManager.swift; sourceTree = "<group>"; };
+		E83F2058299C134900A7D913 /* flatbuffers */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = flatbuffers; path = "../../../com.unity.ext.flatsharp/Source~/flatbuffers"; sourceTree = "<group>"; };
+		E855B9A12981C58800777639 /* PolySpatialRealityKitOverrides.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialRealityKitOverrides.swift; sourceTree = "<group>"; };
+		E855B9A32981C58800777639 /* PolySpatialRealityKitExtra.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialRealityKitExtra.swift; sourceTree = "<group>"; };
+		E855B9A72981C63300777639 /* XROSPolySpatialContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XROSPolySpatialContentView.swift; sourceTree = "<group>"; };
+		E855B9A82981C63300777639 /* PolySpatialVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialVolume.swift; sourceTree = "<group>"; };
+		E868C1102983114D00F4BE5E /* libFlatBuffers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFlatBuffers.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E7B720D12981A52B00655168 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E868C12D2983118000F4BE5E /* libFlatBuffers.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E868C10D2983114D00F4BE5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6522D7622B96892F00F93218 /* ShaderGraph */ = {
+			isa = PBXGroup;
+			children = (
+				6522D7632B96895600F93218 /* ShaderGlobalProperty.swift */,
+				6522D7672B96898300F93218 /* CachedShaderGraph.swift */,
+				6522D7772B968A5F00F93218 /* ShaderGraphInstance.swift */,
+				6522D76B2B9689A000F93218 /* LoadingShaderGraph.swift */,
+				6522D77B2B968A7600F93218 /* LoadingShaderGraphInstance.swift */,
+				6522D76F2B968A0200F93218 /* ValidShaderGraph.swift */,
+				6522D77F2B968A8800F93218 /* ValidShaderGraphInstance.swift */,
+				6522D7732B968A1500F93218 /* InvalidShaderGraph.swift */,
+			);
+			path = ShaderGraph;
+			sourceTree = "<group>";
+		};
+		6522D78B2B9786A600F93218 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				350172612B62B743007B73E4 /* ColorExtensions.swift */,
+				E75D034028BE936900D1E768 /* MathExtensions.swift */,
+				35882B102BA3505A00AB1531 /* MeshResourceExtensions.swift */,
+				E75D034228BE936900D1E768 /* UnityExtensions.swift */,
+				6522D7872B97869600F93218 /* UnityParticleExtensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		655504782B6425DF00E7126E /* ComponentManagers */ = {
+			isa = PBXGroup;
+			children = (
+				3538B46D2C12316900729328 /* LineRendererManager.swift */,
+				655504972B6DBFEA00E7126E /* ParticleManager.swift */,
+				655504812B642A7100E7126E /* SkinnedMeshManager.swift */,
+				6522D7832B9692B800F93218 /* ShaderManager.swift */,
+				93BBCC1C2B8D5759003E1AB9 /* StaticBatchManager.swift */,
+			);
+			path = ComponentManagers;
+			sourceTree = "<group>";
+		};
+		8BAA486129F1F615000F979C /* FlatBuffers */ = {
+			isa = PBXGroup;
+			children = (
+				8BAA486229F1F615000F979C /* Constants.swift */,
+				8BAA486329F1F615000F979C /* Offset.swift */,
+				8BAA486429F1F615000F979C /* Mutable.swift */,
+				8BAA486529F1F615000F979C /* Int+extension.swift */,
+				8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */,
+				8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */,
+				8BAA486829F1F615000F979C /* Message.swift */,
+				8BAA486929F1F615000F979C /* Verifier.swift */,
+				8BAA486A29F1F615000F979C /* FlatBuffersUtils.swift */,
+				8BAA486B29F1F615000F979C /* ByteBuffer.swift */,
+				8BAA486C29F1F615000F979C /* TableVerifier.swift */,
+				8BAA486D29F1F615000F979C /* Root.swift */,
+				8BAA486E29F1F615000F979C /* VeriferOptions.swift */,
+				8BAA486F29F1F615000F979C /* Table.swift */,
+				8BAA487029F1F615000F979C /* Verifiable.swift */,
+				8BAA487129F1F615000F979C /* NativeObject.swift */,
+				8BAA487229F1F615000F979C /* String+extension.swift */,
+				8BAA487329F1F615000F979C /* FlatBufferObject.swift */,
+				8BAA487429F1F615000F979C /* Enum.swift */,
+				8BAA487529F1F615000F979C /* Struct.swift */,
+			);
+			name = FlatBuffers;
+			path = "../../../com.unity.ext.flatsharp/Source~/flatbuffers/swift/Sources/FlatBuffers";
+			sourceTree = "<group>";
+		};
+		ABEE3E932922DCBA00858FB4 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				E83F2058299C134900A7D913 /* flatbuffers */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		BC8BB85328DB5D6900587535 /* MessageHandlers */ = {
+			isa = PBXGroup;
+			children = (
+				93490F752C98B00400B6EF75 /* PolySpatialImplStateVerifier.swift */,
+				938298BA2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift */,
+				936334B32BD1B2A30014038E /* PolySpatialImplAlignmentMarker.swift */,
+				937CBA902B5F3E8C00ADA956 /* PolySpatialImplCanvas.swift */,
+				938CB6082B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift */,
+				BC498A002B0C56BE00A9A7DE /* PolySpatialImplText.swift */,
+				E7A9CD2D28D22A7100148658 /* PolySpatialImplInput.swift */,
+				DE2456DCA2A49EE471094A67 /* PolySpatialImplMaterial.swift */,
+				DE245A092BB676F4475A9A57 /* PolySpatialImplMesh.swift */,
+				DE24545920F587F2EAF2ACEB /* PolySpatialImplTexture.swift */,
+				E7C476A72AAF74F5008BEB5D /* PolySpatialImplSortingGroup.swift */,
+				BCF7A9CF2926D4470019D33C /* PolySpatialImplSprite.swift */,
+				68D728502999CBEB009A19D3 /* PolySpatialImplParticle.swift */,
+				682697EA2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift */,
+			);
+			path = MessageHandlers;
+			sourceTree = "<group>";
+		};
+		BC8BB85428DB5D7300587535 /* DeveloperUI */ = {
+			isa = PBXGroup;
+			children = (
+				BCB693FE28D4D90E00925774 /* PolySpatialDebugHierarchyView.swift */,
+				BCB693F828D4CFE600925774 /* PolySpatialFPSView.swift */,
+				BCB693FA28D4D3C100925774 /* PolySpatialStatistics.swift */,
+				BCB693FC28D4D57100925774 /* PolySpatialStatisticsSystem.swift */,
+				BCFC97A328D5117100FE3A71 /* PolySpatialStatisticsView.swift */,
+				BC2DB1E728F4C50900C84852 /* PolySpatialResourcesView.swift */,
+			);
+			path = DeveloperUI;
+			sourceTree = "<group>";
+		};
+		E75D032C28BE933400D1E768 = {
+			isa = PBXGroup;
+			children = (
+				E72FFD732A83E5F000B5A77F /* README.md */,
+				E75D033828BE933500D1E768 /* PolySpatialRealityKit */,
+				E7F5E45A29EF8DA0005FE959 /* PolySpatialRealityKitC */,
+				E855B9A02981C58800777639 /* PolySpatialExtra */,
+				E7B720DF2981A5DD00655168 /* visionOS */,
+				8BAA486129F1F615000F979C /* FlatBuffers */,
+				E75D035828BE937A00D1E768 /* Frameworks */,
+				ABEE3E932922DCBA00858FB4 /* Packages */,
+				E75D033728BE933500D1E768 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E75D033728BE933500D1E768 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E7B720DE2981A52B00655168 /* libPolySpatial_xros.a */,
+				E868C1102983114D00F4BE5E /* libFlatBuffers.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E75D033828BE933500D1E768 /* PolySpatialRealityKit */ = {
+			isa = PBXGroup;
+			children = (
+				655504782B6425DF00E7126E /* ComponentManagers */,
+				6522D78B2B9786A600F93218 /* Extensions */,
+				BC8BB85428DB5D7300587535 /* DeveloperUI */,
+				BC8BB85328DB5D6900587535 /* MessageHandlers */,
+				6522D7622B96892F00F93218 /* ShaderGraph */,
+				E75D034928BE936900D1E768 /* PolySpatialRealityKit.swift */,
+				E75D034B28BE936900D1E768 /* PolySpatialRealityKitAccess.swift */,
+				DE245A581C17A63C83F50D2E /* PolySpatialComponents.swift */,
+				DE2455CDD658B73BA7C43597 /* PolySpatialEntity.swift */,
+				DE245902366E81D20D9BF0A9 /* PolySpatialImplUtils.swift */,
+				ABEE3E8F2922DC9500858FB4 /* PolySpatialAPI.gen.swift */,
+				E855B9A82981C63300777639 /* PolySpatialVolume.swift */,
+				E72FFD792A85767E00B5A77F /* PolySpatialWindow.swift */,
+				E7E801272A82D88900D2C77A /* PolySpatialWindowManager.swift */,
+				E795B72C2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift */,
+				E72FFD752A85763300B5A77F /* PolySpatialSceneDelegate.swift */,
+				337414282BD8042C005608F2 /* PolySpatialConsoleLog.swift */,
+			);
+			path = PolySpatialRealityKit;
+			sourceTree = "<group>";
+		};
+		E75D035828BE937A00D1E768 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E75D036A28BE944200D1E768 /* RealityKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E7B720DF2981A5DD00655168 /* visionOS */ = {
+			isa = PBXGroup;
+			children = (
+				E855B9A72981C63300777639 /* XROSPolySpatialContentView.swift */,
+			);
+			path = visionOS;
+			sourceTree = "<group>";
+		};
+		E7F5E45A29EF8DA0005FE959 /* PolySpatialRealityKitC */ = {
+			isa = PBXGroup;
+			children = (
+				E799B79C2919F7E5009E85D7 /* UnityGraphicsFormat.h */,
+				E799B79B2919F7E5009E85D7 /* UnityGraphicsFormat.mm */,
+				6023CB8F28F4D18300EDD17B /* module.modulemap */,
+			);
+			path = PolySpatialRealityKitC;
+			sourceTree = "<group>";
+		};
+		E855B9A02981C58800777639 /* PolySpatialExtra */ = {
+			isa = PBXGroup;
+			children = (
+				E855B9A12981C58800777639 /* PolySpatialRealityKitOverrides.swift */,
+				E855B9A32981C58800777639 /* PolySpatialRealityKitExtra.swift */,
+			);
+			path = PolySpatialExtra;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E7B720B72981A52B00655168 /* PolySpatial-visionOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E7B720D92981A52B00655168 /* Build configuration list for PBXNativeTarget "PolySpatial-visionOS" */;
+			buildPhases = (
+				E7B720B92981A52B00655168 /* Sources */,
+				E7B720D12981A52B00655168 /* Frameworks */,
+				E7B720D82981A52B00655168 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E75B86912A573037008218A7 /* PBXTargetDependency */,
+			);
+			name = "PolySpatial-visionOS";
+			packageProductDependencies = (
+			);
+			productName = "PolySpatial-iOS";
+			productReference = E7B720DE2981A52B00655168 /* libPolySpatial_xros.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		E868C10F2983114D00F4BE5E /* FlatBuffers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E868C1142983114D00F4BE5E /* Build configuration list for PBXNativeTarget "FlatBuffers" */;
+			buildPhases = (
+				E868C10C2983114D00F4BE5E /* Sources */,
+				E868C10D2983114D00F4BE5E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlatBuffers;
+			productName = FlatBuffers;
+			productReference = E868C1102983114D00F4BE5E /* libFlatBuffers.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E75D032D28BE933400D1E768 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					E868C10F2983114D00F4BE5E = {
+						CreatedOnToolsVersion = 14.3;
+					};
+				};
+			};
+			buildConfigurationList = E75D033028BE933400D1E768 /* Build configuration list for PBXProject "PolySpatialRealityKit" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E75D032C28BE933400D1E768;
+			productRefGroup = E75D033728BE933500D1E768 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E7B720B72981A52B00655168 /* PolySpatial-visionOS */,
+				E868C10F2983114D00F4BE5E /* FlatBuffers */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E7B720D82981A52B00655168 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# error out if any command fails\nset -e\n\ntarget_dir=\"${PROJECT_DIR}/../../Lib~/\"\n\nmkdir -p \"${target_dir}\"\n\nif [[ \"${EXECUTABLE_EXTENSION}\" != \"a\" ]] ; then\n    echo \"Unexpected executable extension for ${EXECUTABLE_PATH}!\"\n    exit 1\nfi\n\n# Copy the .a file.  Its name is hardcoded in the build settings so will always have the non-simulator\n# name, but we need to copy it to one that distinguishes simulator\ncp \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\" \"${target_dir}/libPolySpatial_${PLATFORM_NAME}.a\"\n\nmkdir -p \"${target_dir}/PolySpatialRealityKit.swiftmodule\"\ncp \"${BUILT_PRODUCTS_DIR}/PolySpatialRealityKit.swiftmodule\"/*.swiftinterface \"${target_dir}/PolySpatialRealityKit.swiftmodule\"\nrm \"${target_dir}/PolySpatialRealityKit.swiftmodule\"/*.private.swiftinterface\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E7B720B92981A52B00655168 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7B720BB2981A52B00655168 /* PolySpatialAPI.gen.swift in Sources */,
+				E7B720BC2981A52B00655168 /* PolySpatialResourcesView.swift in Sources */,
+				E7B720BF2981A52B00655168 /* PolySpatialDebugHierarchyView.swift in Sources */,
+				6522D7662B96895600F93218 /* ShaderGlobalProperty.swift in Sources */,
+				68D728532999CBEB009A19D3 /* PolySpatialImplParticle.swift in Sources */,
+				E7B720C02981A52B00655168 /* PolySpatialFPSView.swift in Sources */,
+				3538B4702C12316900729328 /* LineRendererManager.swift in Sources */,
+				6522D78A2B97869600F93218 /* UnityParticleExtensions.swift in Sources */,
+				6522D7822B968A8800F93218 /* ValidShaderGraphInstance.swift in Sources */,
+				6522D7762B968A1500F93218 /* InvalidShaderGraph.swift in Sources */,
+				E855B9A62981C58800777639 /* PolySpatialRealityKitExtra.swift in Sources */,
+				E855B9AA2981C63300777639 /* XROSPolySpatialContentView.swift in Sources */,
+				6522D7862B9692B800F93218 /* ShaderManager.swift in Sources */,
+				E7B720C12981A52B00655168 /* PolySpatialImplSprite.swift in Sources */,
+				E7B720C22981A52B00655168 /* PolySpatialStatistics.swift in Sources */,
+				E7B720C32981A52B00655168 /* PolySpatialStatisticsSystem.swift in Sources */,
+				938CB60C2B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift in Sources */,
+				35882B132BA3505B00AB1531 /* MeshResourceExtensions.swift in Sources */,
+				E7B720C42981A52B00655168 /* PolySpatialStatisticsView.swift in Sources */,
+				E7B720C52981A52B00655168 /* PolySpatialImplInput.swift in Sources */,
+				E7B720C62981A52B00655168 /* PolySpatialImplMaterial.swift in Sources */,
+				93BBCC1F2B8D5759003E1AB9 /* StaticBatchManager.swift in Sources */,
+				6522D7722B968A0200F93218 /* ValidShaderGraph.swift in Sources */,
+				682697ED2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift in Sources */,
+				6555049A2B6DBFEA00E7126E /* ParticleManager.swift in Sources */,
+				938298BB2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift in Sources */,
+				BC498A042B0C56BE00A9A7DE /* PolySpatialImplText.swift in Sources */,
+				6522D77A2B968A5F00F93218 /* ShaderGraphInstance.swift in Sources */,
+				6522D76E2B9689A000F93218 /* LoadingShaderGraph.swift in Sources */,
+				93490F772C98B00400B6EF75 /* PolySpatialImplStateVerifier.swift in Sources */,
+				E7B720C72981A52B00655168 /* PolySpatialImplMesh.swift in Sources */,
+				6522D76A2B96898300F93218 /* CachedShaderGraph.swift in Sources */,
+				3374142B2BD8042C005608F2 /* PolySpatialConsoleLog.swift in Sources */,
+				E7B720C82981A52B00655168 /* PolySpatialImplTexture.swift in Sources */,
+				E72FFD7C2A85767F00B5A77F /* PolySpatialWindow.swift in Sources */,
+				6522D77E2B968A7600F93218 /* LoadingShaderGraphInstance.swift in Sources */,
+				655504822B642A7100E7126E /* SkinnedMeshManager.swift in Sources */,
+				E855B9AB2981C63300777639 /* PolySpatialVolume.swift in Sources */,
+				E7B720C92981A52B00655168 /* MathExtensions.swift in Sources */,
+				E72FFD782A85763300B5A77F /* PolySpatialSceneDelegate.swift in Sources */,
+				E7B720CA2981A52B00655168 /* PolySpatialRealityKit.swift in Sources */,
+				E7B720CB2981A52B00655168 /* PolySpatialRealityKitAccess.swift in Sources */,
+				E7B720CC2981A52B00655168 /* UnityExtensions.swift in Sources */,
+				E7B720CD2981A52B00655168 /* PolySpatialComponents.swift in Sources */,
+				350172632B62B743007B73E4 /* ColorExtensions.swift in Sources */,
+				E795B72F2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift in Sources */,
+				936334B62BD1B2A30014038E /* PolySpatialImplAlignmentMarker.swift in Sources */,
+				E7B720CE2981A52B00655168 /* PolySpatialEntity.swift in Sources */,
+				E7B720CF2981A52B00655168 /* PolySpatialImplUtils.swift in Sources */,
+				E7E8012A2A82D88900D2C77A /* PolySpatialWindowManager.swift in Sources */,
+				E855B9A42981C58800777639 /* PolySpatialRealityKitOverrides.swift in Sources */,
+				E7C476AA2AAF74F5008BEB5D /* PolySpatialImplSortingGroup.swift in Sources */,
+				E7B720D02981A52B00655168 /* UnityGraphicsFormat.mm in Sources */,
+				937CBA932B5F3E8C00ADA956 /* PolySpatialImplCanvas.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E868C10C2983114D00F4BE5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BAA488D29F1F661000F979C /* Struct.swift in Sources */,
+				8BAA489C29F1F661000F979C /* FlatBuffersUtils.swift in Sources */,
+				8BAA489229F1F661000F979C /* NativeObject.swift in Sources */,
+				8BAA489929F1F661000F979C /* Mutable.swift in Sources */,
+				8BAA489A29F1F661000F979C /* Message.swift in Sources */,
+				8BAA488E29F1F661000F979C /* String+extension.swift in Sources */,
+				8BAA489029F1F661000F979C /* ByteBuffer.swift in Sources */,
+				8BAA489729F1F661000F979C /* VeriferOptions.swift in Sources */,
+				8BAA489129F1F661000F979C /* FlatbuffersErrors.swift in Sources */,
+				8BAA489829F1F661000F979C /* Table.swift in Sources */,
+				8BAA489329F1F661000F979C /* FlatBufferObject.swift in Sources */,
+				8BAA489529F1F661000F979C /* TableVerifier.swift in Sources */,
+				8BAA488B29F1F661000F979C /* Offset.swift in Sources */,
+				8BAA489B29F1F661000F979C /* Verifiable.swift in Sources */,
+				8BAA488C29F1F661000F979C /* FlatBufferBuilder.swift in Sources */,
+				8BAA489629F1F661000F979C /* Verifier.swift in Sources */,
+				8BAA488A29F1F661000F979C /* Root.swift in Sources */,
+				8BAA488F29F1F661000F979C /* Constants.swift in Sources */,
+				8BAA489D29F1F661000F979C /* Enum.swift in Sources */,
+				8BAA489429F1F661000F979C /* Int+extension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E75B86912A573037008218A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E868C10F2983114D00F4BE5E /* FlatBuffers */;
+			targetProxy = E75B86902A573037008218A7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E75D033B28BE933500D1E768 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (C) 2023 Unity Technologies ";
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		E75D033C28BE933500D1E768 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (C) 2023 Unity Technologies ";
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E7B720DA2981A52B00655168 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Z6SFPV59E3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.unity3d.PolySpatialRealityKit;
+				PRODUCT_MODULE_NAME = PolySpatialRealityKit;
+				PRODUCT_NAME = PolySpatial_xros;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E7B720DB2981A52B00655168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Z6SFPV59E3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.unity3d.PolySpatialRealityKit;
+				PRODUCT_MODULE_NAME = PolySpatialRealityKit;
+				PRODUCT_NAME = PolySpatial_xros;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = xros;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E868C1152983114D00F4BE5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Debug;
+		};
+		E868C1162983114D00F4BE5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E75D033028BE933400D1E768 /* Build configuration list for PBXProject "PolySpatialRealityKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E75D033B28BE933500D1E768 /* Debug */,
+				E75D033C28BE933500D1E768 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E7B720D92981A52B00655168 /* Build configuration list for PBXNativeTarget "PolySpatial-visionOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E7B720DA2981A52B00655168 /* Debug */,
+				E7B720DB2981A52B00655168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E868C1142983114D00F4BE5E /* Build configuration list for PBXNativeTarget "FlatBuffers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E868C1152983114D00F4BE5E /* Debug */,
+				E868C1162983114D00F4BE5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E75D032D28BE933400D1E768 /* Project object */;
+}

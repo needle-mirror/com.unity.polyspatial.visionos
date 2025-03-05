@@ -1,5 +1,5 @@
 {
-    "name": "Unity.PolySpatial.RealityKit.EditorTests",
+    "name": "Unity.PolySpatial.RealityKit.Editor.Tests",
     "rootNamespace": "",
     "references": [
         "Unity.PolySpatial.RealityKit.Editor",

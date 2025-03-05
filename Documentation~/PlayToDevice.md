@@ -172,4 +172,3 @@ Even though the Play to Device feature is a powerful tool for iterating on your 
 * PlayToDevice may incur a performance hit when using render textures, and render textures may render slowly or may stutter while connected.
 * Play to Device may not be able to accommodate your `VolumeCamera`'s specific `Output Dimension`. The number of available `VolumeCamera` window sizes (`OutputDimension`) is limited in PlayToDevice, and PlayToDevice will attempt to match user requested dimensions to available window sizes.
 * Object tracking is not supported in the Play to Device app.
-* XR Meshes over windows are not supported over Play to Device.

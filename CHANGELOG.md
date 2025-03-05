@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [2.2.4] - 2025-03-05
+
+## [2.2.2] - 2025-02-21
+
+### Changed
+- Reset PlayToDevice network connections when all volume camera windows in PlayToDevice (including the connection UI window) are backgrounded. This can occur if the headset is taken off the user's head and locked, or if the user manually closes each window visible.
+- Improved performance of texture transfer using LowLevelTexture API/GPU blit.
+- Improved performance of mesh transfer and static mesh merging using LowLevelMesh API/GPU processsing.
+- The `Limit Frames Per Second` field in the PlayToDevice UI has been changed to a slider. This value can be modified at runtime.
+- Updated Particle System documentation to include more detailed limitations of ReplicateProperty mode.
+
+### Fixed
+- Fixed a crash that could occur when re-opening a volume. The crash occurred when the scene had the VisionOSVideoComponent and the MeshRenderer it was referencing on different GameObjects.
+- Fixed a problem that was occuring with apps that had both a bounded volume and an unbounded volume. When the app was backgrounded (for example, due to the Home View), and then brought back, the unbounded volume would not reappear.
+- Fixed support for non-2D RenderTextures.
+- Removed an error log "Mesh * not found for MeshCollider." when a null mesh collider is supplied.
+
 ## [2.1.2] - 2024-11-26
 
 ### Added
@@ -17,6 +34,7 @@ For general changes to PolySpatial, refer to the [PolySpatial Changelog](https:/
 - Restored `PolySpatialWindowManagerAccess.entityForIdentifier`/`identifierForEntity` that was removed when adding multi-volume support and added `entitiesForUnityInstanceId` to return Entities from all volumes.
 - Improved performance of blend shapes by enabling asynchronous processing.
 - Entities merged via static batching now include the source entities' synchronized components (sort groups, image based light receivers, environment lighting configurations, grounding shadows, and hover effects).
+- Improved performance of texture transfer using LowLevelTexture API/GPU blit.
 - Updated Metal Samples presentation image and added known limitations section to the Play to Device Section.
 
 ### Deprecated

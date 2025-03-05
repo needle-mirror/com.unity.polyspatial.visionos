@@ -7,6 +7,7 @@ import Combine
 import CoreGraphics
 import CoreImage
 import Foundation
+import Metal
 import OSLog
 import RealityKit
 import SceneKit
@@ -18,6 +19,15 @@ import _RealityKit_SwiftUI
 import _StringProcessing
 import _SwiftConcurrencyShims
 import simd
+#if compiler(>=5.3) && $RetroactiveAttribute
+extension RealityFoundation.MaterialParameters.Handle : @retroactive Swift.Hashable {
+  public static func == (lhs: RealityFoundation.MaterialParameters.Handle, rhs: RealityFoundation.MaterialParameters.Handle) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#else
 extension RealityFoundation.MaterialParameters.Handle : Swift.Hashable {
   public static func == (lhs: RealityFoundation.MaterialParameters.Handle, rhs: RealityFoundation.MaterialParameters.Handle) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
@@ -25,6 +35,34 @@ extension RealityFoundation.MaterialParameters.Handle : Swift.Hashable {
     get
   }
 }
+#endif
+#if compiler(>=5.3) && $RetroactiveAttribute
+extension RealityFoundation.LowLevelMesh.Descriptor : @retroactive Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Descriptor, rhs: RealityFoundation.LowLevelMesh.Descriptor) -> Swift.Bool
+}
+#else
+extension RealityFoundation.LowLevelMesh.Descriptor : Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Descriptor, rhs: RealityFoundation.LowLevelMesh.Descriptor) -> Swift.Bool
+}
+#endif
+#if compiler(>=5.3) && $RetroactiveAttribute
+extension RealityFoundation.LowLevelMesh.Attribute : @retroactive Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Attribute, rhs: RealityFoundation.LowLevelMesh.Attribute) -> Swift.Bool
+}
+#else
+extension RealityFoundation.LowLevelMesh.Attribute : Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Attribute, rhs: RealityFoundation.LowLevelMesh.Attribute) -> Swift.Bool
+}
+#endif
+#if compiler(>=5.3) && $RetroactiveAttribute
+extension RealityFoundation.LowLevelMesh.Layout : @retroactive Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Layout, rhs: RealityFoundation.LowLevelMesh.Layout) -> Swift.Bool
+}
+#else
+extension RealityFoundation.LowLevelMesh.Layout : Swift.Equatable {
+  public static func == (lhs: RealityFoundation.LowLevelMesh.Layout, rhs: RealityFoundation.LowLevelMesh.Layout) -> Swift.Bool
+}
+#endif
 public enum PolySpatialConsoleLogType : Swift.Int32 {
   case exception
   case assert
@@ -106,6 +144,9 @@ extension SwiftUICore.EnvironmentValues {
     set
   }
 }
+@_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialViewSubGraph {
+  @objc deinit
+}
 @_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialVolume : Foundation.ObservableObject, Swift.Equatable, Swift.Hashable {
   @_Concurrency.MainActor public var assignedWindowUUID: Foundation.UUID?
   @_Concurrency.MainActor public var description: Swift.String {
@@ -117,8 +158,8 @@ extension SwiftUICore.EnvironmentValues {
     get
   }
   @_Concurrency.MainActor public func windowDismissed()
-  @_Concurrency.MainActor public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
-  @_Concurrency.MainActor public func hash(into hasher: inout Swift.Hasher)
+  nonisolated public static func == (lhs: PolySpatialRealityKit.PolySpatialVolume, rhs: PolySpatialRealityKit.PolySpatialVolume) -> Swift.Bool
+  nonisolated public func hash(into hasher: inout Swift.Hasher)
   @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
@@ -148,9 +189,9 @@ extension simd.simd_quatf {
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
 }
-public protocol PolySpatialRealityKitDelegate {
-  func on(volumeAdded: PolySpatialRealityKit.PolySpatialVolume)
-  func on(volumeRemoved: PolySpatialRealityKit.PolySpatialVolume)
+@_Concurrency.MainActor public protocol PolySpatialRealityKitDelegate {
+  @_Concurrency.MainActor func on(volumeAdded: PolySpatialRealityKit.PolySpatialVolume)
+  @_Concurrency.MainActor func on(volumeRemoved: PolySpatialRealityKit.PolySpatialVolume)
 }
 @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @objc public class PolySpatialRealityKitAccess : ObjectiveC.NSObject {
   @_Concurrency.MainActor public static func register()
@@ -159,11 +200,19 @@ public protocol PolySpatialRealityKitDelegate {
   @_Concurrency.MainActor public static func addDelegate(_ delegate: any PolySpatialRealityKit.PolySpatialRealityKitDelegate)
   @objc deinit
 }
+#if compiler(>=5.3) && $RetroactiveAttribute
+extension Swift.String : @retroactive Foundation.LocalizedError {
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+#else
 extension Swift.String : Foundation.LocalizedError {
   public var errorDescription: Swift.String? {
     get
   }
 }
+#endif
 public struct PackedIdentifier : Swift.CustomStringConvertible {
   public init(id0: Swift.UInt64, id1: Swift.UInt64)
   public var description: Swift.String {
@@ -203,11 +252,13 @@ public protocol PolySpatialWindowManagerDelegate {
   @_Concurrency.MainActor public static func onCompositorSpaceOpened(_ window: PolySpatialRealityKit.PolySpatialWindow)
   @_Concurrency.MainActor public static func onCompositorSpaceDismissed(_ window: PolySpatialRealityKit.PolySpatialWindow)
   @_Concurrency.MainActor public static func onImmersionChange(_ oldAmount: Swift.Double?, _ newAmount: Swift.Double?)
+  @_Concurrency.MainActor public static func onAppStateChange(_ oldPhase: SwiftUI.ScenePhase, _ newPhase: SwiftUI.ScenePhase)
   @objc deinit
 }
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Equatable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Hashable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.RawRepresentable {}
+extension PolySpatialRealityKit.PolySpatialViewSubGraph : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialVolume : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialSceneDelegate : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialRealityKitAccess : Swift.Sendable {}

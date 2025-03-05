@@ -171,7 +171,7 @@ namespace Unity.PolySpatial.RealityKit.EditorTests
 
 #if UNITY_EDITOR_OSX
         /// <summary>
-        /// Checks to see if the visionOSCallbackOrder and macCallbackOrder are greater than the rkPluginCallbackOrder.
+        /// Checks to see if the visionOSCallbackOrder is greater than the rkPluginCallbackOrder.
         /// </summary>
         [Test]
         public void VerifyBuildOrder()
@@ -181,11 +181,6 @@ namespace Unity.PolySpatial.RealityKit.EditorTests
             var visionOSBuildProcessor = new VisionOSBuildProcessor();
             var visionOSCallbackOrder = visionOSBuildProcessor.callbackOrder;
             Assert.Greater(visionOSCallbackOrder, rkPluginCallbackOrder);
-#if POLYSPATIAL_INTERNAL
-            var macBuildProcessor = new PolySpatialMacBuildProcessor();
-            var macCallbackOrder = macBuildProcessor.callbackOrder;
-            Assert.Greater(macCallbackOrder, rkPluginCallbackOrder);
-#endif
         }
 #endif
 

@@ -54,6 +54,9 @@ If one is not present a default one will be created that will include the bounds
 - You can only create VisionOS builds with the Unity editor for Apple Silicon. Check that the title bar in Unity does **not** contain "\<Rosetta>". If it does, use the Unity Hub to download the Apple Silicon version.
 - Make sure you have the VisionOS Simulator installed. In XCode, open `Window > Devices and Simulators`, and select the `Simulators` tab. If there is nothing listed, add one using the + button.
 
+## Q: My RealityKit app uses too much memory
+By default, PolySpatial maintains extra copies of resources such as textures and meshes in case they are modified after transferring them to RealityKit. If you know that a texture or mesh will not be modified, you can use the [PolySpatialObjectUtils.MarkFinal](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/api/Unity.PolySpatial.PolySpatialObjectUtils.html#methods) methods to indicate that Unity can free its copy, reducing overall memory usage.
+
 # Common Errors
 
 ## Error: `xcrun: error: unable to find utility "actool", not a developer tool or in PATH`

@@ -19,6 +19,8 @@ You can find instructions on how to install these packages at the links above.
 
 ## Image Tracking
 
+![Image Tracking](images/samples/ImageTracking.png)
+
 The **Image Tracking** scene allows users to spawn content using predefined, unique image markers in an unbounded application.
 
 > [!NOTE]
@@ -27,12 +29,16 @@ The **Image Tracking** scene allows users to spawn content using predefined, uni
 
 ## Mixed Reality
 
+![Mixed Reality](images/samples/MixedReality.png)
+
 The **Mixed Reality** scene allows users to spawn content using a custom ARKit hand gesture in an unbounded application. It also visualizes plane data information in the physical environment.
 
 > [!NOTE]
 > This sample uses ARKit features that are not supported in the VisionOS simulator, you must run it on device.
 
 ## Object Tracking
+
+![Object Tracking](images/samples/ObjectTracking.png)
 
 The **Object Tracking** scene allows users to spawn content using predefined, unique objects markers in an unbounded application.
 

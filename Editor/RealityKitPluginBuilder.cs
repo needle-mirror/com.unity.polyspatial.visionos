@@ -1,20 +1,16 @@
 #if (UNITY_VISIONOS ||  POLYSPATIAL_INTERNAL) && UNITY_EDITOR_OSX
 using System;
 using System.IO;
-using Unity.PolySpatial.Internals.Editor;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.XR.VisionOS;
 using UnityEngine;
 
 namespace Unity.PolySpatial.Internals.Editor
 {
-    internal class RealityKitPluginBuilder : IPreprocessBuildWithReport
+    class RealityKitPluginBuilder : IPreprocessBuildWithReport
     {
         const int k_BuildTimeoutSeconds = 15 * 60;
-        const string k_MacOSMinVersion = "10.13";
-        const string k_MacOSSDKVersion = "13.1";
 
         // must be early, but it doesn't affect the Unity build
         public int callbackOrder => 10;
@@ -66,25 +62,6 @@ namespace Unity.PolySpatial.Internals.Editor
         // the .yamato package-pack.yml, package-pack.metafile, and Tools/build_polyspatial_package.sh
 
         /// <summary>
-        /// Run an external build to create the Mac PolySpatial Plugin.
-        /// </summary>
-        public static void BuildMacPlugin()
-        {
-            if (BuildUtils.IsPackageImmutable())
-                return;
-
-            DoPluginBuild("macos");
-        }
-
-        public static void BuildMacNewPlugin()
-        {
-            if (BuildUtils.IsPackageImmutable())
-                return;
-
-            DoPluginBuild("macos-new");
-        }
-
-        /// <summary>
         /// Run an external build to create an visionOS PolySpatial Plugin.
         /// </summary>
 #if POLYSPATIAL_INTERNAL
@@ -128,12 +105,6 @@ namespace Unity.PolySpatial.Internals.Editor
                     if (report.summary.platform == BuildTarget.VisionOS)
                     {
                         BuildVisionOSPlugin();
-                    }
-                    else if (report.summary.platform == BuildTarget.StandaloneOSX)
-                    {
-#if POLYSPATIAL_INTERNAL
-                        BuildMacPlugin();
-#endif
                     }
                 }
             }

@@ -3,4 +3,4 @@ using UnityEngine.Scripting;
 
 [assembly: AlwaysLinkAssembly]
 [assembly: InternalsVisibleTo("Unity.PolySpatial.FunctionalTests.PolySpatialTest")]
-[assembly: InternalsVisibleTo("Unity.PolySpatial.RealityKitTests")]
+[assembly: InternalsVisibleTo("Unity.PolySpatial.RealityKitTests.Runtime.Tests")]

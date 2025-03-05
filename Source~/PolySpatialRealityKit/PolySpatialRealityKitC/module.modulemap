@@ -1,0 +1,5 @@
+module PolySpatialRealityKitC {
+    header "PolySpatialNativeAPI.h"
+    header "UnityGraphicsFormat.h"
+    export *
+}

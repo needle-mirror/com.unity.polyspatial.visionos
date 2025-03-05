@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.PolySpatial;
 using Unity.PolySpatial.Networking;
-using UnityEditor.PolySpatial;
 using UnityEditor.PolySpatial.Utilities;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -40,10 +39,10 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         const string k_PlayToDeviceWindowTitle = "Play To Device";
         const string k_PlayToDeviceWindowMenuPath = "Window/PolySpatial/" + k_PlayToDeviceWindowTitle;
         const string k_PlayToDeviceWindowIconPath = "Packages/com.unity.polySpatial/Assets/Textures/Icons/ARVR@4x.png";
-        const string k_PlayToDeviceWindowTreeAssetPath = "Packages/com.unity.polyspatial/Editor/PlayToDevice/PlayToDeviceWindow.uxml";
-        const string m_ConnectionListEntryTreeAssetPath = "Packages/com.unity.polyspatial/Editor/PlayToDevice/ConnectionListEntry.uxml";
+        const string k_PlayToDeviceWindowTreeAssetPath = "Packages/com.unity.polyspatial.visionos/Editor/PlayToDevice/PlayToDeviceWindow.uxml";
+        const string k_ConnectionListEntryTreeAssetPath = "Packages/com.unity.polyspatial.visionos/Editor/PlayToDevice/ConnectionListEntry.uxml";
 
-        const string K_InfoFoldoutName = "InfoFoldout";
+        const string k_InfoFoldoutName = "InfoFoldout";
         const string k_InfoHelpBox = "InfoHelpBox";
         const string k_ConnectOnPlayDropdown = "ConnectOnPlayDropdown";
         const string k_ConnectionTimeoutField = "ConnectionTimeoutField";
@@ -53,15 +52,15 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         const string k_ConnectionList = "ConnectionList";
         const string k_MismatchVersionHelpBox = "MismatchVersionHelpBox";
 
-        const string K_AdvancedSettingsFoldoutName = "AdvancedSettingsFoldout";
+        const string k_AdvancedSettingsFoldoutName = "AdvancedSettingsFoldout";
         const string k_HostNameField = "HostNameField";
         const string k_InvalidHostNameHelpBox = "InvalidHostNameHelpBox";
         const string k_HostIPField = "HostIPField";
         const string k_InvalidIPHelpBox = "InvalidIPHelpBox";
         const string k_HostPortField = "HostPortField";
         const string k_InvalidPortHelpBox = "InvalidPortHelpBox";
-        const string K_AddConnectionButton = "AddConnectionButton";
-        const string K_DuplicateConnectionHelpBox = "DuplicateConnectionHelpBox";
+        const string k_AddConnectionButton = "AddConnectionButton";
+        const string k_DuplicateConnectionHelpBox = "DuplicateConnectionHelpBox";
 
         const string k_NoConnectionsSelectedMessage = "<b>Connect on Play</b> is enabled, but no connections have been selected. For Play To Device to work, please select a connection from the list below or add a new connection.";
         const string k_PlayToDeviceNotEnabled = "A connection is selected but <b>Connect on Play</b> is disabled. Enable <b>Connect on Play</b> for Play To Device to work.";
@@ -221,7 +220,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                 m_PlayToDeviceWindowTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_PlayToDeviceWindowTreeAssetPath);
 
             if (m_ConnectionListEntryTreeAsset == null)
-                m_ConnectionListEntryTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(m_ConnectionListEntryTreeAssetPath);
+                m_ConnectionListEntryTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_ConnectionListEntryTreeAssetPath);
 
             Refresh();
             ConnectionDiscoveryManager.instance.OnConnectionsChanges += Refresh;
@@ -378,7 +377,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
             uxmlElements.Q<HelpBox>(k_InfoHelpBox).text = string.Format(k_InfoHelpBoxTextFormat, k_DiscussionsURL, k_PlayToDeviceDocsURL);
 
-            var infoFoldout = uxmlElements.Q<Foldout>(K_InfoFoldoutName);
+            var infoFoldout = uxmlElements.Q<Foldout>(k_InfoFoldoutName);
             infoFoldout.value = m_InfoFoldoutState.Value;
             infoFoldout.RegisterValueChangedCallback(evt => m_InfoFoldoutState.Value = evt.newValue);
 
@@ -414,13 +413,13 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             m_ConnectionCandidatesListView.itemsSource = m_ConnectionCandidates;
             m_MismatchedVersionsHelpBox = uxmlElements.Q<HelpBox>(k_MismatchVersionHelpBox);
 
-            m_DuplicateConnectionHelpBox = uxmlElements.Q<HelpBox>(K_DuplicateConnectionHelpBox);
+            m_DuplicateConnectionHelpBox = uxmlElements.Q<HelpBox>(k_DuplicateConnectionHelpBox);
             m_DuplicateConnectionHelpBox.text = k_DuplicateConnectionHelpBoxText;
             m_DuplicateConnectionHelpBox.style.display = DisplayStyle.None;
 
             CreateConnectionFields(uxmlElements);
 
-            var addConnectionButton = uxmlElements.Q<Button>(K_AddConnectionButton);
+            var addConnectionButton = uxmlElements.Q<Button>(k_AddConnectionButton);
             addConnectionButton.clicked += () =>
             {
                 if (ValidateConnectionFields())
@@ -433,7 +432,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
         void CreateConnectionFields(VisualElement uxmlElements)
         {
-            m_AdvancedSettingsFoldout = uxmlElements.Q<Foldout>(K_AdvancedSettingsFoldoutName);
+            m_AdvancedSettingsFoldout = uxmlElements.Q<Foldout>(k_AdvancedSettingsFoldoutName);
             m_AdvancedSettingsFoldout.value = m_AdvancedSettingsFoldoutState.Value;
             m_AdvancedSettingsFoldout.RegisterValueChangedCallback(evt => m_AdvancedSettingsFoldoutState.Value = evt.newValue);
 
@@ -442,7 +441,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             connectionTimeoutField.tooltip = k_ConnectionTimeoutFieldTooltip;
             connectionTimeoutField.RegisterValueChangedCallback(evt => PolySpatialUserSettings.Instance.ConnectionTimeout = evt.newValue);
 
-            var limitFramesPerSecondField = uxmlElements.Q<IntegerField>(k_LimitFramesPerSecondField);
+            var limitFramesPerSecondField = uxmlElements.Q<SliderInt>(k_LimitFramesPerSecondField);
             limitFramesPerSecondField.value = PolySpatialUserSettings.Instance.PlayToDeviceLimitFPS;
             limitFramesPerSecondField.enabledSelf = PolySpatialUserSettings.Instance.PlayToDeviceLimitFPSEnable;
             limitFramesPerSecondField.tooltip = k_LimitFramesPerSecondFieldTooltip;

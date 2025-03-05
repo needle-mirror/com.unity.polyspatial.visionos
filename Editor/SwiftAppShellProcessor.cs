@@ -94,11 +94,6 @@ namespace Unity.PolySpatial.Internals.Editor
 
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialAppDelegate.swift", UNITY_RK_SRC_PATH, "MainApp");
             CopyAndAddToBuildTarget(swiftAppTarget, "UnityPolySpatialApp.swift", UNITY_RK_SRC_PATH, "MainApp");
-
-            // VisionOS does not support surface shaders (CustomMaterial).
-            if (buildTarget == BuildTarget.StandaloneOSX)
-                CopyAndAddToBuildTarget(swiftAppTarget, "Shaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
-
             CopyAndAddToBuildTarget(swiftAppTarget, "ComputeShaders.metal", UNITY_RK_SRC_PATH, XCODE_POLYSPATIAL_RK_PATH);
 
             if (buildTarget == BuildTarget.VisionOS)

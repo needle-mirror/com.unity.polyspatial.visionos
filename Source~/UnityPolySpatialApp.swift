@@ -19,6 +19,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     @Environment(\.dismissWindow) var dismissWindow
     @Environment(\.openImmersiveSpace) var openImmersiveSpace
     @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
+    @Environment(\.scenePhase) var scenePhase
 
     init() {
         PolySpatialWindowManagerAccess.delegate = self
@@ -32,6 +33,9 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
 
     var body: some Scene {
         mainScene
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                PolySpatialWindowManagerAccess.onAppStateChange(oldPhase, newPhase)
+            }
     }
 
     func requestOpenWindow(_ configuration: String) {

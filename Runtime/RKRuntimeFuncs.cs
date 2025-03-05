@@ -1,20 +1,14 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using AOT;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.Scripting;
 using UnityEditor;
 
 namespace Unity.PolySpatial.Internals
 {
-    internal static class RKRuntimeFuncs
+    static class RKRuntimeFuncs
     {
         delegate void GetPolySpatialNativeApiFn(out Platform.PolySpatialNativeAPI api);
-
-        delegate void GenericFunctionDelegate();
 
         static GetPolySpatialNativeApiFn GetPolySpatialNativeAPI_dynamic;
 
@@ -22,7 +16,7 @@ namespace Unity.PolySpatial.Internals
         static IntPtr s_libHandle;
 
 #if UNITY_VISIONOS
-        const string kPluginName = "__Internal"; // on iOS, it's a static library linked with the il2cpp code
+        const string kPluginName = "__Internal"; // on visionOS, it's a static library linked with the il2cpp code
 #else
         const string kPluginName = "PolySpatialNotSupportedStaticDllImportPlatform";
 #endif
@@ -58,29 +52,6 @@ namespace Unity.PolySpatial.Internals
                     libpath = File.ReadAllText(dotrk).Trim();
                 }
             }
-
-#if UNITY_STANDALONE_OSX && !UNITY_EDITOR
-            if (String.IsNullOrEmpty(libpath))
-            {
-                // a native player build on mac.  We put our .bundle in the PlugIns directory,
-                // but Unity doesn't load it through a plugin asset.  Note weird PlugIns capitalization
-                // is a Unity quirk.
-
-                // just in case we're directly linked with the bundle
-                if (TryLoadFunctionPointers(IntPtr.Zero))
-                    return;
-
-                var macOsLibPath = Path.Combine(Application.dataPath, "PlugIns", "PolySpatial-macOS.bundle", "Contents", "MacOS", "PolySpatial-macOS");
-                libpath = File.Exists(macOsLibPath) ? macOsLibPath
-                    : null;
-
-                if (libpath == null)
-                {
-                    Debug.LogError($"Expected mac plugin {macOsLibPath} doesn't exist");
-                }
-            }
-#endif
-
             if (String.IsNullOrEmpty(libpath))
                 return;
 

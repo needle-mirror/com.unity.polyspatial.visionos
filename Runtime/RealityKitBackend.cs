@@ -4,6 +4,7 @@ using AOT;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UnityEngine.Scripting;
 using Profiler = Unity.PolySpatial.Internals.PolySpatialProfiler;
 
@@ -59,13 +60,7 @@ namespace Unity.PolySpatial.Internals
         [Preserve]
         public static int GetBackendPriority()
         {
-#if false // UNITY_EDITOR // Mac preview unfortunately doesn't work well in this way
-            // if Mac preview is disabled in the editor, disable the platform
-            if (!PolySpatialSettings.Instance.EnableMacRealityKitPreviewInPlayMode)
-            {
-                return -1;
-            }
-#elif !UNITY_EDITOR && (UNITY_VISIONOS || UNITY_STANDALONE_OSX)
+#if !UNITY_EDITOR && UNITY_VISIONOS
             if (!TryGetAPIPointers())
                 return -1;
 
@@ -107,6 +102,8 @@ namespace Unity.PolySpatial.Internals
             // MonoPInvokeCallback methods will leak exceptions and cause crashes; always use a try/catch in these methods
             try
             {
+                // This makes the assumption that the RealityKitBackend always uses the latest version of HostCommands,
+                // and that any downgrading of HostCommands is handled by downstream C#.
                 s_Instance.NextHostHandler.HandleHostCommand(command, argCount, args, argSizes);
             }
             catch (Exception exception)
@@ -115,10 +112,12 @@ namespace Unity.PolySpatial.Internals
             }
         }
 
-        public unsafe void HandleCommand(PolySpatialCommand cmd, int argCount, void** argValues, int* argSizes)
+        public unsafe void HandleCommand(PolySpatialCommandHeader cmdHeader, int argCount, void** argValues, int* argSizes)
         {
             s_HandleCommandMarker.Begin();
-            s_OldAPIPointers.SendClientCommand(cmd, argCount, argValues, argSizes);
+            // This makes the assumption that the RealityKitBackend always uses the latest versions of Commands, and that
+            // any upgrading of Commands is handled by the upstream C# code, so only the Command enum value is required.
+            s_OldAPIPointers.SendClientCommand(cmdHeader.Command, argCount, argValues, argSizes);
             s_HandleCommandMarker.End();
         }
 
@@ -141,6 +140,50 @@ namespace Unity.PolySpatial.Internals
         public Texture2D TakeScreenshot(Camera camera, int width, int height)
         {
             throw new NotImplementedException();
+        }
+
+        public bool CanReceiveNativeMesh(Mesh mesh)
+        {
+            // We can handle non-skinned meshes natively.  In order to let us transfer all vertices in one pass per
+            // buffer, they must have Vector3 positions (if present), Vector3 normals (if present), Vector4 tangents
+            // (if present), and Vector[2-4] UVs (if present).  This is the usual setup, but users can use arbitrary
+            // formats for meshes, so we have to check.
+            return mesh.blendShapeCount == 0 &&
+                !mesh.HasVertexAttribute(VertexAttribute.BlendWeight) &&
+                !mesh.HasVertexAttribute(VertexAttribute.BlendIndices) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.Position) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.Position) == 3 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.Position) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.Normal) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.Normal) == 3 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.Normal) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.Tangent) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.Tangent) == 4 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.Tangent) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord0) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord0) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord0) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord1) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord1) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord1) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord2) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord2) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord2) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord3) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord3) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord3) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord4) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord4) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord4) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord5) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord5) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord5) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord6) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord6) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord6) == VertexAttributeFormat.Float32)) &&
+                (!mesh.HasVertexAttribute(VertexAttribute.TexCoord7) ||
+                    (mesh.GetVertexAttributeDimension(VertexAttribute.TexCoord7) >= 2 &&
+                    mesh.GetVertexAttributeFormat(VertexAttribute.TexCoord7) == VertexAttributeFormat.Float32));
         }
     }
 }

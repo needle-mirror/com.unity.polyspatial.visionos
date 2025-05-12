@@ -227,6 +227,7 @@ namespace Unity.PolySpatial.Internals.Editor
                     {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
                         PolySpatialContentViewWrapper(minSize: {minSizeString}, maxSize: {maxSizeString})
                             .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                            .handlesGameControllerEvents(matching: .gamepad)
                         KeyboardTextField().frame(width: 0, height: 0).modifier(LifeCycleHandlerModifier())
                     }} defaultValue: {{ UUID() }} {windowStyle} {upperLimbVisibility} {worldAlignmentString}";
 
@@ -245,6 +246,7 @@ namespace Unity.PolySpatial.Internals.Editor
                     {windowType}(id: ""{configName}"", for: UUID.self) {{ uuid in
                         PolySpatialContentViewWrapper(minSize: {minSizeString}, maxSize: {maxSizeString})
                             .environment(\.pslWindow, PolySpatialWindow(uuid.wrappedValue, ""{configName}"", {dimsVec3}))
+                            .handlesGameControllerEvents(matching: .gamepad)
                             .onImmersionChange() {{ oldContext, newContext in
                                 PolySpatialWindowManagerAccess.onImmersionChange(oldContext.amount, newContext.amount)
                             }}
@@ -437,6 +439,7 @@ import Foundation
 import SwiftUI
 import PolySpatialRealityKit
 import UnityFramework
+import GameController
 
 let unityStartInBatchMode = {(startInBatchMode ? "true" : "false")}
 

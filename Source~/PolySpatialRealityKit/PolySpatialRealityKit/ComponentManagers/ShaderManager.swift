@@ -82,6 +82,9 @@ class ShaderManager {
     static let kMaskTextureHandle = ShaderGraphMaterial.parameterHandle(name: kMaskTextureParam)
     static let kUVTransformParam = "_UVTransform"
     static let kUVTransformHandle = ShaderGraphMaterial.parameterHandle(name: kUVTransformParam)
+    static let kHasGammaSpaceVertexColorsParam = "_HasGammaSpaceVertexColors"
+    static let kHasGammaSpaceVertexColorsHandle = ShaderGraphMaterial.parameterHandle(
+        name: kHasGammaSpaceVertexColorsParam)
 
     static let kCullParam = "_Cull"
     static let kZWriteControlParam = "_ZWriteControl"

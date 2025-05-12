@@ -28,6 +28,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         const string k_ConnectOnPlayToggleTooltip = "When enabled, your content will be synced to the Play to Device Host each time you enter Play mode. The Play To Device Host must be installed and running within the visionOS or your Vision Pro device.";
         const string k_ConnectionTimeoutFieldTooltip = "How long (in seconds) to try connecting to a remote host before timing out.";
         const string k_LimitFramesPerSecondFieldTooltip = "Limit FPS of the app in the editor. Should be lower than FPS of host. The editor running faster than the Play to Device Host can result in sending unnecessary data and unneeded latency.";
+        const string k_DynamicallyAdjustFramesPerSecondFieldTooltip = "Dynamically adjust FPS of the app in the editor according to FPS of host.";
 
         const string k_DirectConnectionName = "<Direct Connection>";
         const string k_InvalidNameHelpBoxText = "Invalid Name";
@@ -48,6 +49,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         const string k_ConnectionTimeoutField = "ConnectionTimeoutField";
         const string k_LimitFramesPerSecondField = "LimitFramesPerSecond";
         const string k_LimitFramesPerSecondToggle = "LimitFramesPerSecondToggle";
+        const string k_DynamicallyAdjustFramesPerSecondToggle = "DynamicallyAdjustFramesPerSecondToggle";
         const string k_AvailableConnectionsFoldoutName = "AvailableConnectionsFoldout";
         const string k_ConnectionList = "ConnectionList";
         const string k_MismatchVersionHelpBox = "MismatchVersionHelpBox";
@@ -72,7 +74,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         VisionOSSettings.AppMode m_PreviousAppMode;
 #endif
 
-        internal const int DirectConnectionMagicCookie = 0;
+        internal const ulong k_DirectConnectionMagicCookie = 0;
 
         [MenuItem(k_PlayToDeviceWindowMenuPath)]
         static void LoadPlayToDeviceWindow()
@@ -103,6 +105,15 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             return port > 1 && port < 65535 && port != PolySpatialSettings.Instance.ConnectionDiscoveryPort;
         }
 
+        // Avoid having "valid" IPs like 10.0000.00001.1 and convert them to 10.0.1.1
+        static string NormalizeIP(string ip)
+        {
+            var parts = ip.Split('.');
+            for (var i = 0; i < parts.Length; i++)
+                parts[i] = int.Parse(parts[i]).ToString();
+            return string.Join(".", parts);
+        }
+
         static int CompareConnectionsByStatus(ConnectionCandidate a, ConnectionCandidate b)
         {
             if (a.Status == b.Status)
@@ -118,10 +129,10 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
         static int CompareConnectionsByAppVersion(ConnectionCandidate a, ConnectionCandidate b)
         {
-            if (a.PlayToDeviceHostVersion == b.PlayToDeviceHostVersion)
+            if (a.HostPolySpatialVersion == b.HostPolySpatialVersion)
                 return string.Compare(a.Name, b.Name, StringComparison.Ordinal);
 
-            return string.Compare(b.PlayToDeviceHostVersion, a.PlayToDeviceHostVersion, StringComparison.Ordinal);
+            return string.Compare(b.HostPolySpatialVersion, a.HostPolySpatialVersion, StringComparison.Ordinal);
         }
 
         static int CompareConnectionsByIP(ConnectionCandidate a, ConnectionCandidate b)
@@ -281,8 +292,8 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                 m_ConnectionCandidates
                     .Where(c =>
                         c != null
-                        && c.PlayToDeviceHostMagicCookie != DirectConnectionMagicCookie
-                        && c.PlayToDeviceHostMagicCookie != (long)PolySpatialMagicCookie.Value)
+                        && c.HostPolySpatialMagicCookie != k_DirectConnectionMagicCookie
+                        && c.HostPolySpatialMagicCookie != (long)PolySpatialMagicCookie.Value)
                     .Select(c => $"\'{c.Name}\'")
                     .Distinct());
         }
@@ -436,10 +447,19 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             m_AdvancedSettingsFoldout.value = m_AdvancedSettingsFoldoutState.Value;
             m_AdvancedSettingsFoldout.RegisterValueChangedCallback(evt => m_AdvancedSettingsFoldoutState.Value = evt.newValue);
 
-            var connectionTimeoutField = uxmlElements.Q<UnsignedIntegerField>(k_ConnectionTimeoutField);
+            var connectionTimeoutField = uxmlElements.Q<FloatField>(k_ConnectionTimeoutField);
             connectionTimeoutField.value = PolySpatialUserSettings.Instance.ConnectionTimeout;
             connectionTimeoutField.tooltip = k_ConnectionTimeoutFieldTooltip;
-            connectionTimeoutField.RegisterValueChangedCallback(evt => PolySpatialUserSettings.Instance.ConnectionTimeout = evt.newValue);
+            connectionTimeoutField.RegisterValueChangedCallback(evt =>
+            {
+                var newValue = evt.newValue;
+                if (newValue < 0f)
+                {
+                    newValue = 0f;
+                    connectionTimeoutField.value = 0f;
+                }
+                PolySpatialUserSettings.Instance.ConnectionTimeout = newValue;
+            });
 
             var limitFramesPerSecondField = uxmlElements.Q<SliderInt>(k_LimitFramesPerSecondField);
             limitFramesPerSecondField.value = PolySpatialUserSettings.Instance.PlayToDeviceLimitFPS;
@@ -455,6 +475,12 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                 limitFramesPerSecondField.enabledSelf = evt.newValue;
                 PolySpatialUserSettings.Instance.PlayToDeviceLimitFPSEnable = evt.newValue;
             });
+
+            var dynamicallyAdjustFramesPerSecondToggle = uxmlElements.Q<Toggle>(k_DynamicallyAdjustFramesPerSecondToggle);
+            dynamicallyAdjustFramesPerSecondToggle.value = PolySpatialUserSettings.Instance.PlayToDeviceDynamicallyAdjustFPSEnable;
+            dynamicallyAdjustFramesPerSecondToggle.tooltip = k_DynamicallyAdjustFramesPerSecondFieldTooltip;
+            dynamicallyAdjustFramesPerSecondToggle.RegisterValueChangedCallback(
+                evt => PolySpatialUserSettings.Instance.PlayToDeviceDynamicallyAdjustFPSEnable = evt.newValue);
 
             m_InvalidHostNameHelpBox = uxmlElements.Q<HelpBox>(k_InvalidHostNameHelpBox);
             m_InvalidHostNameHelpBox.text = k_InvalidNameHelpBoxText;
@@ -499,7 +525,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         bool ValidateConnectionFields()
         {
             var isValidHostname = IsValidHostName(m_HostName);
-            var isValidIPAddress = IsValidIPAddress(m_HostIPAddress);
+            var isValidIPAddress = IsValidIPAddress(NormalizeIP(m_HostIPAddress));
             var isValidPort = IsValidPort(m_HostPort);
 
             m_InvalidHostNameHelpBox.style.display = isValidHostname ? DisplayStyle.None : DisplayStyle.Flex;
@@ -542,11 +568,11 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
             var newConnectionCandidate = new ConnectionCandidate()
             {
-                IP = m_HostIPAddress,
-                Name = m_HostName,
+                IP = NormalizeIP(m_HostIPAddress),
+                Name = m_HostName.Trim(),
                 ServerPort = m_HostPort,
                 Status = ConnectionDiscoveryStatus.Lost,
-                PlayToDeviceHostVersion = string.Empty,
+                HostPolySpatialVersion = string.Empty,
                 LastContact = DateTime.Now
             };
 

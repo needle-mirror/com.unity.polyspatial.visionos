@@ -130,6 +130,29 @@ extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
     }
 }
 
+// Read-Only access into a PolySpatialInstanceIdList data buffer.
+struct UnsafePolySpatialInstanceIDBufferPointer {
+    private let data: UnsafeRawBufferPointer
+
+    public init(_ data: UnsafeRawBufferPointer) {
+        self.data = data
+    }
+
+    public var count: Int { (data.count - MemoryLayout<PolySpatialInstanceIDListHeader>.size) / MemoryLayout<Int64>.size }
+
+    public var instanceIds: UnsafeBufferPointer<Int64> {
+        data[MemoryLayout<PolySpatialInstanceIDListHeader>.size...].bindMemory(to: Int64.self)
+    }
+
+    public var hostId: PolySpatialHostID {
+        data.load(as: PolySpatialInstanceIDListHeader.self).hostId
+    }
+
+    public var hostVolumeIndex: UInt8 {
+        data.load(as: PolySpatialInstanceIDListHeader.self).hostVolumeIndex
+    }
+}
+
 // Extension to add Hashable support to the PolySpatialComponentID type.
 extension PolySpatialComponentID: Equatable, Hashable, CustomStringConvertible {
     public var description: String {
@@ -410,4 +433,3 @@ extension UIColor {
         return brightness
     }
 }
-

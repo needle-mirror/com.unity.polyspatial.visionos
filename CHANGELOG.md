@@ -9,9 +9,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [2.2.4] - 2025-03-05
+## [2.3.1] - 2025-05-12
 
-## [2.2.2] - 2025-02-21
+### Added
+- VisionOSVideoComponent now has the capability to load a video clip from a URL instead of just a VideoClip. Additionally, a Preroll property allows the component to attempt to load the video clip before it plays it, to allow for smoother playback.
+- Added support for getting game controller input in visionOS 2.0. Apple changes 2.0 to allow use of game controllers to handle chrome interaction, which means that game controller input would almost never get to the application. Now we register intent to handle game pad inputs so that we can get controller input again.
+
+### Changed
+- The PlayToDevice app will now attempt to broadcast to any Unity editors on the local subnet. Upon success, an entry for the device will appear in the "Available Devices" list in the Play To Device panel.
+- RealityKit apps now send `OnApplicationFocus` and `OnApplicationPause` messages when the app changes its background state.
+
+### Fixed
+- Fixed swizzling of ambient occlusion term for standard lit materials (Unity uses the value of the green texture channel).
+- Fixed mesh corruption issue for meshes with blend shapes and multiple UV sets/vertex colors.
+- Fixed crash when converting LowLevelMesh instances (i.e., meshes transferred on the GPU) to shapes for MeshCollider instances.
+- Fixed issue with frame "hitches" (frame times 2x/3x target) when updating meshes via GPU transfer.
+- Improved performance of loading/instantiating collider meshes.
+
+## [2.2.4] - 2025-03-05
 
 ### Changed
 - Reset PlayToDevice network connections when all volume camera windows in PlayToDevice (including the connection UI window) are backgrounded. This can occur if the headset is taken off the user's head and locked, or if the user manually closes each window visible.

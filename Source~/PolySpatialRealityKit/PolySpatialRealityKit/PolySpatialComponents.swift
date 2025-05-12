@@ -69,10 +69,14 @@ class PolySpatialComponents {
 
         public init() { }
 
-        public init(_ meshId: PolySpatialAssetID, _ materialIds: [PolySpatialAssetID], _ castShadows: Bool) {
+        public init(
+            _ meshId: PolySpatialAssetID, _ materialIds: [PolySpatialAssetID],
+            _ castShadows: Bool, _ boundsMargin: Float) {
+
             self.meshSource = .asset(meshId)
             self.materialIds = materialIds
             self.castShadows = castShadows
+            self.boundsMargin = boundsMargin
         }
 
         public init(
@@ -240,24 +244,62 @@ class PolySpatialComponents {
 
     @MainActor
     class UnityVideoPlayer: Component {
+        // AVPlayer status isn't always immediately ready to play right after
+        // load. This observer tracks and ensures that the clip is prerolled
+        // as needed when the player is ready.
+        class VideoPlayerStatusObserver: NSObject {
+            @objc var player: AVPlayer
+            var statusObserver: NSKeyValueObservation?
+
+            init(object: AVPlayer, playerComponent: UnityVideoPlayer) {
+                player = object
+                super.init()
+
+                statusObserver = observe(
+                    \.player.status,
+                    options: []
+                ) { object, change in
+                    Task { @MainActor in
+                        playerComponent.prerollIfNeeded()
+                    }
+                }
+            }
+
+            deinit {
+                statusObserver?.invalidate()
+            }
+        }
+
         // an entity with this unity video player will have a special video material applied to it.
+        public var id: PolySpatialInstanceID
         public var state: PolySpatialVideoPlayerState = .isStopped
         public var videoUrl: URL
         public var videoMaterial: VideoMaterial
         public var player: AVQueuePlayer
         public var playerItem: AVPlayerItem
         public var avPlayerLooper: AVPlayerLooper?
+        public var shouldPreroll: Bool
+        var observerObject: VideoPlayerStatusObserver?
 
         // A special mesh with inverted UVs is required for video material to work, since the video material is an RK-native material.
         public var meshAsset: MeshResource?
         public var meshAssetId: PolySpatialAssetID = .invalidAssetId
 
-        public init(_ url: URL) {
+        public init(_ id: PolySpatialInstanceID,
+                    _ url: URL,
+                    _ shouldPreroll: Bool) {
+            self.id = id
+            self.shouldPreroll = shouldPreroll
             videoUrl = url
             playerItem = AVPlayerItem(asset: AVURLAsset(url: videoUrl))
             player = AVQueuePlayer(items: [playerItem])
             videoMaterial = VideoMaterial(avPlayer: player)
             // videoMaterial.controller.audioInputMode = .spatial
+            observerObject = .init(object: player, playerComponent: self)
+        }
+
+        deinit {
+            player.cancelPendingPrerolls()
         }
 
         public func changeUrl(_ url: URL) {
@@ -273,6 +315,11 @@ class PolySpatialComponents {
             avPlayerLooper = nil
 
             videoMaterial = VideoMaterial(avPlayer: player)
+
+            // If this player had been set to preroll, the user might change the url too quickly for preroll to finish, so finish it here.
+            if (shouldPreroll) {
+                player.cancelPendingPrerolls()
+            }
         }
 
         public func setState(_ state: PolySpatialVideoPlayerState, _ looping: Bool) {
@@ -302,6 +349,28 @@ class PolySpatialComponents {
                 avPlayerLooper = nil
             } else if avPlayerLooper == nil {
                 avPlayerLooper = .init(player: player, templateItem: playerItem)
+            }
+        }
+
+        public func prerollIfNeeded() {
+            if (player.rate == 0 &&
+                player.status == .readyToPlay &&
+                self.shouldPreroll) {
+
+                player.preroll(atRate: player.defaultRate,
+                               completionHandler:({ (wasSuccess: Bool) -> Void in
+                    Task { @MainActor in
+                        var assetStatus: PolySpatialVideoAssetStatus = .prerolled
+                        if (!wasSuccess) {
+                            assetStatus = .failedToPreroll
+                        }
+
+                        withUnsafePointer(to: self.id) { id in
+                            var assetStatusRawValue = assetStatus.rawValue
+                            PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &assetStatusRawValue)
+                        }
+                    }
+                }))
             }
         }
 

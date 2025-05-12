@@ -366,7 +366,7 @@ extension PolySpatialRealityKit {
     }
 
     func toTextureParameter(_ tex: PolySpatialTexture) -> MaterialParameters.Texture? {
-        toTextureParameter(tex.texture)
+        toTextureParameter(tex.textureId.id)
     }
 
     func toTextureParameter(_ tex: PolySpatialAssetID) -> MaterialParameters.Texture? {
@@ -444,7 +444,7 @@ extension PolySpatialRealityKit {
         let material = materialPtr!.pointee
         var unlitMaterial = getOrCreateUnlitMaterial(id, material.blendingMode)
 
-        unlitMaterial.color = .init(tint: material.baseColorMap.color.rk(), texture: toTextureParameter(material.baseColorMap.texture))
+        unlitMaterial.color = .init(tint: material.baseColorMap.color.rk(), texture: toTextureParameter(material.baseColorMap.textureId.id))
         if material.isTransparent {
             unlitMaterial.blending = createUnlitTransparentBlending(material.opacity)
         } else {
@@ -463,7 +463,7 @@ extension PolySpatialRealityKit {
 
         if PolySpatialRealityKit.instance.particleRenderingMode == .replicateProperties {
             vfxMaterials[id] = .init(
-                texture: toTextureAsset(material.baseColorMap.texture),
+                texture: toTextureAsset(material.baseColorMap.textureId.id),
                 blendMode: material.blendingMode,
                 color: material.baseColorMap.color.rk(),
                 isLit: false,
@@ -471,7 +471,7 @@ extension PolySpatialRealityKit {
                 opacity: material.opacity)
         }
 
-        UpdateMaterialDefinition(UnlitMaterialAsset(id, unlitMaterial, colorTextureID: material.baseColorMap.texture))
+        UpdateMaterialDefinition(UnlitMaterialAsset(id, unlitMaterial, colorTextureID: material.baseColorMap.textureId.id))
     }
 
     func createUnlitTransparentBlending(_ opacity: Float) -> UnlitMaterial.Blending {
@@ -485,14 +485,14 @@ extension PolySpatialRealityKit {
         let material = materialPtr!.pointee
         var unlitMaterial = getOrCreateUnlitMaterial(id, material.blendingMode)
 
-        unlitMaterial.color = .init(tint: material.baseColorMap.color.rk(), texture: toTextureParameter(material.baseColorMap.texture))
+        unlitMaterial.color = .init(tint: material.baseColorMap.color.rk(), texture: toTextureParameter(material.baseColorMap.textureId.id))
         if material.isTransparent {
             unlitMaterial.blending = createUnlitTransparentBlending(material.opacity)
         } else {
             unlitMaterial.blending = .opaque
         }
 
-        UpdateMaterialDefinition(UnlitMaterialAsset(id, unlitMaterial, colorTextureID: material.baseColorMap.texture))
+        UpdateMaterialDefinition(UnlitMaterialAsset(id, unlitMaterial, colorTextureID: material.baseColorMap.textureId.id))
     }
 
     func CreateOrUpdateOcclusionMaterialAsset(_ id: PolySpatialAssetID, _ materialPtr: UnsafePointer<PolySpatialOcclusionMaterial>?) {
@@ -508,69 +508,91 @@ extension PolySpatialRealityKit {
             pbrmaterial.faceCulling = cullMode
         }
 
-        let baseColor = PhysicallyBasedMaterial.BaseColor.init(tint: materialDef.baseColorMap.color.rk(), texture: toTextureParameter(materialDef.baseColorMap.texture))
-        pbrmaterial.baseColor = baseColor
+        let baseColor = PhysicallyBasedMaterial.BaseColor.init(tint: materialDef.baseColorMap.color.rk(), texture: toTextureParameter(materialDef.baseColorMap.textureId.id))
+        if pbrmaterial.baseColor.tint != baseColor.tint || pbrmaterial.baseColor.texture != baseColor.texture {
+            pbrmaterial.baseColor = baseColor
+        }
 
         var emissiveIntensity = materialDef.emissiveIntensity
         var emissiveColor: PhysicallyBasedMaterial.EmissiveColor
         // color and texture are added rather than multiplied in RealityKit; this is a hack to work around
-        if materialDef.emissiveColorMap.texture.isValid {
+        if materialDef.emissiveColorMap.textureId.id.isValid {
             emissiveIntensity *= Float(materialDef.emissiveColorMap.color.rkLinear().brightnessComponent)
-            emissiveColor = .init(texture: toTextureParameter(materialDef.emissiveColorMap.texture))
+            emissiveColor = .init(texture: toTextureParameter(materialDef.emissiveColorMap.textureId.id))
         } else {
             // raise to an exponent derived from experimentation in an effort to match Unity rendering
             let experimentalExponent = 1.0 / 2.2
             emissiveColor = .init(color: materialDef.emissiveColorMap.color.rkPow(experimentalExponent),
-                texture: toTextureParameter(materialDef.emissiveColorMap.texture))
+                texture: toTextureParameter(materialDef.emissiveColorMap.textureId.id))
         }
 
         if pbrmaterial.emissiveIntensity != emissiveIntensity {
             pbrmaterial.emissiveIntensity = emissiveIntensity
         }
 
-        pbrmaterial.emissiveColor = emissiveColor
+        if pbrmaterial.emissiveColor.color != emissiveColor.color || pbrmaterial.emissiveColor.texture != emissiveColor.texture {
+            pbrmaterial.emissiveColor = emissiveColor
+        }
 
         var metallic: PhysicallyBasedMaterial.Metallic
         var specular: PhysicallyBasedMaterial.Specular
         switch materialDef.workflow {
             case .polySpatialMetallicWorkflow:
-                metallic = .init(scale: materialDef.metallicMap.scalar, texture: toTextureParameter(materialDef.metallicMap.texture))
+                metallic = .init(scale: materialDef.metallicMap.scalar, texture: toTextureParameter(materialDef.metallicMap.textureId.id))
                 // the specular scalar value indicates whether we want highlights or not
                 specular = .init(floatLiteral: materialDef.specularMap.scalar)
             case .polySpatialSpecularWorkflow:
                 metallic = .init(floatLiteral: 0)
-                specular = .init(scale: materialDef.specularMap.scalar, texture: toTextureParameter(materialDef.specularMap.texture))
+                specular = .init(scale: materialDef.specularMap.scalar, texture: toTextureParameter(materialDef.specularMap.textureId.id))
             @unknown default:
                 LogError("Unsupported workflow type \(materialDef.workflow) passed into provider.")
         }
 
-        pbrmaterial.metallic = metallic
-        pbrmaterial.specular = specular
+        if pbrmaterial.metallic.scale != metallic.scale || pbrmaterial.metallic.texture != metallic.texture {
+            pbrmaterial.metallic = metallic
+        }
 
-        let roughness = PhysicallyBasedMaterial.Roughness.init(scale: materialDef.roughnessMap.scalar, texture: toTextureParameter(materialDef.roughnessMap.texture))
-        pbrmaterial.roughness = roughness
+        if pbrmaterial.specular.scale != specular.scale || pbrmaterial.specular.texture != specular.texture {
+            pbrmaterial.specular = specular
+        }
+
+        let roughness = PhysicallyBasedMaterial.Roughness.init(scale: materialDef.roughnessMap.scalar, texture: toTextureParameter(materialDef.roughnessMap.textureId.id))
+        if pbrmaterial.roughness.scale != roughness.scale || pbrmaterial.roughness.texture != roughness.texture {
+            pbrmaterial.roughness = roughness
+        }
 
         let normal = PhysicallyBasedMaterial.Normal.init(texture: toTextureParameter(materialDef.normalMap))
-        pbrmaterial.normal = normal
+        if pbrmaterial.normal.texture != normal.texture {
+            pbrmaterial.normal = normal
+        }
 
-        let ambientOcclusion = PhysicallyBasedMaterial.AmbientOcclusion.init(texture: toTextureParameter(materialDef.ambientOcclusionMap))
-        pbrmaterial.ambientOcclusion = ambientOcclusion
+        // Unity takes the ambient occlusion term from the green channel; RealityKit from the red.  See
+        // https://github.cds.internal.unity3d.com/unity/unity/blob/0c94d673a03e1c6046c5e4b07c02253068393367/Shaders/Includes/UnityStandardInput.cginc#L117
+        var ambientOcclusion = PhysicallyBasedMaterial.AmbientOcclusion(texture: toTextureParameter(materialDef.ambientOcclusionMap))
+        ambientOcclusion.texture?.swizzle.red = .green
+        if pbrmaterial.ambientOcclusion.texture != ambientOcclusion.texture {
+            pbrmaterial.ambientOcclusion = ambientOcclusion
+        }
 
         let clearcoat = PhysicallyBasedMaterial.Clearcoat.init(
             scale: materialDef.clearcoatMap.scalar,
-            texture: toTextureParameter(materialDef.clearcoatMap.texture))
-        pbrmaterial.clearcoat = clearcoat
+            texture: toTextureParameter(materialDef.clearcoatMap.textureId.id))
+        if pbrmaterial.clearcoat.scale != clearcoat.scale || pbrmaterial.clearcoat.texture != clearcoat.texture {
+            pbrmaterial.clearcoat = clearcoat
+        }
 
         let clearcoatRoughness = PhysicallyBasedMaterial.ClearcoatRoughness.init(
             scale: materialDef.clearcoatRoughnessMap.scalar,
-            texture: toTextureParameter(materialDef.clearcoatRoughnessMap.texture))
-        pbrmaterial.clearcoatRoughness = clearcoatRoughness
+            texture: toTextureParameter(materialDef.clearcoatRoughnessMap.textureId.id))
+        if pbrmaterial.clearcoatRoughness.scale != clearcoatRoughness.scale || pbrmaterial.clearcoatRoughness.texture != clearcoatRoughness.texture {
+            pbrmaterial.clearcoatRoughness = clearcoatRoughness
+        }
 
         if materialDef.isTransparent {
             // Unity doesn't have a concept of a separate transparency map.  Given the code in ConvertCommonURPMaterialProperties,
             // we're always going to get materialDef.opacity == transparencyMap.scale.  We're going to assert that and compare.
             // TODO -- need to see what RealityKit does with base color maps with an alpha channel
-            PolySpatialAssert(materialDef.opacity == materialDef.transparencyMap.scalar && !materialDef.transparencyMap.texture.isValid)
+            PolySpatialAssert(materialDef.opacity == materialDef.transparencyMap.scalar && !materialDef.transparencyMap.textureId.id.isValid)
             pbrmaterial.blending = .transparent(opacity: .init(floatLiteral: materialDef.opacity))
         } else {
             pbrmaterial.blending = PhysicallyBasedMaterial.Blending.opaque
@@ -585,7 +607,7 @@ extension PolySpatialRealityKit {
 
         if particleRenderingMode == .replicateProperties {
             vfxMaterials[id] = .init(
-                texture: toTextureAsset(materialDef.baseColorMap.texture),
+                texture: toTextureAsset(materialDef.baseColorMap.textureId.id),
                 blendMode: materialDef.blendingMode,
                 color: materialDef.baseColorMap.color.rk(),
                 isLit: true,
@@ -595,15 +617,15 @@ extension PolySpatialRealityKit {
 
         UpdateMaterialDefinition(PhysicallyBasedMaterialAsset(
             id, pbrmaterial,
-            baseColorTextureID: materialDef.baseColorMap.texture,
-            emissiveColorTextureID: materialDef.emissiveColorMap.texture,
-            metallicTextureID: materialDef.metallicMap.texture,
-            specularTextureID: materialDef.specularMap.texture,
-            roughnessTextureID: materialDef.roughnessMap.texture,
-            normalTextureID: materialDef.normalMap.texture,
-            ambientOcclusionTextureID: materialDef.ambientOcclusionMap.texture,
-            clearcoatTextureID: materialDef.clearcoatMap.texture,
-            clearcoatRoughnessTextureID: materialDef.clearcoatRoughnessMap.texture))
+            baseColorTextureID: materialDef.baseColorMap.textureId.id,
+            emissiveColorTextureID: materialDef.emissiveColorMap.textureId.id,
+            metallicTextureID: materialDef.metallicMap.textureId.id,
+            specularTextureID: materialDef.specularMap.textureId.id,
+            roughnessTextureID: materialDef.roughnessMap.textureId.id,
+            normalTextureID: materialDef.normalMap.textureId.id,
+            ambientOcclusionTextureID: materialDef.ambientOcclusionMap.textureId.id,
+            clearcoatTextureID: materialDef.clearcoatMap.textureId.id,
+            clearcoatRoughnessTextureID: materialDef.clearcoatRoughnessMap.textureId.id))
     }
 
     func setOpacityThreshold(_ material: inout PhysicallyBasedMaterial, _ materialData: PolySpatialPBRMaterial) {
@@ -617,7 +639,7 @@ extension PolySpatialRealityKit {
         if (PolySpatialRealityKit.instance.particleRenderingMode == .replicateProperties) {
             let material = _materialPtr!.pointee
             let vfxMaterial = VfXMaterial(
-                texture: toTextureAsset(material.baseColorMap.texture),
+                texture: toTextureAsset(material.baseColorMap.textureId.id),
                 blendMode: material.blendingMode,
                 color: material.baseColorMap.color.rk(),
                 isLit: false,
@@ -636,7 +658,7 @@ extension PolySpatialRealityKit {
         if (PolySpatialRealityKit.instance.particleRenderingMode == .replicateProperties) {
             let material = _materialPtr!.pointee
             let vfxMaterial = VfXMaterial(
-                texture: toTextureAsset(material.baseColorMap.texture),
+                texture: toTextureAsset(material.baseColorMap.textureId.id),
                 blendMode: material.blendingMode,
                 color: material.baseColorMap.color.rk(),
                 isLit: true,

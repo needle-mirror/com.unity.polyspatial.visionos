@@ -126,7 +126,7 @@ extension PolySpatialRealityKit {
             let options = TextureResource.CreateOptions(semantic: semantic, mipmapsMode: mipmapsMode)
 
             let rsrc: TextureResource = switch texdata.shape {
-                case .texture2D: try! .init(image: createImage(0), options: options)
+                case .texture2D, .renderTexture: try! .init(image: createImage(0), options: options)
                 case .textureCube: try! .cube(slices: createSlices(), options: options)
                 case .texture2Darray: try! .texture2DArray(slices: createSlices(), options: options)
                 case .texture3D: try! .texture3D(slices: createSlices(), options: options)
@@ -161,7 +161,8 @@ extension PolySpatialRealityKit {
 
         do {
             let rsrc: TextureResource = switch texdata.shape {
-                case .texture2D: try .init(
+                // Treat render texture like we would a texture2D in RK.
+                case .texture2D, .renderTexture: try .init(
                     dimensions: .dimensions(width: Int(texdata.width), height: Int(texdata.height)),
                     format: .raw(pixelFormat: metalFormat),
                     contents: .init(mipmapLevels: texdata.mipsAsBuffer!.map { mip in

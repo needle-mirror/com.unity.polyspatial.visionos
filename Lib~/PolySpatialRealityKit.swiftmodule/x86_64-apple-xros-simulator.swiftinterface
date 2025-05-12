@@ -178,12 +178,18 @@ extension simd.simd_quatf {
   public func eulerAngles() -> Swift.SIMD3<Swift.Float>
 }
 @objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency public class PolySpatialSceneDelegate : ObjectiveC.NSObject, UIKit.UISceneDelegate, Foundation.ObservableObject {
+  @_Concurrency.MainActor @preconcurrency public static var sceneWillEnterForeground: ((UIKit.UIScene) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public static var sceneDidEnterBackground: ((UIKit.UIScene) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public static var sceneDidDisconnect: ((UIKit.UIScene) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public static var sceneDidBecomeActive: ((UIKit.UIScene) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public static var sceneWillResignActive: ((UIKit.UIScene) -> Swift.Void)?
   @_Concurrency.MainActor @preconcurrency @objc public func scene(_ scene: UIKit.UIScene, willConnectTo session: UIKit.UISceneSession, options connectionOptions: UIKit.UIScene.ConnectionOptions)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneWillEnterForeground(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneDidEnterBackground(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneDidDisconnect(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneDidBecomeActive(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneWillResignActive(_ scene: UIKit.UIScene)
+  @_Concurrency.MainActor @preconcurrency public static func hasPendingVolumes() -> Swift.Bool
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public init()
   @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher

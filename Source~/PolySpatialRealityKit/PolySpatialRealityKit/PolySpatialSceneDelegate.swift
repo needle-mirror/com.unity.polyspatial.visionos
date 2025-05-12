@@ -10,6 +10,13 @@ import Combine
 // pslWindowUUID attached to it. Ignore those.
 public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObject
 {
+    // Expose delegates for scene lifecycle. These will be set by UnityPolySpatialAppDelegate when the application is configured
+    public static var sceneWillEnterForeground: ((UIScene) -> Void)?
+    public static var sceneDidEnterBackground: ((UIScene) -> Void)?
+    public static var sceneDidDisconnect: ((UIScene) -> Void)?
+    public static var sceneDidBecomeActive: ((UIScene) -> Void)?
+    public static var sceneWillResignActive: ((UIScene) -> Void)?
+
     var pslWindowUUID: UUID?
 
     public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -31,12 +38,14 @@ public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObje
     public func sceneWillEnterForeground(_ scene: UIScene) {
         pslVolumeLog.trace("Scene willEnterForeground: \(scene, privacy: .public), window uuid: \(self.pslWindowUUID?.description ?? "nil", privacy: .public)")
         PolySpatialWindowManager.shared.on(windowWillEnterForeground: pslWindowUUID)
+        Self.sceneWillEnterForeground?(scene)
     }
 
     // Sent only if the OS puts the scene into the background.
     public func sceneDidEnterBackground(_ scene: UIScene) {
         pslVolumeLog.trace("Scene didEnterBackground: \(scene, privacy: .public)")
         PolySpatialWindowManager.shared.on(windowDidEnterBackground: pslWindowUUID)
+        Self.sceneDidEnterBackground?(scene)
     }
 
     // Sent when the scene is destroyed, potentially after sceneDidEnterBackground.
@@ -44,18 +53,33 @@ public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObje
         pslVolumeLog.trace("Scene disconnected: \(scene, privacy: .public)")
         PolySpatialWindowManager.shared.on(sceneDidDisconnect: pslWindowUUID)
         PolySpatialWindowManager.shared.on(windowDismissed: pslWindowUUID)
+        Self.sceneDidDisconnect?(scene)
     }
-    
+
     // Sent when the scene becomes active. Sent regardless of who creates the scene.
-    // When the scene first becomes active, pslWindowUUID is nil, so we can't rely on this invoking the right event handler at start. 
+    // When the scene first becomes active, pslWindowUUID is nil, so we can't rely on this invoking the right event handler at start.
     public func sceneDidBecomeActive(_ scene: UIScene) {
         pslVolumeLog.trace("Scene became active: \(scene, privacy: .public)")
         PolySpatialWindowManager.shared.on(windowDidBecomeActive: pslWindowUUID)
+        Self.sceneDidBecomeActive?(scene)
     }
-    
+
     // Sent when the window is not focused.
     public func sceneWillResignActive(_ scene: UIScene) {
         pslVolumeLog.trace("Scene will resign active: \(scene, privacy: .public)")
         PolySpatialWindowManager.shared.on(windowWillResignActive: pslWindowUUID)
+        Self.sceneWillResignActive?(scene)
+    }
+
+    // Used by UnityPolySpatialAppDelegate to determine whether or not to notify Unity about app lifecycle. Normally, when the last scene
+    // enters the background or resigns, we trigger the equivalent app-level event (background or resign) in Unity. If there are pending
+    // volumes waiting for a match, we should not trigger these events because that wasn't truly the last scene.
+    public static func hasPendingVolumes() -> Bool {
+        let windowManager = PolySpatialWindowManager.shared
+        let orphanedVolumesAndWindows = windowManager.orphanVolumes.count + windowManager.allWindows.count
+
+        // If the sum of orphaned volumes and windows is greater than the total sum of volumes, we are in the middle
+        // of a transition, or otherwise in a situation where we should suppress pause messages
+        return orphanedVolumesAndWindows > windowManager.allVolumes.count
     }
 }

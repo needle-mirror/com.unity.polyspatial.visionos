@@ -16,7 +16,9 @@ typealias PolySpatialHostCommand = Unity_PolySpatial_Internals_PolySpatialHostCo
 typealias PolySpatialChangeListEntityData = Unity_PolySpatial_Internals_PolySpatialChangeListEntityData
 typealias PolySpatialFrameData = Unity_PolySpatial_Internals_PolySpatialFrameData
 typealias PolySpatialLightData = Unity_PolySpatial_Internals_PolySpatialLightData
+typealias PolySpatialLightmapRenderData = Unity_PolySpatial_Internals_PolySpatialLightmapRenderData
 typealias PolySpatialLightmapData = Unity_PolySpatial_Internals_PolySpatialLightmapData
+typealias PolySpatialLightmapSettingsData = Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData
 typealias PolySpatialLightProbeData = Unity_PolySpatial_Internals_PolySpatialLightProbeData
 typealias PolySpatialReflectionProbeData = Unity_PolySpatial_Internals_PolySpatialReflectionProbeData
 typealias PolySpatialPointerEvent = Unity_PolySpatial_Internals_PolySpatialPointerEvent
@@ -50,6 +52,7 @@ typealias PolySpatialSkinnedRendererData = Unity_PolySpatial_Internals_PolySpati
 typealias PolySpatialSkinnedBlendShapeData = Unity_PolySpatial_Internals_PolySpatialSkinnedBlendShapeData
 typealias PolySpatialHostID = Unity_PolySpatial_Internals_PolySpatialHostID
 typealias PolySpatialInstanceID = Unity_PolySpatial_Internals_PolySpatialInstanceID
+typealias PolySpatialInstanceIDListHeader = Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader
 typealias PolySpatialComponentID = Unity_PolySpatial_Internals_PolySpatialComponentID
 typealias PolySpatialAssetID = Unity_PolySpatial_Internals_PolySpatialAssetID
 typealias PolySpatialAssetCommandMetadata = Unity_PolySpatial_Internals_PolySpatialAssetCommandMetadata
@@ -99,6 +102,9 @@ typealias PolySpatialGameObjectData = Unity_PolySpatial_Internals_PolySpatialGam
 typealias PolySpatialLogWithMarkup = Unity_PolySpatial_Internals_LogWithMarkup
 typealias PolySpatialConsoleLogMessageData = Unity_PolySpatial_Internals_ConsoleLogMessageData
 typealias PolySpatialLineRendererData = Unity_PolySpatial_Internals_PolySpatialLineRendererData
+typealias PolySpatialTransformDeltaFlags = Unity_PolySpatial_Internals_PolySpatialTransformDeltaFlags
+typealias PolySpatialSourceType = Unity_PolySpatial_Internals_PolySpatialVideoSource
+typealias PolySpatialVideoAssetStatus = Unity_PolySpatial_Internals_PolySpatialVideoAssetStatus
 
 // For changelists that don't contain EngineData
 struct EmptyData {
@@ -323,9 +329,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     // Links the id that the video player is on with the id that the mesh renderer is on.
     var videoPlayerEntityMap: [PolySpatialInstanceID: PolySpatialInstanceID] = [:]
 
-    // Out-Of-Order MeshColliders
-    var meshIdToMeshCollider: [PolySpatialAssetID: Set<PolySpatialEntity>] = [:]
-
     var componentDeleters: [PolySpatialCommand: (PolySpatialInstanceID) -> Void] = [:]
 
     var assetDeleters: [PolySpatialAssetID: (PolySpatialAssetID) -> Void] = [:]
@@ -410,6 +413,9 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
     let magentaImage: CGImage
     let whiteTexture: TextureResource
+
+    // The current list of lightmaps.
+    var lightmapData: [PolySpatialLightmapData] = []
 
     init() {
         PolySpatialComponents.registerComponents()
@@ -557,14 +563,11 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     }
 
     func getViewSubGraph(_ volumeIndex: UInt8) -> PolySpatialViewSubGraph {
-        let viewSubGraph = tryGetViewSubGraph(volumeIndex)
+        let vidx = Int(volumeIndex)
+        let viewSubGraph = viewSubGraphs[vidx]
         PolySpatialAssert(viewSubGraph != nil, "No ViewSubGraph found for index \(volumeIndex)")
 
         return viewSubGraph!
-    }
-
-    func tryGetViewSubGraph(_ volumeIndex: UInt8) -> PolySpatialViewSubGraph? {
-        (volumeIndex < viewSubGraphs.count) ? viewSubGraphs[Int(volumeIndex)] : nil
     }
 
     func getOrCreateViewSubGraph(_ idx: UInt8) -> PolySpatialViewSubGraph {
@@ -584,20 +587,17 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     }
 
     func tryGetVolume(_ id: PolySpatialInstanceID) -> PolySpatialVolume? {
-        return tryGetViewSubGraph(id.hostVolumeIndex)?.volume
+        return getViewSubGraph(id.hostVolumeIndex).volume
     }
 
     func getEntities(unityInstanceId: Int32) -> [PolySpatialEntity] {
         var entities: [PolySpatialEntity] = []
-        for (vidx, viewSubGraph) in viewSubGraphs.enumerated() {
+        for viewSubGraph in viewSubGraphs {
             guard let viewSubGraph = viewSubGraph else {
                 continue
             }
 
-            let id = PolySpatialInstanceID(
-                id: .init(unityInstanceId), hostId: .localDefault, hostVolumeIndex: .init(vidx))
-
-            guard let entity = viewSubGraph.entities[id] else {
+            guard let entity = viewSubGraph.entities[Int64(unityInstanceId)] else {
                 continue
             }
 
@@ -607,7 +607,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     }
 
     func TryGetEntity(_ id: PolySpatialInstanceID) -> PolySpatialEntity? {
-        return getViewSubGraph(id.hostVolumeIndex).entities[id]
+        return getViewSubGraph(id.hostVolumeIndex).entities[id.id]
     }
 
     func GetEntity(_ id: PolySpatialInstanceID) -> PolySpatialEntity {
@@ -681,15 +681,18 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         pose?.pointee = .init()
     }
 
-    func AddEntities(_ ids: UnsafeBufferPointer<PolySpatialInstanceID>) {
+    func AddEntities(_ ids: UnsafePolySpatialInstanceIDBufferPointer) {
         PolySpatialAssert(ids.count > 0, "AddEntities with empty ids")
 
-        let viewSubGraph = getOrCreateViewSubGraph(ids[0].hostVolumeIndex)
+        let viewSubGraph = getOrCreateViewSubGraph(ids.hostVolumeIndex)
 
-        for id in ids {
-            PolySpatialAssert(viewSubGraph.volumeIndex == id.hostVolumeIndex, "AddEntity for unexpected hostVolumeIndex \(id.hostVolumeIndex)")
-            PolySpatialAssert(viewSubGraph.entities[id] == nil, "AddEntity for \(id) but it already exists!")
-            viewSubGraph.entities[id] = .init(id)
+        let hostId = ids.hostId
+        let hostVolumeIndex = ids.hostVolumeIndex
+
+        for iid in ids.instanceIds {
+            let id = PolySpatialInstanceID(id: iid, hostId: hostId, hostVolumeIndex: hostVolumeIndex)
+            PolySpatialAssert(viewSubGraph.entities[iid] == nil, "AddEntity for \(id) but it already exists!")
+            viewSubGraph.entities[iid] = .init(id)
         }
     }
 
@@ -700,7 +703,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
         for id in ids {
             PolySpatialAssert(viewSubGraph.volumeIndex == id.hostVolumeIndex, "DeleteEntity for unexpected hostVolumeIndex \(id.hostVolumeIndex)")
-            if let entity = viewSubGraph.entities.removeValue(forKey: id) {
+            if let entity = viewSubGraph.entities.removeValue(forKey: id.id) {
                 entity.dispose()
             } else {
                 LogError("deleteEntity for \(id) but it doesn't exist!")
@@ -729,28 +732,30 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         }
     }
 
-    func SetEntityParents(_ ids: UnsafeBufferPointer<PolySpatialInstanceID>, _ parents: UnsafeBufferPointer<PolySpatialInstanceID>) {
+    func SetEntityParents(_ ids: UnsafePolySpatialInstanceIDBufferPointer, _ parents: UnsafeBufferPointer<Int64>) {
         PolySpatialAssert(ids.count > 0, "SetEntityParents with empty ids")
 
-        let viewSubGraph = getViewSubGraph(ids[0].hostVolumeIndex)
+        let hostVolumeIndex = ids.hostVolumeIndex
+        let viewSubGraph = getViewSubGraph(hostVolumeIndex)
+        let instanceIds = ids.instanceIds
 
-        for i in 0..<ids.count {
-            let id = ids[i]
+        for i in 0..<instanceIds.count {
+            let id = instanceIds[i]
             let parentId = parents[i]
             guard let entity = viewSubGraph.entities[id] else {
-                LogErrorWithMarkup("Attempt to update parent on missing entity %0", [.instanceIdtoGameObject], [id.id])
+                LogErrorWithMarkup("Attempt to update parent on missing entity %0", [.instanceIdtoGameObject], [id])
                 continue
             }
 
-            if !parentId.isValid {
-                entity.setParent(GetRootEntity(id))
+            if parentId == PolySpatialInstanceID.none.id {
+                entity.setParent(viewSubGraph.root)
             } else if let parentEntity = viewSubGraph.entities[parentId] {
                 entity.setParent(parentEntity)
             } else {
                 LogErrorWithMarkup("Attempt to update parent on %0 to missing entity %1. Parenting to Root Entity instead.",
-                                   [.instanceIdtoGameObject, .instanceIdtoGameObject], [id.id, parentId.id],
+                                   [.instanceIdtoGameObject, .instanceIdtoGameObject], [id, parentId],
                                    false)
-                entity.setParent(GetRootEntity(id))
+                entity.setParent(viewSubGraph.root)
             }
         }
     }
@@ -769,14 +774,17 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         }
     }
 
-    func SetEntityTransforms(_ ids: UnsafeBufferPointer<PolySpatialInstanceID>, _ positions: UnsafeBufferPointer<PolySpatialVec3>,
+    func SetEntityTransforms(_ ids: UnsafePolySpatialInstanceIDBufferPointer, _ positions: UnsafeBufferPointer<PolySpatialVec3>,
                             _ rotations: UnsafeBufferPointer<PolySpatialQuaternion>, _ scales: UnsafeBufferPointer<PolySpatialVec3>) {
-        for (index, id) in ids.enumerated() {
+        let instanceIds = ids.instanceIds
+        let viewSubGraph = getViewSubGraph(ids.hostVolumeIndex)
+
+        for (index, iid) in instanceIds.enumerated() {
             let position = ConvertPolySpatialVec3PositionToFloat3(positions[index])
             let rotation = ConvertPolySpatialQuaternionToRotation(rotations[index])
             let scale = ConvertPolySpatialVec3VectorToFloat3(scales[index])
 
-            guard let entity = TryGetEntity(id) else {
+            guard let entity = viewSubGraph.entities[iid] else {
                 LogError("Missing entity in SetEntityTransforms!")
                 continue
             }
@@ -792,35 +800,87 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         PolySpatialRealityKit.instance.skinnedMeshManager.UpdateDirtySkeletons()
     }
 
-    func AddEntitiesWithTransforms(_ ids: UnsafeBufferPointer<PolySpatialInstanceID>, _ parents: UnsafeBufferPointer<PolySpatialInstanceID>,
+    func setEntityTransformDeltas(_ ids: UnsafePolySpatialInstanceIDBufferPointer,
+                                  _ deltaFlags: UnsafeBufferPointer<PolySpatialTransformDeltaFlags>,
+                                  _ deltaBuffer: UnsafeBufferPointer<UInt8>) {
+        guard var bufferPtr = deltaBuffer.baseAddress else {
+            return
+        }
+
+        let instanceIds = ids.instanceIds
+        let viewSubGraph = getViewSubGraph(ids.hostVolumeIndex)
+
+        for (index, iid) in instanceIds.enumerated() {
+            guard let entity = viewSubGraph.entities[iid] else {
+                LogError("Missing entity in setEntityTransformDeltas!")
+                continue
+            }
+
+            let flags = deltaFlags[index]
+
+            // Skip over previous index value
+            if (flags.contains(.hasPreviousIndex)) {
+                bufferPtr = bufferPtr + MemoryLayout<Int32>.size
+            }
+
+            if (flags.contains(.hasPosition)) {
+                let positionPtr = UnsafeRawPointer(bufferPtr).bindMemory(to: PolySpatialVec3.self, capacity: 1)
+                entity.transform.translation = ConvertPolySpatialVec3PositionToFloat3(positionPtr.pointee)
+                bufferPtr = bufferPtr + MemoryLayout<PolySpatialVec3>.size
+            }
+
+            if (flags.contains(.hasRotation)) {
+                let rotationPtr = UnsafeRawPointer(bufferPtr).bindMemory(to: PolySpatialQuaternion.self, capacity: 1)
+                entity.transform.rotation = ConvertPolySpatialQuaternionToRotation(rotationPtr.pointee)
+                bufferPtr = bufferPtr + MemoryLayout<PolySpatialQuaternion>.size
+            }
+
+            if (flags.contains(.hasScale)) {
+                let scalePtr = UnsafeRawPointer(bufferPtr).bindMemory(to: PolySpatialVec3.self, capacity: 1)
+                entity.transform.scale = ConvertPolySpatialVec3VectorToFloat3(scalePtr.pointee)
+                bufferPtr = bufferPtr + MemoryLayout<PolySpatialVec3>.size
+            }
+
+            PolySpatialRealityKit.instance.skinnedMeshManager.MarkSkeletonDirty(entity)
+        }
+
+        PolySpatialRealityKit.instance.skinnedMeshManager.UpdateDirtySkeletons()
+    }
+
+    func AddEntitiesWithTransforms(_ ids: UnsafePolySpatialInstanceIDBufferPointer, _ parents: UnsafeBufferPointer<Int64>,
                                    _ positions: UnsafeBufferPointer<PolySpatialVec3>, _ rotations: UnsafeBufferPointer<PolySpatialQuaternion>,
                                    _ scales: UnsafeBufferPointer<PolySpatialVec3>, _ states: UnsafeBufferPointer<PolySpatialGameObjectData>) {
         PolySpatialAssert(ids.count > 0, "AddEntitiesWithTransforms with empty ids")
 
-        let viewSubGraph = getOrCreateViewSubGraph(ids[0].hostVolumeIndex)
+        let viewSubGraph = getOrCreateViewSubGraph(ids.hostVolumeIndex)
+        let instanceIds = ids.instanceIds
 
-        for id in ids {
-            PolySpatialAssert(viewSubGraph.entities[id] == nil, "AddEntity for \(id) but it already exists!")
-            viewSubGraph.entities[id] = .init(id)
+        let hostId = ids.hostId
+        let hostVolumeIndex = ids.hostVolumeIndex
+
+        for iid in instanceIds {
+            let id = PolySpatialInstanceID(id: iid, hostId: hostId, hostVolumeIndex: hostVolumeIndex)
+            PolySpatialAssert(viewSubGraph.entities[iid] == nil, "AddEntity for \(id) but it already exists!")
+            viewSubGraph.entities[iid] = .init(id)
         }
 
-        for (index, id) in ids.enumerated() {
-            let parentId = parents[index]
+        for (index, iid) in instanceIds.enumerated() {
+            let parentIid = parents[index]
             let position = ConvertPolySpatialVec3PositionToFloat3(positions[index])
             let rotation = ConvertPolySpatialQuaternionToRotation(rotations[index])
             let scale = ConvertPolySpatialVec3VectorToFloat3(scales[index])
 
-            let entity = viewSubGraph.entities[id]!
+            let entity = viewSubGraph.entities[iid]!
 
-            if !parentId.isValid {
-                entity.setParent(GetRootEntity(id))
-            } else if let parentEntity = TryGetEntity(parentId) {
+            if parentIid == PolySpatialInstanceID.none.id {
+                entity.setParent(viewSubGraph.root)
+            } else if let parentEntity = viewSubGraph.entities[parentIid] {
                 entity.setParent(parentEntity)
             } else {
                 LogErrorWithMarkup("Attempt to set parent on %0 to missing entity %1. Parenting to Root Entity instead.",
-                                   [.instanceIdtoGameObject, .instanceIdtoGameObject], [id.id, parentId.id],
+                                   [.instanceIdtoGameObject, .instanceIdtoGameObject], [iid, parentIid],
                                    false)
-                entity.setParent(GetRootEntity(id))
+                entity.setParent(viewSubGraph.root)
             }
 
             entity.setTransform(.init(scale: scale, rotation: rotation, translation: position))
@@ -968,8 +1028,14 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
         let mids = info.hasMaterialIds ? Array(info.materialIdsAsBuffer!) : []
         let reflectionProbes = info.hasReflectionProbes ? Array(info.reflectionProbesAsBuffer!) : nil
+        var boundsMargin = Float(0)
+        if let localBounds = info.localBounds?.rk(), let meshBounds = TryGetMeshForId(info.meshId!)?.bounds {
+            let maxDeltas = max(localBounds.max - meshBounds.max, meshBounds.min - localBounds.min)
+            boundsMargin = max(maxDeltas.x, max(maxDeltas.y, maxDeltas.z))
+        }
         entity.setRenderMeshAndMaterials(
-            info.meshId!, mids, info.shadowCastingMode != .off, info.lightmap, info.lightProbe, reflectionProbes)
+            info.meshId!, mids, info.shadowCastingMode != .off, boundsMargin,
+            info.lightmap, info.lightProbe, reflectionProbes)
 
         if let sortingGroup = sortingGroups[info.sortingGroup] {
             entity.setModelSortGroupBase(.init(group: sortingGroup, order: .init(info.sortingOrder)))
@@ -1013,7 +1079,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             // Apply skinned mesh to backing entity now.
             let mids = renderData.hasMaterialIds ? Array(renderData.materialIdsAsBuffer!) : []
             backingEntity.setRenderMeshAndMaterials(
-                renderData.meshId!, mids, renderData.shadowCastingMode != .off,
+                renderData.meshId!, mids, renderData.shadowCastingMode != .off, 0,
                 renderData.lightmap, renderData.lightProbe, reflectionProbes)
 
             // Update all transforms now in case this SMR doesn't actually have an animation to update from.
@@ -1023,7 +1089,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             backingEntity.blendLocalBounds = info.localBounds.rk()
             let mids = renderData.hasMaterialIds ? Array(renderData.materialIdsAsBuffer!) : []
             backingEntity.setRenderMeshAndMaterials(
-                renderData.meshId!, mids, renderData.shadowCastingMode != .off,
+                renderData.meshId!, mids, renderData.shadowCastingMode != .off, 0,
                 renderData.lightmap, renderData.lightProbe, reflectionProbes)
         }
     }
@@ -1180,13 +1246,11 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     }
 
     func createOrUpdateCollider(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ colliderInfo: UnsafeMutablePointer<PolySpatialColliderData>?) {
-        let entity = GetEntity(id)
-        entity.createOrUpdateCollision(info: UnsafePointer(colliderInfo!), trackingFlags: trackingFlags)
+        GetEntity(id).createOrUpdateCollisionShape(colliderInfo!.pointee)
     }
 
     func destroyCollider(_ destroyColliderData: PolySpatialDestroyComponentData) {
-        let entity = GetEntity(destroyColliderData.instanceId)
-        entity.destroyCollision(info: destroyColliderData)
+        GetEntity(destroyColliderData.instanceId).destroyCollisionShape(destroyColliderData.componentId)
     }
 
     func createOrUpdateVideoPlayer(_ id: PolySpatialInstanceID, _ videoInfo: UnsafeMutablePointer<PolySpatialVideoPlayerData>?) {
@@ -1201,22 +1265,32 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             return
         }
 
+        guard let videoUrl = getVideoURL(info.source, info.pathToVideo!) else {
+            PolySpatialRealityKit.LogWarning(
+                "Unable to find video clip \(info.pathToVideo!), video clip will not be played.")
+
+            var videoId = id
+            var assetNotFound = PolySpatialVideoAssetStatus.notFound
+            PolySpatialRealityKit.instance.SendHostCommand (.updateVideoAssetStatus, &videoId, &assetNotFound)
+            return
+        }
+
         var firstTimeSetup = false
         // If the mesh entity has changed, then set up a new component.
         if videoPlayerEntityMap[id] == nil {
             // Set up a new component
-            setVideoComponent(info, rendererEntity)
+            setVideoComponent(id, info, rendererEntity, videoUrl)
             videoPlayerEntityMap[id] = remappedMeshRendererId
             firstTimeSetup = true
         } else if videoPlayerEntityMap[id] != remappedMeshRendererId {
             // Delete old component and set up a new component.
             cleanUpVideoPlayer(id)
 
-            setVideoComponent(info, rendererEntity)
+            setVideoComponent(id, info, rendererEntity, videoUrl)
             videoPlayerEntityMap[id] = remappedMeshRendererId
         }
 
-        updateVideoComponent(info, rendererEntity, firstTimeSetup)
+        updateVideoComponent(info, rendererEntity, firstTimeSetup, videoUrl)
     }
 
     func destroyVideoPlayer(_ id: PolySpatialInstanceID) {
@@ -1531,6 +1605,8 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         case .endSession:
             PolySpatialConsoleLog.instance.messages.removeAll()
             break
+        case .sendProjectSettings:
+            break;
         case .endConnection:
             break
         case .createOrUpdateReferenceImageLibrary:
@@ -1552,12 +1628,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             let meshId = assetIdPtr!.pointee
             var mesh: PolySpatialMesh = getRoot(byteBuffer: &data!)
             CreateOrUpdateMeshAsset(meshId, &mesh)
-
-            if PolySpatialRealityKit.instance.meshIdToMeshCollider[meshId] != nil {
-                for entity in PolySpatialRealityKit.instance.meshIdToMeshCollider[meshId]! {
-                    entity.updateMeshCollisionShape(meshId: meshId)
-                }
-            }
             break
         case .createOrUpdateNativeMeshAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
@@ -1684,20 +1754,24 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
         // entity APIs
         case .setEntityTransforms:
-            var lengthPtr: UnsafeMutablePointer<Int32>?
-            var ids: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
+            var idArrayData: UnsafeRawBufferPointer?
             var positions: UnsafeMutableBufferPointer<PolySpatialVec3>?
             var rotations: UnsafeMutableBufferPointer<PolySpatialQuaternion>?
             var scales: UnsafeMutableBufferPointer<PolySpatialVec3>?
-            ExtractArgs(argCount, args, argSizes, &lengthPtr, &ids, &positions, &rotations, &scales)
-            SetEntityTransforms(.init(ids!), .init(positions!), .init(rotations!), .init(scales!))
+            ExtractArgs(argCount, args, argSizes, &idArrayData, &positions, &rotations, &scales)
+            SetEntityTransforms(.init(idArrayData!), .init(positions!), .init(rotations!), .init(scales!))
             break
-
+        case .setEntityTransformDeltas, .setEntityInterpolatedTransformDeltas:
+            var idArrayData: UnsafeRawBufferPointer?
+            var deltaFlags: UnsafeMutableBufferPointer<PolySpatialTransformDeltaFlags>?
+            var deltaBuffer: UnsafeMutableBufferPointer<UInt8>?
+            ExtractArgs(argCount, args, argSizes, &idArrayData, &deltaFlags, &deltaBuffer)
+            setEntityTransformDeltas(.init(idArrayData!), .init(deltaFlags!), .init(deltaBuffer!))
+            break
         case .addEntities:
-            var lengthPtr: UnsafeMutablePointer<Int32>?
-            var ids: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
-            ExtractArgs(argCount, args, argSizes, &lengthPtr, &ids)
-            AddEntities(.init(ids!))
+            var idArrayData: UnsafeRawBufferPointer?
+            ExtractArgs(argCount, args, argSizes, &idArrayData)
+            AddEntities(.init(idArrayData!))
             break
         case .deleteEntities:
             var lengthPtr: UnsafeMutablePointer<Int32>?
@@ -1715,11 +1789,10 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             HandleChangeListArg(argCount, args, argSizes, entryCallback: SetEntityState)
             break
         case .setEntityParents:
-            var lengthPtr: UnsafeMutablePointer<Int32>?
-            var ids: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
-            var parentIds: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
-            ExtractArgs(argCount, args, argSizes, &lengthPtr, &ids, &parentIds)
-            SetEntityParents(.init(ids!), .init(parentIds!))
+            var idArrayData: UnsafeRawBufferPointer?
+            var parentIds: UnsafeMutableBufferPointer<Int64>?
+            ExtractArgs(argCount, args, argSizes, &idArrayData, &parentIds)
+            SetEntityParents(.init(idArrayData!), .init(parentIds!))
             break
         case .setEntityDebugInfo:
             var idPtr: UnsafeMutablePointer<PolySpatialInstanceID>?
@@ -1728,15 +1801,14 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             SetEntityDebugInfo(idPtr!.pointee, namePtr!)
             break
         case .addEntitiesWithTransforms:
-            var lengthPtr: UnsafeMutablePointer<Int32>?
-            var ids: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
-            var parents: UnsafeMutableBufferPointer<PolySpatialInstanceID>?
+            var idArrayData: UnsafeRawBufferPointer?
+            var parentIds: UnsafeMutableBufferPointer<Int64>?
             var positions: UnsafeMutableBufferPointer<PolySpatialVec3>?
             var rotations: UnsafeMutableBufferPointer<PolySpatialQuaternion>?
             var scales: UnsafeMutableBufferPointer<PolySpatialVec3>?
             var states: UnsafeMutableBufferPointer<PolySpatialGameObjectData>?
-            ExtractArgs(argCount, args, argSizes, &lengthPtr, &ids, &parents, &positions, &rotations, &scales, &states)
-            AddEntitiesWithTransforms(.init(ids!), .init(parents!), .init(positions!), .init(rotations!), .init(scales!), .init(states!))
+            ExtractArgs(argCount, args, argSizes, &idArrayData, &parentIds, &positions, &rotations, &scales, &states)
+            AddEntitiesWithTransforms(.init(idArrayData!), .init(parentIds!), .init(positions!), .init(rotations!), .init(scales!), .init(states!))
             break
         case .createOrUpdateLight:
             HandleChangeListArg(argCount, args, argSizes, entryCallback: createOrUpdateLight)
@@ -1896,12 +1968,18 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             let ssRequest: PolySpatialScreenshotRequest = getRoot(byteBuffer: &buf)
             takeScreenshot(ssRequest)
 
+        case .setLightmapSettings:
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &data)
+            let lightmapSettingsData: PolySpatialLightmapSettingsData = getRoot(byteBuffer: &data!)
+            lightmapData.replaceSubrange(0..<lightmapData.count, with: lightmapSettingsData.lightmapsAsBuffer!)
+
         // VisionOS doesn't handle these commands, but we don't need to issue a warning about them.
-        case .createOrUpdateCamera, .destroyCamera, .setRenderSettings:
+        case .createOrUpdateCamera, .destroyCamera, .setRenderSettings, .setGraphicsSettings, .createOrUpdateHalo, .destroyHalo:
             break
 
         // The following assets are known, but not supported.
-        case .createOrUpdateRenderingVolumeProfileAsset, .createOrUpdateTmpFontAsset:
+        case .createOrUpdateRenderingVolumeProfileAsset, .createOrUpdateTmpFontAsset, .createOrUpdateGenericAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
             var data: ByteBuffer?
             ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
@@ -1913,6 +1991,10 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
         case .createOrUpdateRenderingVolume, .destroyRenderingVolume:
             LogWarning("RealityKit does not support UnityEngine.Rendering.Volumes.")
+            
+        // Handled on Unity-side, do nothing for RealityKit. 
+        case .updateAudioStream:
+            break
 
         // Any other commands will generate an error.
         default:

@@ -14,6 +14,11 @@ This feature is delivered through the Play to Device Host application, which can
 
 Any changes you make in Unity Editor - such as creating game objects, modifying inspector values, updating and recompiling shader graphs, etc. - will be synchronized to the simulator/device in real time, and any interactions you perform on the host will be synchronized back to the editor.
 
+<iframe width="560" height="315"
+src="https://www.youtube.com/embed/W1sAnj2fztY"
+frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+
 ## Requirements
 
 Depending on how you are running your application, you will need to install the Play to Device Host on either the visionOS Simulator or an Apple Vision Pro device.

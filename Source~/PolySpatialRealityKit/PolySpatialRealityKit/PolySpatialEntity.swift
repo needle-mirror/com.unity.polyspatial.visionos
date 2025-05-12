@@ -22,14 +22,18 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         self.components[PolySpatialComponents.InstanceRef.self]!
     }
 
-    struct ColliderShape{
-        var resource: ShapeResource
-        var info: PolySpatialColliderData
-        var worldScale: SIMD3<Float>
+    struct CollisionShape {
+        let info: PolySpatialColliderData
+        let resource: ShapeResource?
+        let worldScale: SIMD3<Float>
+
+        init(_ info: PolySpatialColliderData, _ resource: ShapeResource?, _ worldScale: simd_float3) {
+            self.info = info
+            self.resource = resource
+            self.worldScale = worldScale
+        }
     }
-    var collisionShapes: [PolySpatialComponentID: ColliderShape] = [:]
-    var collisionMeshGeneration: [PolySpatialComponentID: Int] = [:]
-    var meshIdToCollisionShape: [PolySpatialAssetID: Set<PolySpatialComponentID>] = [:]
+    var collisionShapes: [PolySpatialComponentID: CollisionShape] = [:]
 
     // if accessed, these are added
     var renderInfo: PolySpatialComponents.RenderInfo {
@@ -232,7 +236,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
 
         disposeBackingEntities()
 
-        unregisterMeshAndMaterials()
+        unregisterMeshesAndMaterials()
         removeSelfAsRenderInfoTextureObserver()
         removeSelfAsMaskedRendererTextureObserver()
         removeSelfAsImageBasedLightTextureObserver()
@@ -273,18 +277,24 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     // the mesh was updated in-place (meaning that the ModelComponent, which stores the mesh by
     // reference, doesn't necessarily need to be updated).
     func meshOrMaterialUpdated(_ id: PolySpatialAssetID, _ referencePreserved: Bool) {
-        PolySpatialAssert(self.components.has(PolySpatialComponents.RenderInfo.self))
+        if let renderInfo = components[PolySpatialComponents.RenderInfo.self],
+                renderInfo.meshId == id || renderInfo.materialIds.contains(id) {
+            // If the reference is preserved and we have the same number of materials, then we only
+            // need to update the raycast target transforms (which are based on the mesh contents).
+            if referencePreserved,
+                let mesh = PolySpatialRealityKit.instance.TryGetMeshForId(id),
+                let model = self.model,
+                mesh.expectedMaterialCount == model.materials.count {
 
-        // If the reference is preserved and we have the same number of materials, then we only
-        // need to update the raycast target transforms (which are based on the mesh contents).
-        if referencePreserved,
-            let mesh = PolySpatialRealityKit.instance.TryGetMeshForId(id),
-            let model = self.model,
-            mesh.expectedMaterialCount == model.materials.count {
-
-            updateRaycastTargetTransforms()
-        } else {
-            updateModelComponent()
+                updateRaycastTargetTransforms()
+            } else {
+                updateModelComponent()
+            }
+        }
+        for (componentId, collisionShape) in collisionShapes {
+            if collisionShape.info.meshId == id {
+                updateMeshCollisionShape(componentId, collisionShape.info)
+            }
         }
     }
 
@@ -411,12 +421,31 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
     }
 
-    func unregisterMeshAndMaterials() {
-        if let ri = self.components[PolySpatialComponents.RenderInfo.self] as PolySpatialComponents.RenderInfo? {
-            PolySpatialRealityKit.instance.UnregisterEntityWithMeshOrMaterial(ri.meshId, self)
-            for mid in ri.materialIds {
-                PolySpatialRealityKit.instance.UnregisterEntityWithMeshOrMaterial(mid, self)
+    func registerMeshes() {
+        if let renderInfo = components[PolySpatialComponents.RenderInfo.self] {
+            PolySpatialRealityKit.instance.RegisterEntityWithMeshOrMaterial(renderInfo.meshId, self)
+        }
+        for collisionShape in collisionShapes.values {
+            PolySpatialRealityKit.instance.RegisterEntityWithMeshOrMaterial(collisionShape.info.meshId, self)
+        }
+    }
+
+    func unregisterMeshesAndMaterials() {
+        unregisterMeshes()
+
+        if let renderInfo = components[PolySpatialComponents.RenderInfo.self] {
+            for materialId in renderInfo.materialIds {
+                PolySpatialRealityKit.instance.UnregisterEntityWithMeshOrMaterial(materialId, self)
             }
+        }
+    }
+
+    func unregisterMeshes() {
+        if let renderInfo = components[PolySpatialComponents.RenderInfo.self] {
+            PolySpatialRealityKit.instance.UnregisterEntityWithMeshOrMaterial(renderInfo.meshId, self)
+        }
+        for collisionShape in collisionShapes.values {
+            PolySpatialRealityKit.instance.UnregisterEntityWithMeshOrMaterial(collisionShape.info.meshId, self)
         }
     }
 
@@ -436,7 +465,8 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         _ meshId: PolySpatialAssetID,
         _ materialIds: [PolySpatialAssetID],
         _ castShadows: Bool = true,
-        _ lightmap: PolySpatialLightmapData? = nil,
+        _ boundsMargin: Float = 0,
+        _ lightmap: PolySpatialLightmapRenderData? = nil,
         _ lightProbe: PolySpatialLightProbeData? = nil,
         _ reflectionProbes: [PolySpatialReflectionProbeData]? = nil) {
 
@@ -447,11 +477,12 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
 
         // create or update components
-        let renderInfo = PolySpatialComponents.RenderInfo(meshId, materialIds, castShadows)
-        if let lightmapData = lightmap {
-            renderInfo.lightmapColorId = lightmapData.colorAssetId
-            renderInfo.lightmapDirId = lightmapData.dirAssetId
-            renderInfo.lightmapScaleOffset = ConvertPolySpatialVec4VectorToFloat4(lightmapData.scaleOffset)
+        let renderInfo = PolySpatialComponents.RenderInfo(meshId, materialIds, castShadows, boundsMargin)
+        if let lightmap {
+            let lightmapData = PolySpatialRealityKit.instance.lightmapData[Int(lightmap.index)]
+            renderInfo.lightmapColorId = lightmapData.lightmapColor
+            renderInfo.lightmapDirId = lightmapData.lightmapDir
+            renderInfo.lightmapScaleOffset = ConvertPolySpatialVec4VectorToFloat4(lightmap.scaleOffset)
         }
         if let lightProbeData = lightProbe {
             renderInfo.lightProbeCoefficients[0] = ConvertPolySpatialVec4VectorToFloat4(lightProbeData.shAr)
@@ -473,7 +504,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     // Sets or clears the render info component, updating the model if appropriate and registering as a listener
     // for changes to meshes/materials/textures.
     func setRenderInfo(_ renderInfo: PolySpatialComponents.RenderInfo?) {
-        unregisterMeshAndMaterials()
+        unregisterMeshesAndMaterials()
         removeSelfAsRenderInfoTextureObserver()
 
         guard let renderInfo = renderInfo else {
@@ -483,13 +514,17 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
 
             // Make sure we also dispose of the raycast backing entity to which may have moved the ModelComponent.
             disposeRaycastTargetBackingEntity()
+
+            // Re-register meshes in case we have collision meshes.
+            registerMeshes()
             return
         }
+        self.components.set(renderInfo)
 
-        // register that we are using our mesh and each of our materials
-        PolySpatialRealityKit.instance.RegisterEntityWithMeshOrMaterial(renderInfo.meshId, self)
-        for mid in renderInfo.materialIds {
-            PolySpatialRealityKit.instance.RegisterEntityWithMeshOrMaterial(mid, self)
+        // Register that we are using our mesh (obtained from the RenderInfo component) and each of our materials.
+        registerMeshes()
+        for materialId in renderInfo.materialIds {
+            PolySpatialRealityKit.instance.RegisterEntityWithMeshOrMaterial(materialId, self)
         }
 
         // Register for lighting texture changes.
@@ -498,8 +533,6 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         for reflectionProbe in renderInfo.reflectionProbes {
             PolySpatialRealityKit.instance.AddTextureObserver(reflectionProbe.textureAssetId, self)
         }
-
-        self.components.set(renderInfo)
 
         updateModelComponent()
     }
@@ -976,6 +1009,8 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
                     try? shaderGraphMaterial.setParameter(
                         handle: ShaderManager.kAlphaCutoffHandle,
                         value: .float(maskedRendererInfo.maskAlphaCutoff))
+                    try? shaderGraphMaterial.setParameter(
+                        handle: ShaderManager.kHasGammaSpaceVertexColorsHandle, value: .float(1))
                 }
 
                 return shaderGraphMaterial
@@ -1016,38 +1051,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
     }
 
-    func updateMeshCollisionShape(meshId: PolySpatialAssetID) {
-        if let ids = meshIdToCollisionShape[meshId] {
-            for id in ids {
-                let mesh = PolySpatialRealityKit.instance.GetMeshForId(meshId)
-                setCollisionShape(id, PolySpatialRealityKit.generateConvexShape(mesh))
-            }
-        }
-    }
-
-    func createOrUpdateCollision(info: UnsafePointer<PolySpatialColliderData>, trackingFlags: Int32) {
-        applyCollisionShapeData(info: info)
-    }
-
-    func destroyCollision(info: PolySpatialDestroyComponentData) {
-        let id = info.componentId
-
-        if let existingShape = collisionShapes[id] {
-            // When being destroyed the PolySpatialColliderData is only initialized with the colliderId
-            // Get the shape enum value and meshId from the stored data
-            let shape = existingShape.info.shape
-
-            removeCollisionShape(id)
-
-            if shape == .mesh {
-                let meshId = existingShape.info.meshId
-                meshIdToCollisionShape[meshId]?.remove(id)
-                PolySpatialRealityKit.instance.meshIdToMeshCollider[meshId]?.remove(self)
-            }
-        }
-    }
-
-    private func applyCollisionShapeData(info: UnsafePointer<PolySpatialColliderData>) {
+    func createOrUpdateCollisionShape(_ info: PolySpatialColliderData) {
         // From RealityFoundation Swift Header
         /// Note the following when considering applying a non-uniform scale to an entity:
         /// - Non-uniform scaling is applicable only to box, convex mesh and triangle mesh collision shapes.
@@ -1058,117 +1062,158 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         /// assign the non-uniform scale to the entity that has the collision shape, and avoid adding children below
         /// that entity.
 
-        let id = info.pointee.colliderId
+        let id = info.colliderId
 
         let worldScale = self.scale(relativeTo: nil)
 
-        switch info.pointee.shape {
+        switch info.shape {
         case .box:
             // box supports non-uniform scaling so you don't have to do the juggle with scale.max and ratios
-            let offset = ConvertPolySpatialVec3PositionToFloat3(info.pointee.center)
-            let size = ConvertPolySpatialVec3VectorToFloat3(info.pointee.size)
+            let offset = ConvertPolySpatialVec3PositionToFloat3(info.center)
+            let size = ConvertPolySpatialVec3VectorToFloat3(info.size)
 
             if let shape = collisionShapes[id] {
                 let previousInfo = shape.info
-                if previousInfo.size.approximatelyEqual(info.pointee.size) {
-                    if !previousInfo.center.approximatelyEqual(info.pointee.center) {
+                if previousInfo.size.approximatelyEqual(info.size) {
+                    if !previousInfo.center.approximatelyEqual(info.center) {
                         // if only offset changed, save time by only updating offset
                         let previousOffset = ConvertPolySpatialVec3PositionToFloat3(previousInfo.center)
-                        setCollisionShape(id, shape.resource.offsetBy(translation: offset - previousOffset), info, worldScale)
+                        setCollisionShape(
+                            id, info, shape.resource!.offsetBy(translation: offset - previousOffset), worldScale)
                     }
                     break
                 }
             }
 
-            setCollisionShape(id, ShapeResource.generateBox(size: size).offsetBy(translation: offset), info, worldScale)
+            setCollisionShape(
+                id, info, ShapeResource.generateBox(size: size).offsetBy(translation: offset), worldScale)
 
         case .sphere:
-            let placement = calcCollisionPlacement(info.pointee, worldScale)
+            let placement = calcCollisionPlacement(info, worldScale)
 
             if let shape = collisionShapes[id] {
                 let previousInfo = shape.info
-                if shape.worldScale.approximatelyEqual(worldScale) && previousInfo.size.approximatelyEqual(info.pointee.size) {
-                    if !previousInfo.center.approximatelyEqual(info.pointee.center) {
+                if shape.worldScale.approximatelyEqual(worldScale) && previousInfo.size.approximatelyEqual(info.size) {
+                    if !previousInfo.center.approximatelyEqual(info.center) {
                         // if only offset changed, save time by only updating offset
                         let previousPlacement = calcCollisionPlacement(previousInfo, worldScale)
                         let offset = placement.offset - previousPlacement.offset
-                        setCollisionShape(id, shape.resource.offsetBy(translation: offset), info, worldScale)
+                        setCollisionShape(id, info, shape.resource!.offsetBy(translation: offset), worldScale)
                     }
                     break
                 }
             }
 
-            setCollisionShape(id, ShapeResource.generateSphere(radius: placement.radius).offsetBy(translation: placement.offset), info, worldScale)
+            setCollisionShape(
+                id, info,
+                ShapeResource.generateSphere(radius: placement.radius).offsetBy(translation: placement.offset),
+                worldScale)
 
         case .capsule:
-            let placement = calcCollisionPlacement(info.pointee, worldScale)
+            let placement = calcCollisionPlacement(info, worldScale)
 
             if let shape = collisionShapes[id] {
                 let previousInfo = shape.info
-                if shape.worldScale.approximatelyEqual(worldScale) && previousInfo.size.approximatelyEqual(info.pointee.size) {
-                    if !previousInfo.center.approximatelyEqual(info.pointee.center) {
+                if shape.worldScale.approximatelyEqual(worldScale) && previousInfo.size.approximatelyEqual(info.size) {
+                    if !previousInfo.center.approximatelyEqual(info.center) {
                         // if only offset changed, save time by only updating offset
                         let previousPlacement = calcCollisionPlacement(previousInfo, shape.worldScale)
                         let offset = placement.offset - previousPlacement.offset
-                        setCollisionShape(id, shape.resource.offsetBy(translation: offset), info, worldScale)
+                        setCollisionShape(id, info, shape.resource!.offsetBy(translation: offset), worldScale)
                     }
                     break
                 }
             }
 
             // For whatever reason height just doesn't need any scaling... Don't look at me, I didn't make realitykit.
-            let height = info.pointee.size.y
+            let height = info.size.y
 
-            setCollisionShape(id, ShapeResource.generateCapsule(height: height, radius: placement.radius).offsetBy(translation: placement.offset), info, worldScale)
+            setCollisionShape(
+                id, info,
+                ShapeResource.generateCapsule(
+                    height: height, radius: placement.radius).offsetBy(translation: placement.offset),
+                worldScale)
 
         case .mesh:
             // Unity mesh collider does not support offset. Orientation and scale change are always okay.
 
-            if collisionShapes[id] != nil && collisionShapes[id]!.info.meshId == info.pointee.meshId {
+            if let shape = collisionShapes[id], shape.info.meshId == info.meshId, shape.info.options == info.options {
                 return
             }
+            // Unregister meshes before (potentially) changing the mesh assignment.
+            unregisterMeshes()
 
-            let meshId = info.pointee.meshId
-            if !meshId.isValid {
-                return
+            setCollisionShape(id, info)
+            if info.meshId.isValid {
+                updateMeshCollisionShape(id, info)
             }
 
-            let mesh = PolySpatialRealityKit.instance.GetMeshForId(meshId)
-            // If mesh is uninitalized it will have 0 boundingRadius. Is there a better way to check this?
-            let isMeshInitialized = mesh.bounds.boundingRadius > 0
-            let isConvex = 0 != (info.pointee.options & PolySpatialColliderOptions.convex.rawValue)
-
-            collisionMeshGeneration[id, default: 0] += 1
-
-            if isMeshInitialized && isConvex {
-                setCollisionShape(id, PolySpatialRealityKit.generateConvexShape(mesh), info, worldScale)
-            } else if isMeshInitialized {
-
-                // Keep track of the generation of a static mesh being processed so if by chance one takes long to process
-                // and new arrives before it finishes, then it will skip setting the outdated static mesh on the component
-                // This should rarely happen, if ever
-                let processingStaticMeshGeneration = collisionMeshGeneration[id]
-
-                var storedInfo = info.pointee
-                Task { @MainActor in
-                    do {
-                        let staticMesh = try await PolySpatialRealityKit.generateStaticMesh(mesh)
-                        if (collisionMeshGeneration[id]! == processingStaticMeshGeneration) {
-                            setCollisionShape(id, staticMesh, &storedInfo, worldScale)
-                        }
-                    } catch {
-                        PolySpatialRealityKit.instance.Log("Failed to generate static mesh: \(error)")
-                    }
-                }
-            }
-
-            // if uninitialized still add to these dictionaries so it receives the message for when they are initialized
-            meshIdToCollisionShape[meshId, default: []].insert(id)
-            PolySpatialRealityKit.instance.meshIdToMeshCollider[meshId, default: []].insert(self)
+            // Re-register meshes now that we've updated the shape.
+            registerMeshes()
 
         @unknown default:
             PolySpatialRealityKit.instance.LogError("Unsupported collider shape passed into provider.")
             return
+        }
+    }
+
+    func destroyCollisionShape(_ id: PolySpatialComponentID) {
+        guard let oldShape = collisionShapes[id] else {
+            return
+        }
+        // If it's a mesh shape, we need to unregister the meshes before clearing.
+        if oldShape.info.meshId.isValid {
+            unregisterMeshes()
+        }
+
+        collisionShapes.removeValue(forKey: id)
+        PolySpatialRealityKit.instance.dirtyCollisionObservers.insert(self)
+
+        // Now re-register the remaining meshes.
+        if oldShape.info.meshId.isValid {
+            registerMeshes()
+        }
+    }
+
+    func updateMeshCollisionShape(_ id: PolySpatialComponentID, _ info: PolySpatialColliderData) {
+        let meshAsset = PolySpatialRealityKit.instance.getMeshAssetForId(info.meshId)
+        let mesh = meshAsset.mesh
+
+        // If mesh is uninitalized it will have 0 boundingRadius. Is there a better way to check this?
+        let isMeshInitialized = mesh.bounds.boundingRadius > 0
+        if !isMeshInitialized {
+            return
+        }
+        let isConvex = 0 != (info.options & PolySpatialColliderOptions.convex.rawValue)
+
+        // For testing, we need to generate the convex shapes synchronously so that they'll be available on the very
+        // next frame.  Static meshes can only be created asynchronously.
+        if isConvex && PolySpatialRealityKit.instance.runtimeFlags.contains(.updateMeshesSynchronously) {
+            setCollisionShape(id, info, meshAsset.convexShape)
+            return
+        }
+
+        // When we obtain the result after asynchronous processing, we need to verify that the source data hasn't
+        // been removed or changed in the meantime.  To do this, we ensure that the collision shape still exists
+        // and refers to the same mesh ID and options, that the MeshAsset hasn't been replaced with something else
+        // (such as a LowLevelMesh), and that the current version matches the one we started with.  If any of
+        // these things change, a new asynchronous request will be kicked off, and we want to be sure that this
+        // won't overwrite its results in the unlikely scenario that it returns afterwards.
+        let oldMeshAsset = meshAsset
+        let oldMeshVersion = oldMeshAsset.version
+        Task { @MainActor in
+            do {
+                let resource = try await (isConvex ?
+                    meshAsset.convexShapeFuture : meshAsset.staticMeshShapeFuture).value
+                if let currentShape = collisionShapes[id], currentShape.info.meshId == info.meshId,
+                        currentShape.info.options == info.options,
+                        PolySpatialRealityKit.instance.tryGetMeshAssetForId(info.meshId) === oldMeshAsset,
+                        oldMeshAsset.version == oldMeshVersion {
+                    setCollisionShape(id, info, resource)
+                }
+            } catch {
+                PolySpatialRealityKit.instance.Log("Failed to generate shape resource: \(error)")
+            }
         }
     }
 
@@ -1189,7 +1234,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         if collisionShapes.isEmpty {
             components.remove(CollisionComponent.self)
         } else {
-            let shapes = collisionShapes.values.map { $0.resource }
+            let shapes = collisionShapes.values.compactMap { $0.resource }
             components.set(CollisionComponent(
                 shapes: shapes,
                 mode: .trigger,
@@ -1197,24 +1242,12 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
     }
 
-    private func setCollisionShape(_ id: PolySpatialComponentID, _ resource: ShapeResource) {
-        if collisionShapes[id] != nil {
-            collisionShapes[id]!.resource = resource
-        } else {
-            collisionShapes[id] = ColliderShape(resource: resource, info: .init(), worldScale: self.scale(relativeTo: nil))
-        }
-        PolySpatialRealityKit.instance.dirtyCollisionObservers.insert(self)
-    }
+    private func setCollisionShape(
+        _ id: PolySpatialComponentID, _ info: PolySpatialColliderData,
+        _ resource: ShapeResource? = nil, _ worldScale: simd_float3 = .zero) {
 
-    private func setCollisionShape(_ id: PolySpatialComponentID, _ resource: ShapeResource, _ info: UnsafePointer<PolySpatialColliderData>, _ worldScale: SIMD3<Float>) {
-        collisionShapes[id] = ColliderShape(resource: resource, info: info.pointee, worldScale: worldScale)
+        collisionShapes[id] = .init(info, resource, worldScale)
         PolySpatialRealityKit.instance.dirtyCollisionObservers.insert(self)
-    }
-
-    private func removeCollisionShape(_ id: PolySpatialComponentID) {
-        if collisionShapes.removeValue(forKey: id) != nil {
-            PolySpatialRealityKit.instance.dirtyCollisionObservers.insert(self)
-        }
     }
 
     // Special handling for meshes with video materials - they need their uvs inverted to work with RK video materials.

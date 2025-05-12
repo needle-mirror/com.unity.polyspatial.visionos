@@ -10,11 +10,6 @@ class StaticBatchManager {
     // The set of static batch roots that need to be updated on the current frame.
     var dirtyStaticBatchRootIds: Set<PolySpatialInstanceID> = []
 
-    // The available vertex semantics in the order they should appear in.  We seem to encounter mesh corruption
-    // issues when we use arbitrary attribute orders (e.g., hash order).
-    static let vertexSemantics: [LowLevelMesh.VertexSemantic] = [
-        .position, .normal, .tangent, .bitangent, .color, .uv0, .uv1, .uv2, .uv3, .uv4, .uv5, .uv6, .uv7]
-
     // A key used to group static batch elements to PolySpatialEntity instances.  Each PolySpatialEntity
     // can only have one set of lighting parameters (lightmap, light probes, etc.)
     struct StaticBatchKey: Equatable, Hashable {
@@ -444,7 +439,7 @@ class StaticBatchManager {
 
                     var semanticAttributes: [LowLevelMesh.VertexSemantic: LowLevelMesh.Attribute] = [:]
                     var attributeOffset = 0
-                    for semantic in StaticBatchManager.vertexSemantics {
+                    for semantic in PolySpatialRealityKit.orderedVertexSemantics {
                         if let format = bufferSummary.semanticFormats[semantic] {
                             semanticAttributes[semantic] = .init(
                                 semantic: semantic, format: format, layoutIndex: 0, offset: attributeOffset)

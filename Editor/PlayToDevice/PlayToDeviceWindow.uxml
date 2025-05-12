@@ -10,11 +10,12 @@
         <ui:HelpBox message-type="Warning" name="MismatchVersionHelpBox" style="margin-top: 7px;" />
     </ui:Foldout>
     <ui:Foldout text="Advanced Settings" name="AdvancedSettingsFoldout" style="padding-bottom: 3px;">
-        <ui:UnsignedIntegerField label="Connection Timeout (Seconds)" value="5" name="ConnectionTimeoutField" />
+        <ui:FloatField label="Connection Timeout (Seconds)" value="2" name="ConnectionTimeoutField" />
         <ui:VisualElement style="flex-direction: row;">
             <ui:Toggle label="Limit Frames Per Second" name="LimitFramesPerSecondToggle" style="align-self: center;" />
             <ui:SliderInt value="90" high-value="250" name="LimitFramesPerSecond" show-input-field="true" low-value="1" style="flex-grow: 1; flex-shrink: 1;" />
         </ui:VisualElement>
+        <ui:Toggle label="Dynamically Adjust FPS" name="DynamicallyAdjustFramesPerSecondToggle" />
         <ui:Foldout text="Direct Connection" style="padding-bottom: 3px;">
             <ui:TextField picking-mode="Ignore" label="Name" value="&lt;Direct Connection&gt;" name="HostNameField" />
             <ui:HelpBox message-type="Warning" name="InvalidHostNameHelpBox" style="margin-left: 180px;" />

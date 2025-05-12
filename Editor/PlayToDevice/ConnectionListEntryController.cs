@@ -205,12 +205,12 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                     throw new ArgumentOutOfRangeException();
             }
             m_NameLabel.text = connectionCandidate.Name;
-            m_VersionLabel.text = string.IsNullOrEmpty(connectionCandidate.PlayToDeviceHostVersion)
+            m_VersionLabel.text = string.IsNullOrEmpty(connectionCandidate.HostPolySpatialVersion)
                 ? string.Empty
-                : string.Format(k_VersionFormat, connectionCandidate.PlayToDeviceHostVersion);
-            var magicCookie = connectionCandidate.PlayToDeviceHostMagicCookie.ToString();
+                : string.Format(k_VersionFormat, connectionCandidate.HostPolySpatialVersion);
+            var magicCookie = connectionCandidate.HostPolySpatialMagicCookie.ToString();
             magicCookie = !string.IsNullOrEmpty(magicCookie) && magicCookie.Length >= 5
-                ? string.Format(k_MagicCookieFormat, connectionCandidate.PlayToDeviceHostMagicCookie.ToString().Substring(0,5))
+                ? string.Format(k_MagicCookieFormat, connectionCandidate.HostPolySpatialMagicCookie.ToString().Substring(0, 5))
                 : string.Empty;
             m_VersionLabel.tooltip = $"{(!string.IsNullOrEmpty(m_VersionLabel.text) ? m_VersionLabel.text + " " : "")}" +
                                      $"{(!string.IsNullOrEmpty(magicCookie) ? magicCookie : "")}";
@@ -240,8 +240,8 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                 EditorApplication.delayCall += playToDeviceWindow.Refresh;
             });
 
-            SetEnabled(connectionCandidate.PlayToDeviceHostMagicCookie == PlayToDeviceWindow.DirectConnectionMagicCookie
-                       || connectionCandidate.PlayToDeviceHostMagicCookie == (long)PolySpatialMagicCookie.Value);
+            SetEnabled(connectionCandidate.HostPolySpatialMagicCookie == PlayToDeviceWindow.k_DirectConnectionMagicCookie
+                       || connectionCandidate.HostPolySpatialMagicCookie == (ulong)PolySpatialMagicCookie.Value);
             if (m_RemoveLabel.enabledSelf && connectionCandidate.Status != ConnectionDiscoveryStatus.Lost)
                 m_RemoveLabel.SetEnabled(false);
         }

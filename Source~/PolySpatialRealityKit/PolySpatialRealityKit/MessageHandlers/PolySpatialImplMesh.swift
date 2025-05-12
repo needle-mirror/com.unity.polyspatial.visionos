@@ -1,9 +1,15 @@
+import Combine
 import Foundation
 import RealityKit
 import UIKit
 
 extension PolySpatialRealityKit {
     typealias ModifyPartsFunctionHandler = (PolySpatialAssetID, UnsafePointer<PolySpatialMesh>?, inout MeshResource.Part) -> Void
+
+    // The available vertex semantics in the order they should appear in.  We seem to encounter mesh corruption
+    // issues when we use arbitrary attribute orders (e.g., hash order).
+    static let orderedVertexSemantics: [LowLevelMesh.VertexSemantic] = [
+        .position, .normal, .tangent, .bitangent, .color, .uv0, .uv1, .uv2, .uv3, .uv4, .uv5, .uv6, .uv7]
 
     // A single frame within a blend shape.  It contains the weight associated with the frame (shapes can have multiple
     // frames with increasing weights, and adjacent frames will be blended together) and the Metal buffers containing
@@ -92,6 +98,70 @@ extension PolySpatialRealityKit {
         // The vertex ranges corresponding to each part of the LowLevelMesh, if any.
         private(set) var lowLevelMeshVertexRanges: [Range<Int>]
 
+        // The cached convex shape resource for the mesh, if any (for synchronous access).
+        private var cachedConvexShape: ShapeResource?
+
+        // The cached future that will resolve asynchronously to the convex shape.
+        private var cachedConvexShapeFuture: Future<ShapeResource, Error>?
+
+        // The cached future that will resolve asynchronously to the static shape.
+        private var cachedStaticMeshShapeFuture: Future<ShapeResource, Error>?
+
+        // Synchronously obtains the shared convex shape through the cache.  Note that this could lead to a redundant
+        // result if called alongside convexShapeFuture, but synchronous generation is only used for testing, so
+        // it shouldn't be a big deal.
+        var convexShape: ShapeResource {
+            if let cachedConvexShape {
+                return cachedConvexShape
+            }
+            let newConvexShape = generateConvexShape(mesh)
+            cachedConvexShape = newConvexShape
+            return newConvexShape
+        }
+
+        // Returns a future that will resolve asynchronously to the shared convex shape.
+        var convexShapeFuture: Future<ShapeResource, Error> {
+            if let cachedConvexShapeFuture {
+                return cachedConvexShapeFuture
+            }
+            let newConvexShapeFuture = Future<ShapeResource, Error> { promise in
+                // If we already have a synchronous result, we can return immediately.
+                if let cachedConvexShape = self.cachedConvexShape {
+                    promise(.success(cachedConvexShape))
+                    return
+                }
+                let mesh = self.mesh
+                Task { @MainActor in
+                    do {
+                        promise(.success(try await generateConvexShape(mesh)))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
+            cachedConvexShapeFuture = newConvexShapeFuture
+            return newConvexShapeFuture
+        }
+
+        // Returns a future that will resolve asynchronously to the shared static shape.
+        var staticMeshShapeFuture: Future<ShapeResource, Error> {
+            if let cachedStaticMeshShapeFuture {
+                return cachedStaticMeshShapeFuture
+            }
+            let newStaticMeshShapeFuture = Future<ShapeResource, Error> { promise in
+                let mesh = self.mesh
+                Task { @MainActor in
+                    do {
+                        promise(.success(try await generateStaticMeshShape(mesh)))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
+            }
+            cachedStaticMeshShapeFuture = newStaticMeshShapeFuture
+            return newStaticMeshShapeFuture
+        }
+
         // The part (if any) from which we obtain the attribute buffers, which are shared between all parts.
         // Refer to GenerateParts for how parts/buffers are initialized.
         var bufferPart: MeshResource.Part? {
@@ -106,6 +176,14 @@ extension PolySpatialRealityKit {
             self.lowLevelMeshVertexRanges = []
             updateCounts()
             updateBaseBuffers()
+        }
+
+        init(_ lowLevelMesh: LowLevelMesh, _ numUVSets: Int, _ vertexRanges: [Range<Int>]) async {
+            self.contents = .init()
+            self.numUVSets = numUVSets
+            self.blendShapes = []
+            self.mesh = try! await .init(from: lowLevelMesh)
+            self.lowLevelMeshVertexRanges = vertexRanges
         }
 
         init(_ lowLevelMesh: LowLevelMesh, _ numUVSets: Int, _ vertexRanges: [Range<Int>]) {
@@ -124,12 +202,22 @@ extension PolySpatialRealityKit {
             updateCounts()
             updateBaseBuffers()
 
+            // Invalidate the cache.
+            cachedConvexShape = nil
+            cachedConvexShapeFuture = nil
+            cachedStaticMeshShapeFuture = nil
+
             version += 1
         }
 
         // Notes that the contents of the LowLevelMesh were changed.
         func replace(_ lowLevelMeshVertexRanges: [Range<Int>]) {
             self.lowLevelMeshVertexRanges = lowLevelMeshVertexRanges
+
+            // Invalidate the cache.
+            cachedConvexShape = nil
+            cachedConvexShapeFuture = nil
+            cachedStaticMeshShapeFuture = nil
 
             version += 1
         }
@@ -307,49 +395,52 @@ extension PolySpatialRealityKit {
             ]
             var vertexLayouts: [LowLevelMesh.Layout] = [.init(bufferIndex: 0, bufferStride: float3Size * 4)]
 
-            // Gather the fixed attributes (UVs, color) for the second buffer.  These are interleaved in the order
-            // we encounter their buffers and their formats match those of the original buffers.
-            var fixedStride = 0
-            var fixedBuffers: [AnyMeshBuffer] = []
-            func addFixedAttribute(_ semantic: LowLevelMesh.VertexSemantic, _ buffer: AnyMeshBuffer) {
-                var format = MTLVertexFormat.invalid
-                var size = 0
-                switch buffer.elementType {
-                    case .simd2Float:
-                        format = .float2
-                        size = MemoryLayout<simd_float2>.size
-                    case .simd3Float:
-                        format = .float3
-                        size = MemoryLayout<simd_float3>.size
-                    case .simd4Float:
-                        format = .float4
-                        size = MemoryLayout<simd_float4>.size
-                    default:
-                        LogError("Unsupported element type: \(buffer.elementType)")
-                }
-                vertexAttributes.append(.init(semantic: semantic, format: format, layoutIndex: 1, offset: fixedStride))
-                fixedStride += size
-                fixedBuffers.append(buffer)
-            }
-            let part = bufferPart!
-            for buffer in part.buffers.values {
+            // Gather the fixed attributes (UVs, color) for the second buffer.  These are ordered according to the
+            // "standard" LowLevelMesh semantic ordering and their formats match those of the original buffers.
+            var semanticBuffers: [LowLevelMesh.VertexSemantic: AnyMeshBuffer] = [:]
+            for buffer in bufferPart!.buffers.values {
                 if buffer.id == .textureCoordinates {
-                    addFixedAttribute(.uv0, buffer)
+                    semanticBuffers[.uv0] = buffer
                 } else if buffer.id.isCustom {
                     switch buffer.id.name {
                         case PolySpatialRealityKit.instance.describe(vertexUVIndex: 0):
-                            addFixedAttribute(.uv0, buffer)
+                            semanticBuffers[.uv0] = buffer
                         case PolySpatialRealityKit.instance.describe(vertexUVIndex: 1):
-                            addFixedAttribute(.uv1, buffer)
+                            semanticBuffers[.uv1] = buffer
                         case PolySpatialRealityKit.instance.describe(vertexUVIndex: 2):
-                            addFixedAttribute(.uv2, buffer)
+                            semanticBuffers[.uv2] = buffer
                         case PolySpatialRealityKit.instance.describe(vertexUVIndex: 3):
-                            addFixedAttribute(.uv3, buffer)
+                            semanticBuffers[.uv3] = buffer
                         case "vertexColor":
-                            addFixedAttribute(.color, buffer)
+                            semanticBuffers[.color] = buffer
                         default:
                             break
                     }
+                }
+            }
+            var fixedStride = 0
+            var fixedBuffers: [AnyMeshBuffer] = []
+            for semantic in orderedVertexSemantics {
+                if let buffer = semanticBuffers[semantic] {
+                    var format = MTLVertexFormat.invalid
+                    var size = 0
+                    switch buffer.elementType {
+                        case .simd2Float:
+                            format = .float2
+                            size = MemoryLayout<simd_float2>.size
+                        case .simd3Float:
+                            format = .float3
+                            size = MemoryLayout<simd_float3>.size
+                        case .simd4Float:
+                            format = .float4
+                            size = MemoryLayout<simd_float4>.size
+                        default:
+                            LogError("Unsupported element type: \(buffer.elementType)")
+                    }
+                    vertexAttributes.append(.init(
+                        semantic: semantic, format: format, layoutIndex: 1, offset: fixedStride))
+                    fixedStride += size
+                    fixedBuffers.append(buffer)
                 }
             }
             if fixedStride > 0 {
@@ -801,17 +892,47 @@ extension PolySpatialRealityKit {
         commandEncoder.endEncoding()
         commandBuffer.commit()
 
+        // If we reused the LowLevelMesh, the effect is immediate.  We can notify the observers directly.
         if reusedLowLevelMesh {
             NotifyMeshOrMaterialObservers(id, true)
-        } else {
+            return
+        }
+
+        // Update the mesh synchronously iff the flag is set (used for testing).
+        if runtimeFlags.contains(.updateMeshesSynchronously) {
             UpdateMeshDefinition(id, .init(lowLevelMesh, numUVSets, vertexRanges))
+            return
+        }
+
+        // If not, then the update is asynchronous.  Replace when it's ready, as long as it wasn't replaced
+        // in the meantime.
+        let oldMeshAsset = getMeshAssetForId(id)
+        let oldMeshVersion = oldMeshAsset.version
+        Task { @MainActor in
+            let newMeshAsset = await MeshAsset(lowLevelMesh, numUVSets, vertexRanges)
+            if tryGetMeshAssetForId(id) === oldMeshAsset && oldMeshAsset.version == oldMeshVersion {
+                UpdateMeshDefinition(id, newMeshAsset)
+            }
         }
     }
 
     static func generateConvexShape(_ mesh: MeshResource) -> ShapeResource {
-        guard let lowLevelMesh = mesh.lowLevelMesh else {
+        if let lowLevelMesh = mesh.lowLevelMesh {
+            return .generateConvex(from: getPoints(lowLevelMesh))
+        } else {
             return .generateConvex(from: mesh)
         }
+    }
+
+    static func generateConvexShape(_ mesh: MeshResource) async throws -> ShapeResource {
+        if let lowLevelMesh = mesh.lowLevelMesh {
+            return try await .generateConvex(from: getPoints(lowLevelMesh))
+        } else {
+            return try await .generateConvex(from: mesh)
+        }
+    }
+
+    static func getPoints(_ lowLevelMesh: LowLevelMesh) -> [simd_float3] {
         var points = Set<simd_float3>()
         for vertexAttribute in lowLevelMesh.descriptor.vertexAttributes {
             if vertexAttribute.semantic != .position {
@@ -824,7 +945,8 @@ extension PolySpatialRealityKit {
                 lowLevelMesh.withUnsafeBytes(bufferIndex: vertexAttribute.layoutIndex) { vertexBuffer in
                     let stride = lowLevelMesh.descriptor.vertexLayouts[vertexAttribute.layoutIndex].bufferStride
                     for part in lowLevelMesh.parts {
-                        for index in indices[part.indexOffset..<part.indexOffset + part.indexCount] {
+                        let intOffset = part.indexOffset / MemoryLayout<UInt32>.stride
+                        for index in indices[intOffset..<intOffset + part.indexCount] {
                             let packed = vertexBuffer.load(
                                 fromByteOffset: vertexAttribute.offset + Int(index) * stride, as: MTLPackedFloat3.self)
                             points.insert(.init(packed.x, packed.y, packed.z))
@@ -834,10 +956,10 @@ extension PolySpatialRealityKit {
             }
             break
         }
-        return .generateConvex(from: .init(points))
+        return .init(points)
     }
 
-    static func generateStaticMesh(_ mesh: MeshResource) async throws -> ShapeResource {
+    static func generateStaticMeshShape(_ mesh: MeshResource) async throws -> ShapeResource {
         var positions: [simd_float3] = []
         var positionIndices: [simd_float3: UInt16] = [:]
         var faceIndices: [UInt16] = []
@@ -853,7 +975,8 @@ extension PolySpatialRealityKit {
                     lowLevelMesh.withUnsafeBytes(bufferIndex: vertexAttribute.layoutIndex) { vertexBuffer in
                         let stride = lowLevelMesh.descriptor.vertexLayouts[vertexAttribute.layoutIndex].bufferStride
                         for part in lowLevelMesh.parts {
-                            for originalIndex in indices[part.indexOffset..<part.indexOffset + part.indexCount] {
+                            let intOffset = part.indexOffset / MemoryLayout<UInt32>.stride
+                            for originalIndex in indices[intOffset..<intOffset + part.indexCount] {
                                 let packed = vertexBuffer.load(
                                     fromByteOffset: vertexAttribute.offset + Int(originalIndex) * stride,
                                     as: MTLPackedFloat3.self)

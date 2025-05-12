@@ -14,12 +14,14 @@ namespace Unity.PolySpatial.Internals
     // a pair of function pointers, one to send commands down to it, and one we pass to our plugin
     // to call when it has host commands to send back to us.
     [Preserve]
-    internal class RealityKitBackend : IPolySpatialCommandHandler, IPolySpatialHostCommandDispatcher,
-        IPolySpatialLocalBackend, PolySpatialBackendExtraFeatures
+    internal class RealityKitBackend : IPolySpatialLocalBackend, IPolySpatialHostCommandDispatcher,
+        PolySpatialBackendExtraFeatures
     {
         static readonly ProfilerMarker s_HandleCommandMarker = new(Profiler.Name<RealityKitBackend>().HandleCommandName);
 
         public IPolySpatialHostCommandHandler NextHostHandler { get; set; }
+
+        public bool RequiresSessionSceneGraphHandler => true;
 
         static Platform.PolySpatialNativeAPI s_OldAPIPointers;
         static RealityKitBackend s_Instance;

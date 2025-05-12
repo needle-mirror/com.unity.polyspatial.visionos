@@ -12,7 +12,7 @@ import Combine
 public class PolySpatialViewSubGraph {
     let volumeIndex: UInt8
     let root: Entity
-    var entities: [PolySpatialInstanceID: PolySpatialEntity] = [:]
+    var entities: [Int64: PolySpatialEntity] = [:]
     var volume: PolySpatialVolume? = nil
 
     init(_ vidx: UInt8) {

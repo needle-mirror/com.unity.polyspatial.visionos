@@ -74,7 +74,7 @@ Support for Unity's built-in particles under PolySpatial is actively being devel
 
 **Note:** Baked Mesh billboard particles only face the camera when in an unbounded volume camera and an ARSession exists in the scene. You can add an ARSession to the scene by right-clicking in the Editor **Hierarchy** window and selecting **XR &gt; AR Session** from the context menu.
 
-- **Bake to Texture**: In this mode, a texture is baked for every particle system every frame. This mode is more performant for large particle systems than Bake to Mesh, while maintaining close visual parity with Unity rendering. This mode is currently limited to billboard and mesh particle render modes, and incurs a longer shader warm time. Billboarded particles in this mode will orient toward the camera properly.
+- **Bake to Texture**: In this mode, a texture is baked for every particle system every frame. This mode is more performant for large particle systems than Bake to Mesh, while maintaining close visual parity with Unity rendering. This mode is currently limited to billboard and mesh particle render modes, and incurs a longer shader warm time. Billboarded particles in this mode will orient toward the camera properly. This mode currently requires a camera in the scene with a `MainCamera` tag on it's GameObject.
 
 **Note:** VFXGraph is not currently supported in PolySpatial.
 

@@ -152,17 +152,41 @@ extension PolySpatialRealityKit {
 
         return newMesh
     }
+    
+    func getVideoURL(_ source: PolySpatialSourceType, _ urlString: String) -> URL? {
+        if (source == .videoClip) {
+            return URL(filePath: urlString)
+        }
+        
+        guard let url = URL(string: urlString) else {
+            return nil
+        }
+        
+        // If the user just passed in the name of the video asset and its extension, then this isn't an absolute path and we'll search the mainBundle for it.
+        if (url.scheme == nil) {
+            let videoExtension = url.pathExtension
+            let videoName = url.deletingPathExtension().lastPathComponent
+            if let bundleUrl = Bundle.main.url(forResource: videoName, withExtension: videoExtension) {
+                return bundleUrl
+            } else {
+                return nil
+            }
+        }
+        
+        return url
+    }
 
     // Sets video component first time, optionally inverts mesh uvs.
-    func setVideoComponent(_ info: PolySpatialVideoPlayerData, _ rendererEntity: PolySpatialEntity) {
+    func setVideoComponent(_ id: PolySpatialInstanceID,
+                           _ info: PolySpatialVideoPlayerData,
+                           _ rendererEntity: PolySpatialEntity,
+                           _ videoUrl: URL) {
         if !rendererEntity.components.has(ModelComponent.self) || !rendererEntity.components.has(PolySpatialComponents.RenderInfo.self) {
             PolySpatialRealityKit.instance.LogWarning("No model or render component found for mesh entity \(info.meshRendererEntityId!) when setting the video player on it, video player component will not be initialized.")
             return
         }
-
-        let videoUrl = NSURL.fileURL(withPath: info.pathToVideo!)
-
-        let videoComp = PolySpatialComponents.UnityVideoPlayer(videoUrl)
+        
+        let videoComp = PolySpatialComponents.UnityVideoPlayer(id, videoUrl, info.preroll)
         let modelComp = rendererEntity.components[ModelComponent.self]! as ModelComponent
         let renderComp = rendererEntity.components[PolySpatialComponents.RenderInfo.self]! as PolySpatialComponents.RenderInfo
 
@@ -175,17 +199,19 @@ extension PolySpatialRealityKit {
         return
     }
 
-    func updateVideoComponent(_ info: PolySpatialVideoPlayerData, _ rendererEntity: PolySpatialEntity, _ firstTimeSetup: Bool) {
+    func updateVideoComponent(_ info: PolySpatialVideoPlayerData,
+                              _ rendererEntity: PolySpatialEntity,
+                              _ firstTimeSetup: Bool,
+                              _ videoUrl: URL) {
         guard let videoComp = rendererEntity.components[PolySpatialComponents.UnityVideoPlayer.self] as PolySpatialComponents.UnityVideoPlayer? else {
             PolySpatialRealityKit.instance.LogWarning("Renderer entity \(rendererEntity) does not have a video component.")
             return
         }
-
-        let newUrl = NSURL.fileURL(withPath: info.pathToVideo!)
-
+        
         // Url was changed.
-        if videoComp.videoUrl != newUrl {
-            videoComp.changeUrl(newUrl)
+        if videoComp.videoUrl != videoUrl {
+            videoComp.shouldPreroll = info.preroll
+            videoComp.changeUrl(videoUrl)
 
             rendererEntity.components.set(ModelComponent.init(mesh: videoComp.meshAsset!, materials: [videoComp.videoMaterial]))
         }

@@ -31,7 +31,7 @@ extension PolySpatialRealityKit {
         if runtimeFlags.contains(.uniqueInvalidMaterialColors) {
             let color = materialErrorColors[materialErrorColorIndex]
             materialErrorColorIndex = (materialErrorColorIndex + 1) % materialErrorColors.count
-            
+
             // Workaround for lack of accessibilityName on older versions of NSColor:
             // https://stackoverflow.com/questions/74228418/how-do-you-access-the-accessibilityname-of-an-nscolor
             LogWarning("\(msg), shown in \(color.value(forKey: "accessibilityName") as! String)")
@@ -53,7 +53,7 @@ extension PolySpatialRealityKit {
             fatalError(msg)
         }
     }
-    
+
     func LogErrorWithMarkup(_ msg: String,
                             _ markupTypes: [Unity_PolySpatial_Internals_LogMarkupType],
                             _ markupValues: [Int64],
@@ -61,13 +61,13 @@ extension PolySpatialRealityKit {
     {
         assert(markupTypes.count >= 1, "If there is no markup use LogError instead.")
         assert(markupTypes.count == markupValues.count, "Markup type and value counts must match.")
-                
+
         var builder = FlatBufferBuilder()
-        
+
         let builderMsg = builder.create(string:msg)
         let vectorTypes = builder.createVector(markupTypes)
         let vectorValues = builder.createVector(markupValues)
-        
+
         let logWithMarkupOffset = PolySpatialLogWithMarkup.startLogWithMarkup(&builder)
         PolySpatialLogWithMarkup.add(log:builderMsg,  &builder)
         PolySpatialLogWithMarkup.add(logLevel:PolySpatialLogLevel.error, &builder)
@@ -75,9 +75,9 @@ extension PolySpatialRealityKit {
         PolySpatialLogWithMarkup.addVectorOf(logValues:vectorValues, &builder)
         let finishedLogWithMarkupOffset = PolySpatialLogWithMarkup.endLogWithMarkup(&builder, start: logWithMarkupOffset)
         builder.finish(offset: finishedLogWithMarkupOffset)
-                
+
         SendHostCommand(PolySpatialHostCommand.logMessageWithMarkup, builder.sizedBuffer)
-        
+
         if abort ?? PolySpatialRealityKit.abortOnError {
             fatalError(msg)
         }
@@ -92,10 +92,10 @@ extension PolySpatialRealityKit {
     }
 
     static func TrackingDisabledOrDestroyedOrInactive(_ trackingFlags: Int32) -> Bool {
-        return 0 != ((UInt32)(trackingFlags) & (PolySpatialTrackingFlags.destroyed.rawValue | 
+        return 0 != ((UInt32)(trackingFlags) & (PolySpatialTrackingFlags.destroyed.rawValue |
                                                 PolySpatialTrackingFlags.disabled.rawValue | PolySpatialTrackingFlags.inactive.rawValue))
     }
-    
+
     static func TrackingDisabledOrDestroyed(_ trackingFlags: Int32) -> Bool {
         return 0 != ((UInt32)(trackingFlags) & (PolySpatialTrackingFlags.destroyed.rawValue | PolySpatialTrackingFlags.disabled.rawValue))
     }
@@ -194,6 +194,16 @@ extension PolySpatialRealityKit {
         s = String.init(utf16CodeUnits: args![0]!.assumingMemoryBound(to: unichar.self), count: Int(argSizes![0]) / 2)
     }
 
+    func ExtractArgs(
+        _ argCount: Int32,
+        _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?,
+        _ argSizes: UnsafeMutablePointer<UInt32>?,
+        _ a1: inout UnsafeRawBufferPointer?
+    ) {
+        assert(argCount == 1)
+        a1 = .init(start: args![0], count: Int(argSizes![0]))
+    }
+
     func ExtractArgs<T1, T2>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                              _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutablePointer<T2>?) {
         assert(argCount == 2)
@@ -233,7 +243,7 @@ extension PolySpatialRealityKit {
         a2 = .init(assumingMemoryBound: args![1]!, capacity: Int(argSizes![1]))
         a3 = args![2]?.bindMemory(to: T2.self, capacity: 1)
     }
-    
+
     func ExtractArgs<T1, T2>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                          _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutablePointer<T2>?, _ a3: inout ByteBuffer?) {
         assert(argCount == 3)
@@ -243,9 +253,9 @@ extension PolySpatialRealityKit {
         a1 = args![0]?.bindMemory(to: T1.self, capacity: 1)
         a2 = args![1]?.bindMemory(to: T2.self, capacity: 1)
         a3 = .init(assumingMemoryBound: args![2]!, capacity: Int(argSizes![2]))
-        
+
     }
-    
+
     func ExtractArgs<T1, T2, T3>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                                  _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutablePointer<T2>?,
                                  _ a3: inout UnsafeMutablePointer<T3>?) {
@@ -281,7 +291,7 @@ extension PolySpatialRealityKit {
         a2 = .init(assumingMemoryBound: args![1]!, capacity: Int(argSizes![1]))
         a3 = .init(start: args![2], count: Int(argSizes![2]))
     }
-    
+
     func ExtractArgs<T1, T2>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                          _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutablePointer<T2>?, _ a3: inout ByteBuffer?,
                          _ a4: inout UnsafeMutableRawBufferPointer?) {
@@ -295,6 +305,16 @@ extension PolySpatialRealityKit {
         a4 = .init(start: args![3], count: Int(argSizes![3]))
     }
 
+    func ExtractArgs<T2>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
+                                 _ a1: inout UnsafeRawBufferPointer?,
+                                 _ a2: inout UnsafeMutableBufferPointer<T2>?) {
+        assert(argCount == 2)
+        assert(Int(argSizes![1]) % MemoryLayout<T2>.size == 0)
+
+        a1 = .init(start: args![0], count: Int(argSizes![0]))
+        a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
+    }
+
     func ExtractArgs<T1, T2, T3>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                                  _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
                                  _ a3: inout UnsafeMutableBufferPointer<T3>?) {
@@ -304,6 +324,18 @@ extension PolySpatialRealityKit {
         assert(Int(argSizes![2]) % MemoryLayout<T3>.size == 0)
 
         a1 = args![0]?.bindMemory(to: T1.self, capacity: 1)
+        a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
+        a3 = .init(start: args![2]?.bindMemory(to: T3.self, capacity: 1), count: Int(argSizes![2]) / MemoryLayout<T3>.size)
+    }
+    
+    func ExtractArgs<T2, T3>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
+                                         _ a1: inout UnsafeRawBufferPointer?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
+                                         _ a3: inout UnsafeMutableBufferPointer<T3>?) {
+        assert(argCount == 3)
+        assert(Int(argSizes![1]) % MemoryLayout<T2>.size == 0)
+        assert(Int(argSizes![2]) % MemoryLayout<T3>.size == 0)
+
+        a1 = .init(start: args![0], count: Int(argSizes![0]))
         a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
         a3 = .init(start: args![2]?.bindMemory(to: T3.self, capacity: 1), count: Int(argSizes![2]) / MemoryLayout<T3>.size)
     }
@@ -321,6 +353,20 @@ extension PolySpatialRealityKit {
         a2 = args![1]?.bindMemory(to: T2.self, capacity: 1)
         a3 = args![2]?.bindMemory(to: T3.self, capacity: 1)
         a4 = args![3]?.bindMemory(to: T4.self, capacity: 1)
+    }
+
+    func ExtractArgs<T2, T3, T4>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
+                                         _ a1: inout UnsafeRawBufferPointer?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
+                                         _ a3: inout UnsafeMutableBufferPointer<T3>?, _ a4: inout UnsafeMutableBufferPointer<T4>?) {
+        assert(argCount == 4)
+        assert(Int(argSizes![1]) % MemoryLayout<T2>.size == 0)
+        assert(Int(argSizes![2]) % MemoryLayout<T3>.size == 0)
+        assert(Int(argSizes![3]) % MemoryLayout<T4>.size == 0)
+
+        a1 = .init(start: args![0], count: Int(argSizes![0]))
+        a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
+        a3 = .init(start: args![2]?.bindMemory(to: T3.self, capacity: 1), count: Int(argSizes![2]) / MemoryLayout<T3>.size)
+        a4 = .init(start: args![3]?.bindMemory(to: T4.self, capacity: 1), count: Int(argSizes![3]) / MemoryLayout<T4>.size)
     }
 
     func ExtractArgs<T1, T2, T3, T4, T5>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
@@ -359,27 +405,23 @@ extension PolySpatialRealityKit {
         a5 = .init(start: args![4]?.bindMemory(to: T5.self, capacity: 1), count: Int(argSizes![4]) / MemoryLayout<T5>.size)
     }
 
-    func ExtractArgs<T1, T2, T3, T4, T5, T6, T7>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
-                                         _ a1: inout UnsafeMutablePointer<T1>?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
+    func ExtractArgs<T2, T3, T4, T5, T6>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
+                                         _ a1: inout UnsafeRawBufferPointer?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
                                          _ a3: inout UnsafeMutableBufferPointer<T3>?, _ a4: inout UnsafeMutableBufferPointer<T4>?,
-                                         _ a5: inout UnsafeMutableBufferPointer<T5>?, _ a6: inout UnsafeMutableBufferPointer<T6>?,
-                                         _ a7: inout UnsafeMutableBufferPointer<T7>?) {
-        assert(argCount == 7)
-        assert(argSizes![0] == MemoryLayout<T1>.size)
+                                         _ a5: inout UnsafeMutableBufferPointer<T5>?, _ a6: inout UnsafeMutableBufferPointer<T6>?) {
+        assert(argCount == 6)
         assert(Int(argSizes![1]) % MemoryLayout<T2>.size == 0)
         assert(Int(argSizes![2]) % MemoryLayout<T3>.size == 0)
         assert(Int(argSizes![3]) % MemoryLayout<T4>.size == 0)
         assert(Int(argSizes![4]) % MemoryLayout<T5>.size == 0)
         assert(Int(argSizes![5]) % MemoryLayout<T6>.size == 0)
-        assert(Int(argSizes![6]) % MemoryLayout<T7>.size == 0)
 
-        a1 = args![0]?.bindMemory(to: T1.self, capacity: 1)
+        a1 = .init(start: args![0], count: Int(argSizes![0]))
         a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
         a3 = .init(start: args![2]?.bindMemory(to: T3.self, capacity: 1), count: Int(argSizes![2]) / MemoryLayout<T3>.size)
         a4 = .init(start: args![3]?.bindMemory(to: T4.self, capacity: 1), count: Int(argSizes![3]) / MemoryLayout<T4>.size)
         a5 = .init(start: args![4]?.bindMemory(to: T5.self, capacity: 1), count: Int(argSizes![4]) / MemoryLayout<T5>.size)
         a6 = .init(start: args![5]?.bindMemory(to: T6.self, capacity: 1), count: Int(argSizes![5]) / MemoryLayout<T6>.size)
-        a7 = .init(start: args![6]?.bindMemory(to: T7.self, capacity: 1), count: Int(argSizes![6]) / MemoryLayout<T7>.size)
     }
 }
 

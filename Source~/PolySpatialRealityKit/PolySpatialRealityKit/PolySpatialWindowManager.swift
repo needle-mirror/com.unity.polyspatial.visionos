@@ -76,7 +76,6 @@ public class PolySpatialWindowManagerAccess {
 class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate {
     static var shared = PolySpatialWindowManager()
 
-
     //We get console errors about using these methods in this context, but they work...
     @Environment(\.openWindow) var openWindow
     @Environment(\.dismissWindow) var dismissWindow

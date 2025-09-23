@@ -17,6 +17,8 @@ public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObje
     public static var sceneDidBecomeActive: ((UIScene) -> Void)?
     public static var sceneWillResignActive: ((UIScene) -> Void)?
 
+    public static var compositorUUID: UUID?
+
     var pslWindowUUID: UUID?
 
     public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -32,27 +34,46 @@ public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObje
         // self.windowScene = windowScene
     }
 
+    func getUUIDForScene(_ scene: UIScene) -> UUID? {
+        if let uuid = pslWindowUUID {
+            return uuid
+        }
+
+        if let immersiveClass = NSClassFromString("CPImmersiveScene"), scene.isKind(of: immersiveClass) {
+            return Self.compositorUUID
+        }
+
+        return nil
+    }
+
     // Sent when the scene is going into the foreground, before sceneDidBecomeActive.
     // Sent regardless of who (OS or user/self-initiated) creates the scene.
     // pslWindowID may be nil at this point during app startup.
     public func sceneWillEnterForeground(_ scene: UIScene) {
-        pslVolumeLog.trace("Scene willEnterForeground: \(scene, privacy: .public), window uuid: \(self.pslWindowUUID?.description ?? "nil", privacy: .public)")
-        PolySpatialWindowManager.shared.on(windowWillEnterForeground: pslWindowUUID)
+        let uuid = getUUIDForScene(scene)
+        pslVolumeLog.trace("Scene willEnterForeground: \(scene, privacy: .public), window uuid: \(uuid?.description ?? "nil", privacy: .public)")
+        PolySpatialWindowManager.shared.on(windowWillEnterForeground: uuid)
         Self.sceneWillEnterForeground?(scene)
     }
 
     // Sent only if the OS puts the scene into the background.
     public func sceneDidEnterBackground(_ scene: UIScene) {
         pslVolumeLog.trace("Scene didEnterBackground: \(scene, privacy: .public)")
-        PolySpatialWindowManager.shared.on(windowDidEnterBackground: pslWindowUUID)
+        let uuid = getUUIDForScene(scene)
+        PolySpatialWindowManager.shared.on(windowDidEnterBackground: uuid)
         Self.sceneDidEnterBackground?(scene)
     }
 
     // Sent when the scene is destroyed, potentially after sceneDidEnterBackground.
     public func sceneDidDisconnect(_ scene: UIScene) {
         pslVolumeLog.trace("Scene disconnected: \(scene, privacy: .public)")
-        PolySpatialWindowManager.shared.on(sceneDidDisconnect: pslWindowUUID)
-        PolySpatialWindowManager.shared.on(windowDismissed: pslWindowUUID)
+        let uuid = getUUIDForScene(scene)
+        if uuid != nil && uuid == Self.compositorUUID {
+            // Clear the static UUID when the compositor space is disconnected
+            Self.compositorUUID = nil
+        }
+        PolySpatialWindowManager.shared.on(sceneDidDisconnect: uuid)
+        PolySpatialWindowManager.shared.on(windowDismissed: uuid)
         Self.sceneDidDisconnect?(scene)
     }
 
@@ -60,14 +81,16 @@ public class PolySpatialSceneDelegate: NSObject, UISceneDelegate, ObservableObje
     // When the scene first becomes active, pslWindowUUID is nil, so we can't rely on this invoking the right event handler at start.
     public func sceneDidBecomeActive(_ scene: UIScene) {
         pslVolumeLog.trace("Scene became active: \(scene, privacy: .public)")
-        PolySpatialWindowManager.shared.on(windowDidBecomeActive: pslWindowUUID)
+        let uuid = getUUIDForScene(scene)
+        PolySpatialWindowManager.shared.on(windowDidBecomeActive: uuid)
         Self.sceneDidBecomeActive?(scene)
     }
 
     // Sent when the window is not focused.
     public func sceneWillResignActive(_ scene: UIScene) {
         pslVolumeLog.trace("Scene will resign active: \(scene, privacy: .public)")
-        PolySpatialWindowManager.shared.on(windowWillResignActive: pslWindowUUID)
+        let uuid = getUUIDForScene(scene)
+        PolySpatialWindowManager.shared.on(windowWillResignActive: uuid)
         Self.sceneWillResignActive?(scene)
     }
 

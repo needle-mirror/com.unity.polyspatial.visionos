@@ -68,6 +68,9 @@ class ShaderManager {
     static let kReflectionProbeWeightHandles = kReflectionProbeWeightParams.map(ShaderGraphMaterial.parameterHandle)
     static let kReflectionProbeParams = kReflectionProbeTextureParams + kReflectionProbeWeightParams
 
+    static let kHasVertexColorsParam = "polySpatial_HasVertexColors"
+    static let kHasVertexColorsHandle = ShaderGraphMaterial.parameterHandle(name: kHasVertexColorsParam)
+    
     static let kColorParam = "_Color"
     static let kColorHandle = ShaderGraphMaterial.parameterHandle(name: kColorParam)
     static let kHoverColorParam = "_HoverColor"
@@ -163,22 +166,40 @@ class ShaderManager {
     }
 
     internal func SetShaderGlobalPropertyValues(_ shaderGlobalPropertyValues: PolySpatialShaderGlobalPropertyValues) {
-        for (index, property) in shaderGlobalFloatProperties.enumerated() {
-            property.setFloat(shaderGlobalPropertyValues.floatProperties(at: Int32(index)))
+        do {
+            var offset = Int32(0)
+            for (index, property) in shaderGlobalFloatProperties.enumerated() {
+                let count = shaderGlobalPropertyValues.floatPropertyArrayCounts[index]
+                property.setFloat(shaderGlobalPropertyValues.floatProperties(at: offset))
+                offset += count
+            }
+            assert(offset == shaderGlobalPropertyValues.floatPropertiesCount)
         }
         for (index, property) in shaderGlobalIntegerProperties.enumerated() {
             property.setInteger(shaderGlobalPropertyValues.integerProperties(at: Int32(index)))
         }
-        for (index, property) in shaderGlobalVectorProperties.enumerated() {
-            property.setVector4(ConvertPolySpatialVec4VectorToFloat4(
-                shaderGlobalPropertyValues.vectorProperties(at: Int32(index))!))
+        do {
+            var offset = Int32(0)
+            for (index, property) in shaderGlobalVectorProperties.enumerated() {
+                let count = shaderGlobalPropertyValues.vectorPropertyArrayCounts[index]
+                property.setVector4(ConvertPolySpatialVec4VectorToFloat4(
+                    shaderGlobalPropertyValues.vectorProperties(at: offset)!))
+                offset += count
+            }
+            assert(offset == shaderGlobalPropertyValues.vectorPropertiesCount)
         }
         for (index, property) in shaderGlobalColorProperties.enumerated() {
             property.setColor(shaderGlobalPropertyValues.colorProperties(at: Int32(index))!.cgColor())
         }
-        for (index, property) in shaderGlobalMatrixProperties.enumerated() {
-            property.setMatrix(ConvertPolySpatialMatrix4x4ToFloat4x4(
-                shaderGlobalPropertyValues.matrixProperties(at: Int32(index))!))
+        do {
+            var offset = Int32(0)
+            for (index, property) in shaderGlobalMatrixProperties.enumerated() {
+                let count = shaderGlobalPropertyValues.matrixPropertyArrayCounts[index]
+                property.setMatrix(ConvertPolySpatialMatrix4x4ToFloat4x4(
+                    shaderGlobalPropertyValues.matrixProperties(at: offset)!))
+                offset += count
+            }
+            assert(offset == shaderGlobalPropertyValues.matrixPropertiesCount)
         }
         for (index, property) in shaderGlobalTextureProperties.enumerated() {
             property.setTexture(shaderGlobalPropertyValues.textureProperties(at: Int32(index))!,

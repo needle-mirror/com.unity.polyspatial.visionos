@@ -11,6 +11,8 @@ extension PolySpatialRealityKit {
     static let orderedVertexSemantics: [LowLevelMesh.VertexSemantic] = [
         .position, .normal, .tangent, .bitangent, .color, .uv0, .uv1, .uv2, .uv3, .uv4, .uv5, .uv6, .uv7]
 
+    static let vertexColorSemantic = MeshBuffers.custom("vertexColor", type: SIMD4<Float>.self)
+
     // A single frame within a blend shape.  It contains the weight associated with the frame (shapes can have multiple
     // frames with increasing weights, and adjacent frames will be blended together) and the Metal buffers containing
     // delta values for vertices, normals, and tangents (which are scaled and added to the values of the base mesh).
@@ -97,6 +99,18 @@ extension PolySpatialRealityKit {
 
         // The vertex ranges corresponding to each part of the LowLevelMesh, if any.
         private(set) var lowLevelMeshVertexRanges: [Range<Int>]
+
+        // An inverted mesh, cached for video player purposes if needed.
+        private var cachedInvertedMesh: MeshResource?
+
+        var invertedMesh: MeshResource {
+            if let cachedInvertedMesh {
+                return cachedInvertedMesh
+            }
+            let invertedMesh = invertMeshUV()
+            cachedInvertedMesh = invertedMesh
+            return invertedMesh
+        }
 
         // The cached convex shape resource for the mesh, if any (for synchronous access).
         private var cachedConvexShape: ShapeResource?
@@ -206,6 +220,7 @@ extension PolySpatialRealityKit {
             cachedConvexShape = nil
             cachedConvexShapeFuture = nil
             cachedStaticMeshShapeFuture = nil
+            cachedInvertedMesh = nil
 
             version += 1
         }
@@ -218,6 +233,7 @@ extension PolySpatialRealityKit {
             cachedConvexShape = nil
             cachedConvexShapeFuture = nil
             cachedStaticMeshShapeFuture = nil
+            cachedInvertedMesh = nil
 
             version += 1
         }
@@ -480,36 +496,38 @@ extension PolySpatialRealityKit {
             }
 
             // Copy the fixed attributes.
-            lowLevelMesh.replaceUnsafeMutableBytes(bufferIndex: 1) {
-                let bufferAddress = $0.baseAddress!
-                var fixedOffset = 0
-                for buffer in fixedBuffers {
-                    var attributeAddress = bufferAddress + fixedOffset
-                    switch buffer.elementType {
-                        case .simd2Float:
-                            for value in buffer.get(simd_float2.self)! {
-                                attributeAddress.storeBytes(of: value, as: simd_float2.self)
-                                attributeAddress += fixedStride
-                            }
-                            fixedOffset += MemoryLayout<simd_float2>.size
-                        case .simd3Float:
-                            for value in buffer.get(simd_float3.self)! {
-                                attributeAddress.storeBytes(of: value, as: simd_float3.self)
-                                attributeAddress += fixedStride
-                            }
-                            fixedOffset += MemoryLayout<simd_float3>.size
-                        case .simd4Float:
-                            for value in buffer.get(simd_float4.self)! {
-                                attributeAddress.storeBytes(of: value, as: simd_float4.self)
-                                attributeAddress += fixedStride
-                            }
-                            fixedOffset += MemoryLayout<simd_float4>.size
-                        default:
-                            LogError("Unsupported element type: \(buffer.elementType)")
+            if fixedStride > 0 {
+                lowLevelMesh.replaceUnsafeMutableBytes(bufferIndex: 1) {
+                    let bufferAddress = $0.baseAddress!
+                    var fixedOffset = 0
+                    for buffer in fixedBuffers {
+                        var attributeAddress = bufferAddress + fixedOffset
+                        switch buffer.elementType {
+                            case .simd2Float:
+                                for value in buffer.get(simd_float2.self)! {
+                                    attributeAddress.storeBytes(of: value, as: simd_float2.self)
+                                    attributeAddress += fixedStride
+                                }
+                                fixedOffset += MemoryLayout<simd_float2>.size
+                            case .simd3Float:
+                                for value in buffer.get(simd_float3.self)! {
+                                    attributeAddress.storeBytes(of: value, as: simd_float3.self)
+                                    attributeAddress += fixedStride
+                                }
+                                fixedOffset += MemoryLayout<simd_float3>.size
+                            case .simd4Float:
+                                for value in buffer.get(simd_float4.self)! {
+                                    attributeAddress.storeBytes(of: value, as: simd_float4.self)
+                                    attributeAddress += fixedStride
+                                }
+                                fixedOffset += MemoryLayout<simd_float4>.size
+                            default:
+                                LogError("Unsupported element type: \(buffer.elementType)")
+                        }
                     }
                 }
             }
-
+            
             let mtlDevice = PolySpatialRealityKit.instance.mtlDevice!
             var jointMatrices: MTLBuffer?
             var jointNormalMatrices: MTLBuffer?
@@ -623,6 +641,150 @@ extension PolySpatialRealityKit {
             }
             commandBuffer.commit()
         }
+
+        // A helper function to take in a mesh and attempt to invert its UV y-origin, returns a copy of the mesh with uv inverted. Useful for native RK materials that expect a certain y-origin.
+        func invertMeshUV() -> MeshResource {
+            // For LowLevelMeshes, we flip the UVs with a compute shader.
+            if let lowLevelMesh = mesh.lowLevelMesh {
+                return try! .init(from: invertMeshUV(lowLevelMesh))
+            }
+
+            var uvInvertedContents = mesh.contents
+            var uvInvertedModels: [MeshResource.Model] = []
+
+            for oldModel in mesh.contents.models {
+                var uvInvertedParts: [MeshResource.Part] = []
+                for oldPart in oldModel.parts {
+                    var part = oldPart
+
+                    // There can be more than one UV set.
+                    for i in 0..<numUVSets {
+                        if i == 0 {
+                            let oldTextureCoords = oldPart.textureCoordinates!
+                            let uvInvertedCoords: [SIMD2<Float>] = .init(
+                                unsafeUninitializedCapacity: oldTextureCoords.count,
+                                initializingWith: {buffer, initializedCount in
+                                    for (index, textureCoords) in oldTextureCoords.enumerated() {
+                                        buffer[index] = .init(x: textureCoords.x, y: 1 - textureCoords.y)
+                                    }
+                                    initializedCount = oldTextureCoords.count
+                                })
+                            part.textureCoordinates = .init(uvInvertedCoords)
+                        }
+
+                        if let oldTextureCoords2 = oldPart[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD2<Float>.self)] {
+                            let uvInvertedCoords2: [SIMD2<Float>] = .init(
+                                unsafeUninitializedCapacity: oldTextureCoords2.count,
+                                initializingWith: {buffer, initializedCount in
+                                    for (index, textureCoords) in oldTextureCoords2.enumerated() {
+                                        buffer[index] = textureCoords.invertYTexCoord()
+                                    }
+                                    initializedCount = oldTextureCoords2.count
+                                })
+                            part[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD2<Float>.self)] = .init(uvInvertedCoords2)
+                        }
+
+                        if let oldTextureCoords3 = oldPart[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD3<Float>.self)] {
+                            let uvInvertedCoords3: [SIMD3<Float>] = .init(
+                                unsafeUninitializedCapacity: oldTextureCoords3.count,
+                                initializingWith: {buffer, initializedCount in
+                                    for (index, textureCoords) in oldTextureCoords3.enumerated() {
+                                        buffer[index] = textureCoords.invertYTexCoord()
+                                    }
+                                    initializedCount = oldTextureCoords3.count
+                                })
+                            part[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD3<Float>.self)] = .init(uvInvertedCoords3)
+                        }
+
+                        if let oldTextureCoords4 = oldPart[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD4<Float>.self)] {
+                            let uvInvertedCoords4: [SIMD4<Float>] = .init(
+                                unsafeUninitializedCapacity: oldTextureCoords4.count,
+                                initializingWith: {buffer, initializedCount in
+                                    for (index, textureCoords) in oldTextureCoords4.enumerated() {
+                                        buffer[index] = textureCoords.invertYTexCoord()
+                                    }
+                                    initializedCount = oldTextureCoords4.count
+                                })
+                            part[MeshBuffers.custom(PolySpatialRealityKit.instance.describe(vertexUVIndex: i), type: SIMD4<Float>.self)] = .init(uvInvertedCoords4)
+                        }
+                    }
+                    uvInvertedParts.append(part)
+                }
+                uvInvertedModels.append(MeshResource.Model.init(id: oldModel.id, parts: uvInvertedParts))
+            }
+
+            uvInvertedContents.models = .init(uvInvertedModels)
+            return try! MeshResource.generate(from: uvInvertedContents)
+        }
+
+        private func invertMeshUV(_ oldLowLevelMesh: LowLevelMesh) -> LowLevelMesh {
+            let newMesh = try! LowLevelMesh(descriptor: oldLowLevelMesh.descriptor)
+            newMesh.parts.replaceAll(oldLowLevelMesh.parts)
+
+            let commandBuffer = PolySpatialRealityKit.instance.mtlCommandQueue!.makeCommandBuffer()!
+            let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()!
+
+            // Copy the indices directly.
+            let sourceIndexBuffer = oldLowLevelMesh.readIndices(using: commandBuffer)
+            blitCommandEncoder.copy(
+                from: sourceIndexBuffer,
+                sourceOffset: 0,
+                to: newMesh.replaceIndices(using: commandBuffer),
+                destinationOffset: 0,
+                size: sourceIndexBuffer.length)
+            blitCommandEncoder.endEncoding()
+
+            let commandEncoder = commandBuffer.makeComputeCommandEncoder(dispatchType: .concurrent)!
+            let computePipelineState = PolySpatialRealityKit.instance.flipTexCoordsCompute!
+            commandEncoder.setComputePipelineState(computePipelineState)
+            var vertexCapacity = UInt32(oldLowLevelMesh.descriptor.vertexCapacity)
+            commandEncoder.setBytes(&vertexCapacity, length: MemoryLayout<UInt32>.size, index: 2)
+
+            // Copy/flip each buffer.
+            for i in 0..<oldLowLevelMesh.descriptor.vertexBufferCount {
+                commandEncoder.setBuffer(oldLowLevelMesh.read(bufferIndex: i, using: commandBuffer), offset: 0, index: 0)
+                commandEncoder.setBuffer(newMesh.replace(bufferIndex: i, using: commandBuffer), offset: 0, index: 1)
+
+                // When we build the LowLevelMesh, we ensure that we have one and only one layout per vertex buffer.
+                var stride = UInt32(oldLowLevelMesh.descriptor.vertexLayouts[i].bufferStride)
+                commandEncoder.setBytes(&stride, length: MemoryLayout<UInt32>.size, index: 3)
+
+                var texCoordOffsets: [UInt32] = []
+                for vertexAttribute in oldLowLevelMesh.descriptor.vertexAttributes {
+                    if vertexAttribute.layoutIndex != i {
+                        continue
+                    }
+                    switch vertexAttribute.semantic {
+                        case .uv0, .uv1, .uv2, .uv3, .uv4, .uv5, .uv6, .uv7:
+                            // We flip the second float (the V coordinate).
+                            texCoordOffsets.append(UInt32(vertexAttribute.offset + MemoryLayout<Float>.size))
+                        default: break
+                    }
+                }
+                // Setting the buffer to "zero" (empty array) causes a "missing buffer binding" exception,
+                // so instead we use a single zero value as a placeholder.
+                if texCoordOffsets.isEmpty {
+                    var unusedOffset = UInt32(0)
+                    commandEncoder.setBytes(&unusedOffset, length: MemoryLayout<UInt32>.size, index: 4)
+                } else {
+                    texCoordOffsets.withUnsafeMutableBytes {
+                        commandEncoder.setBytes($0.baseAddress!, length: $0.count, index: 4)
+                    }
+                }
+                var texCoordOffsetCount = UInt32(texCoordOffsets.count)
+                commandEncoder.setBytes(&texCoordOffsetCount, length: MemoryLayout<UInt32>.size, index: 5)
+
+                commandEncoder.dispatchThreadgroups(
+                    .init(width: Int(vertexCapacity), height: 1, depth: 1),
+                    threadsPerThreadgroup: .init(
+                        width: computePipelineState.maxTotalThreadsPerThreadgroup, height: 1, depth: 1))
+            }
+
+            commandEncoder.endEncoding()
+            commandBuffer.commit()
+
+            return newMesh
+        }
     }
 
     func describe(modelId: PolySpatialAssetID) -> String {
@@ -708,11 +870,13 @@ extension PolySpatialRealityKit {
         }
 
         var numUVSets = 0
+        var vertexAttributeDescriptors: [PolySpatialVertexAttributeDescriptor] =
+            .init(unityMesh.vertexAttributeDescriptorsAsBuffer!)
         var vertexLayouts: [LowLevelMesh.Layout] = []
         var sourceStrides: [Int] = []
         var vertexAttributes: [LowLevelMesh.Attribute] = []
         var attributeExtents: [TransferExtents] = []
-        for vertexAttributeDescriptor in unityMesh.vertexAttributeDescriptorsAsBuffer! {
+        for vertexAttributeDescriptor in vertexAttributeDescriptors {
             if let uvIndex = vertexAttributeDescriptor.attribute.uvIndex() {
                 numUVSets = max(numUVSets, uvIndex + 1)
             }
@@ -853,7 +1017,7 @@ extension PolySpatialRealityKit {
 
             // Find the attributes that we will use for this buffer.
             var texCoordExtents: [TransferExtents] = []
-            for (j, vertexAttributeDescriptor) in unityMesh.vertexAttributeDescriptorsAsBuffer!.enumerated() {
+            for (j, vertexAttributeDescriptor) in vertexAttributeDescriptors.enumerated() {
                 if vertexAttributeDescriptor.stream != i {
                     continue
                 }
@@ -1290,11 +1454,9 @@ extension PolySpatialRealityKit {
                 }
             }
 
-            // Currently, sampling the vertex colors of geometry that lacks explicit ones returns UV0.
-            // We have reported this to Apple as FB13421556.  If they fix that issue, we should remove the
-            // fallback white vertex colors so as to conserve memory.
-            part[MeshBuffers.custom("vertexColor", type: SIMD4<Float>.self)] =
-                colorBuffer ?? .init(repeatElement(.one, count: vertexCount))
+            if colorBuffer != nil {
+                part[PolySpatialRealityKit.vertexColorSemantic] = colorBuffer
+            }
 
             if !unityMesh.indices16.isEmpty {
                 let slice = unityMesh.indices16AsBuffer![Int(subMesh.indexStart)..<(Int(subMesh.indexStart + subMesh.indexCount))]

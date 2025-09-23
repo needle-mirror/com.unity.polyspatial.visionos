@@ -63,8 +63,21 @@ class PolySpatialComponents {
             }
         }
 
+        // Returns the lightmap scale/offset transformed so that it will scale and offset flipped UVs into
+        // flipped space.  The UV scale is in xy and the UV offset is in zw, as described in the documentation:
+        // https://docs.unity3d.com/6000.2/Documentation/ScriptReference/Renderer-lightmapScaleOffset.html
+        public var flippedLightmapScaleOffset: simd_float4 {
+            // Note that we only flip the V coordinate.  If the original V coordinate is V, the flipped coordinate
+            // is 1 - V, and the original transformed coordinate is V*y + w, then the flipped transformed
+            // coordinate is 1 - V*y - w.  To get that as a linear transformation of 1 - V, we can first
+            // multiply by y (i.e., the scale is the same), giving y - V*y.  The new offset, w', is then
+            // (1 - V*y - w) - (y - V*y), or 1 - y - w.
+            .init(lightmapScaleOffset.x, lightmapScaleOffset.y,
+                lightmapScaleOffset.z, 1 - lightmapScaleOffset.y - lightmapScaleOffset.w)
+        }
+
         public var staticBatchKey: StaticBatchManager.StaticBatchKey {
-            .init(lightmapColorId, lightmapDirId, lightmapScaleOffset, lightProbeCoefficients, reflectionProbes)
+            .init(lightmapColorId, lightmapDirId, lightProbeCoefficients, reflectionProbes)
         }
 
         public init() { }
@@ -88,7 +101,7 @@ class PolySpatialComponents {
             self.materialIds = materialIds
             self.lightmapColorId = staticBatchKey.lightmapColorId
             self.lightmapDirId = staticBatchKey.lightmapDirId
-            self.lightmapScaleOffset = staticBatchKey.lightmapScaleOffset
+            self.lightmapScaleOffset = .init(1, 1, 0, 0)
             self.lightProbeCoefficients = staticBatchKey.lightProbeCoefficients
             self.reflectionProbes = staticBatchKey.reflectionProbes
         }
@@ -281,10 +294,6 @@ class PolySpatialComponents {
         public var shouldPreroll: Bool
         var observerObject: VideoPlayerStatusObserver?
 
-        // A special mesh with inverted UVs is required for video material to work, since the video material is an RK-native material.
-        public var meshAsset: MeshResource?
-        public var meshAssetId: PolySpatialAssetID = .invalidAssetId
-
         public init(_ id: PolySpatialInstanceID,
                     _ url: URL,
                     _ shouldPreroll: Bool) {
@@ -372,16 +381,6 @@ class PolySpatialComponents {
                     }
                 }))
             }
-        }
-
-        public func invertAndCacheMesh(_ mesh: MeshResource, _ assetId: PolySpatialAssetID) -> Bool {
-            if self.meshAssetId != assetId {
-                self.meshAsset = PolySpatialRealityKit.instance.invertMeshUV(mesh, assetId)
-                self.meshAssetId = assetId
-
-                return true
-            }
-            return false
         }
     }
 

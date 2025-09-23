@@ -48,9 +48,9 @@ struct PolySpatialDebugHierarchyView: View {
     public var body: some View {
         HStack(alignment: .top) {
             Button(self.roots.isEmpty ? "Dump Hierachy" : "Update Hierarchy") {
-                for viewSubGraph in PolySpatialRealityKit.instance.viewSubGraphs {
-                    if let viewSubGraph = viewSubGraph {
-                        self.roots.append(Node(entity: viewSubGraph.root))
+                for viewSubgraph in PolySpatialRealityKit.instance.viewSubgraphs {
+                    if let viewSubgraph = viewSubgraph {
+                        self.roots.append(Node(entity: viewSubgraph.root))
                     }
                 }
             }.padding(5)
@@ -65,14 +65,14 @@ struct PolySpatialDebugHierarchyView: View {
                     OutlineGroup(root, children: \.children) { node in
                         VStack(alignment: .leading) {
                             Text(node.name)
-                            
+
                             let font  = Font.system(size: 10)
                             let pos = node.position
                             Text("X:\(pos.x, specifier: "%.2f") Y:\(pos.y, specifier: "%.2f") Z:\(pos.z, specifier: "%.2f")").font(font)
-                            
+
                             let angles = node.orientation
                             Text("X:\(angles.x, specifier: "%.2f") Y:\(angles.y, specifier: "%.2f") Z:\(angles.z, specifier: "%.2f")").font(font)
-                            
+
                             let s = node.scale
                             Text("X:\(s.x, specifier: "%.2f") Y:\(s.y, specifier: "%.2f") Z:\(s.z, specifier: "%.2f")").font(font)
                         }

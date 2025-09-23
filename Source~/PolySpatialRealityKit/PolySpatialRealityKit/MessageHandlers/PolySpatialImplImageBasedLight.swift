@@ -9,7 +9,7 @@ extension PolySpatialRealityKit {
         _ imageBasedLightInfo: UnsafeMutablePointer<PolySpatialImageBasedLightData>?) {
         let entity = GetEntity(id)
         let info = imageBasedLightInfo!.pointee
-            
+
         entity.setImageBasedLightInfo(
             info.sourceAssetId0,
             info.sourceAssetId1,
@@ -17,7 +17,7 @@ extension PolySpatialRealityKit {
             info.inheritsRotation,
             info.intensityExponent)
     }
-    
+
     func destroyImageBasedLight(_ id: PolySpatialInstanceID) {
         let entity = GetEntity(id)
         entity.clearImageBasedLightInfo()
@@ -29,16 +29,16 @@ extension PolySpatialRealityKit {
         _ imageBasedLightReceiverInfo: UnsafeMutablePointer<PolySpatialImageBasedLightReceiverData>?) {
         let entity = GetEntity(id)
         let info = imageBasedLightReceiverInfo!.pointee
-            
+
         // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-        let remappedImageBasedLightId = PolySpatialInstanceID(id: info.imageBasedLightId.id, hostId: id.hostId, hostVolumeIndex: id.hostVolumeIndex)
-        
+        let remappedImageBasedLightId = PolySpatialInstanceID(id: info.imageBasedLightId.id, hostId: id.hostId, viewSubgraphIndex: id.viewSubgraphIndex)
+
         entity.components.set(ImageBasedLightReceiverComponent(
             imageBasedLight: GetEntity(remappedImageBasedLightId)))
 
         entity.updateBackingEntityComponents(ImageBasedLightReceiverComponent.self)
     }
-    
+
     func destroyImageBasedLightReceiver(_ id: PolySpatialInstanceID) {
         let entity = GetEntity(id)
         entity.components.remove(ImageBasedLightReceiverComponent.self)

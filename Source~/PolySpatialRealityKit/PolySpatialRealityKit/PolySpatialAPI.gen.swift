@@ -8,7 +8,7 @@ internal enum Unity_PolySpatial_PolySpatialMagicCookie: UInt64, Enum, Verifiable
   internal typealias T = UInt64
   internal static var byteSize: Int { return MemoryLayout<UInt64>.size }
   internal var value: UInt64 { return self.rawValue }
-  case value = 1746124864139345000
+  case value = 1754062704675767000
 
   internal static var max: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
   internal static var min: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
@@ -19,7 +19,7 @@ internal enum Unity_PolySpatial_Internals_PolySpatialProtocolVersion: UInt32, En
   internal typealias T = UInt32
   internal static var byteSize: Int { return MemoryLayout<UInt32>.size }
   internal var value: UInt32 { return self.rawValue }
-  case value = 4139
+  case value = 4145
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialProtocolVersion { return .value }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialProtocolVersion { return .value }
@@ -434,6 +434,34 @@ internal enum Unity_PolySpatial_Internals_PolySpatialGradientMode: Int32, Enum, 
 }
 
 
+///  Expected audio speaker setup.
+///  Unity will ignore this setting if the equipment doesn't support the requested speaker mode.
+internal enum Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  ///  Should not be used, included only to keep this enum aligned with the AudioSpeakerMode enum.
+  case raw = 0
+  ///  The speakers are monaural, and there's only 1 audio channel.
+  case mono = 1
+  ///  The speakers are stereo, with 2 audio channels.
+  case stereo = 2
+  ///  Quad speakers with 4 audio channels.
+  case quad = 3
+  ///  Surround sound with 5 audio channels.
+  case surround = 4
+  ///  Surround sound with a subwoofer, resulting in 6 audio channels.
+  case mode5point1 = 5
+  ///  Surround sound with more speakers and a subwoofer, resulting in 8 audio channels.
+  case mode7point1 = 6
+  ///  Stereo output with 2 channels, but data is encoded to match Prologic/Prologic2.
+  case prologic = 7
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode { return .prologic }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode { return .raw }
+}
+
+
 ///  Describes the state in which the capability is supported by the remote(s).
 internal enum Unity_PolySpatial_Internals_RemoteSupport: Int8, Enum, Verifiable {
   internal typealias T = Int8
@@ -518,6 +546,23 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCameraClearFlags: Int32, En
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialCameraClearFlags { return .nothing }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialCameraClearFlags { return .unused }
+}
+
+
+///  Used to specify how the sensor gate (sensor frame) defined by Camera.sensorSize
+///  fits into the resolution gate (render frame). Values match those of UnityEngine.Camera.GateFitMode
+internal enum Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case none_ = 0
+  case vertical = 1
+  case horizontal = 2
+  case fill = 3
+  case overscan = 4
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode { return .overscan }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode { return .none_ }
 }
 
 
@@ -662,6 +707,24 @@ internal enum Unity_PolySpatial_Internals_PolySpatialTextureShape: Int32, Enum, 
 }
 
 
+internal enum Unity_PolySpatial_Internals_PolySpatialTextureDimension: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case unknown = -1
+  case none_ = 0
+  case any = 1
+  case tex2D = 2
+  case tex3D = 3
+  case cube = 4
+  case tex2Darray = 5
+  case cubeArray = 6
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialTextureDimension { return .cubeArray }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialTextureDimension { return .unknown }
+}
+
+
 internal enum Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode: Int32, Enum, Verifiable {
   internal typealias T = Int32
   internal static var byteSize: Int { return MemoryLayout<Int32>.size }
@@ -672,6 +735,20 @@ internal enum Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode: Int32,
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode { return .generateAllMips }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode { return .none_ }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialTextureTransferMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case raw = 0
+  case jpg = 1
+  case png = 2
+  case webRtc = 3
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode { return .webRtc }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode { return .raw }
 }
 
 
@@ -807,6 +884,23 @@ internal enum Unity_PolySpatial_Internals_PolySpatialParticleMaterialColorMode: 
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleMaterialColorMode { return .difference }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleMaterialColorMode { return .multiply }
+}
+
+
+///  Match MaterialGlobalIlluminationFlags on C++ side
+///  https://github.cds.internal.unity3d.com/unity/unity/blob/d78a217681a0b3266d69766ca586b603b0b62e9f/Runtime/Export/Graphics/GraphicsEnums.cs#L932
+internal enum Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags: UInt32, Enum, Verifiable {
+  internal typealias T = UInt32
+  internal static var byteSize: Int { return MemoryLayout<UInt32>.size }
+  internal var value: UInt32 { return self.rawValue }
+  case none_ = 0
+  case realtimeEmissive = 1
+  case bakedEmissive = 2
+  case anyEmissive = 3
+  case emissiveIsBlack = 4
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags { return .emissiveIsBlack }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags { return .none_ }
 }
 
 
@@ -1160,6 +1254,140 @@ internal enum Unity_PolySpatial_Internals_PolySpatialFogMode: Int32, Enum, Verif
 }
 
 
+///  Transparent object sorting mode of a Camera. Values match those of UnityEngine.TransparencySortMode
+internal enum Unity_PolySpatial_Internals_PolySpatialTransparencySortMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case default_ = 0
+  case perspective = 1
+  case orthographic = 2
+  case customAxis = 3
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialTransparencySortMode { return .customAxis }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialTransparencySortMode { return .default_ }
+}
+
+
+///  Defines the way Unity chooses a probe to light a Renderer that is lit by Light Probes but positioned outside the
+///  bounds of the Light Probe tetrahedral hull. Values match those of UnityEngine.Rendering.LightProbeOutsideHullStrategy
+internal enum Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case kLightProbeSearchTetrahedralHull = 0
+  case kLightProbeUseAmbientProbe = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy { return .kLightProbeUseAmbientProbe }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy { return .kLightProbeSearchTetrahedralHull }
+}
+
+
+///  Determines which type of shadows should be used.
+internal enum Unity_PolySpatial_Internals_PolySpatialShadowQuality: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case disable = 0
+  case hardOnly = 1
+  case all = 2
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialShadowQuality { return .all }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialShadowQuality { return .disable }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialShadowProjection: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case closeFit = 0
+  case stableFit = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialShadowProjection { return .stableFit }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialShadowProjection { return .closeFit }
+}
+
+
+///  Default shadow resolution. Each decrease in quality level halves the resolution of shadows.
+internal enum Unity_PolySpatial_Internals_PolySpatialShadowResolution: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case low = 0
+  case medium = 1
+  case high = 2
+  case veryHigh = 3
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialShadowResolution { return .veryHigh }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialShadowResolution { return .low }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialShadowmaskMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case shadowmask = 0
+  case distanceShadowmask = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialShadowmaskMode { return .distanceShadowmask }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialShadowmaskMode { return .shadowmask }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case disable = 0
+  case enable = 1
+  case forceEnable = 2
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering { return .forceEnable }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering { return .disable }
+}
+
+
+internal struct Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides: OptionSet, Enum, Verifiable {
+  internal typealias T = UInt32
+  internal let rawValue: T
+
+  internal init(rawValue: T) {
+    self.rawValue = rawValue
+  }
+
+  internal static var byteSize: Int { return MemoryLayout<UInt32>.size }
+  internal var value: UInt32 { return self.rawValue }
+  internal static let pixelError = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 1)
+  internal static let basemapDistance = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 2)
+  internal static let detailDensity = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 4)
+  internal static let detailDistance = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 8)
+  internal static let treeDistance = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 16)
+  internal static let billboardStart = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 32)
+  internal static let fadeLength = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 64)
+  internal static let maxTrees = Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: 128)
+
+  internal static let none: Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides = []
+  internal static let all: Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides = [.pixelError, .basemapDistance, .detailDensity, .detailDistance, .treeDistance, .billboardStart, .fadeLength, .maxTrees]
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialSkinWeights: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case none_ = 0
+  case oneBone = 1
+  case twoBones = 2
+  case fourBones = 4
+  case unlimited = 255
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialSkinWeights { return .unlimited }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialSkinWeights { return .none_ }
+}
+
+
 ///  Input mode for a minmax curve.
 internal enum Unity_PolySpatial_Internals_PolySpatialParticleCurveMode: Int32, Enum, Verifiable {
   internal typealias T = Int32
@@ -1506,6 +1734,10 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCommand: Int32, Enum, Verif
   ///  Notify a host that it should end all sessions and connections. Intended to be sent from a temporary connection
   ///  that will then close. Allows for editor menu actions to force a host back into a Ready state.
   case endAllSessionsAndConnections = 263
+  ///  Adds an ICE candidate for WebRTC communication.
+  case addRtcIceCandidate = 264
+  ///  Sets a remote session description for WebRTC communication.
+  case setRtcRemoteDescription = 265
   /// --- Category for app system commands ---
   case lifecycleCommandCategory = 512
   ///  Sent when a network connection is first formed. The host will ack this
@@ -1528,9 +1760,9 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCommand: Int32, Enum, Verif
   ///  Sent when the simulation/app finishes a frame of change processing. The
   ///  host will ack this with EndHostFrame
   case endAppFrame = 518
-  ///  Any project level data we will need to remap on the other side, like 
-  ///  sorting layers for example.
-  case sendProjectSettings = 519
+  ///  Request that a PolySpatial Backend destroy a ViewSubgraph,
+  ///  including all entities and component associated with it.
+  case destroyViewSubgraph = 519
   /// --- Category for asset commands sent from app to host ---
   case assetCommandCategory = 768
   ///  delete a given resource matching
@@ -1708,22 +1940,34 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCommand: Int32, Enum, Verif
   ///  Create/update/destroy a HoverEffect component.
   case createOrUpdateVisionOshoverEffect = 1795
   case destroyVisionOshoverEffect = 1796
-  ///  Sets the names of the shader global properties.
-  case setShaderGlobalPropertyMap = 1797
-  ///  Sets the values of the shader global properties.
-  case setShaderGlobalPropertyValues = 1798
-  ///  Sets the values of the render settings properties.
-  case setRenderSettings = 1799
-  ///  Sets the values of the graphics settings properties.
-  case setGraphicsSettings = 1800
-  ///  Sets the global lightmap settings.
-  case setLightmapSettings = 1801
   ///  Create/update/destroy a GroundingShadow component.
-  case createOrUpdateVisionOsgroundingShadow = 1802
-  case destroyVisionOsgroundingShadow = 1803
+  case createOrUpdateVisionOsgroundingShadow = 1797
+  case destroyVisionOsgroundingShadow = 1798
   ///  Create/update/destroy a Billboard component.
-  case createOrUpdateVisionOsbillboard = 1804
-  case destroyVisionOsbillboard = 1805
+  case createOrUpdateVisionOsbillboard = 1799
+  case destroyVisionOsbillboard = 1800
+  ///  Sets the names of the shader global properties.
+  case setShaderGlobalPropertyMap = 1801
+  ///  Sets the values of the shader global properties.
+  case setShaderGlobalPropertyValues = 1802
+  ///  Sets the values of the render settings properties.
+  case setRenderSettings = 1803
+  ///  Sets the values of the graphics settings properties.
+  case setGraphicsSettings = 1804
+  ///  Sets the global lightmap settings.
+  case setLightmapSettings = 1805
+  ///  Any layer data we will need to remap on the other side, like sorting layers for example.
+  case setLayerSettings = 1806
+  ///  Sets the global lightprobe settings.
+  case setLightProbesData = 1807
+  ///  Sets the values of the time settings properties.
+  case setTimeSettings = 1808
+  ///  Sets the values of the quality settings properties.
+  case setQualitySettings = 1809
+  ///  Sets (or clears, if the array is empty) the texture asset IDs to use for pixel streaming.
+  case setPixelStreamTextures = 1810
+  ///  Sets the values of the RenderPipelineGlobalSettings for the current render pipeline.
+  case setRenderPipelineGlobalSettings = 1811
   /// --- Placeholder Category for input to keep app/host categories in sync ---
   case inputCommandCategory = 2048
   ///  Reports the connection state of a device back to a host.
@@ -1732,11 +1976,15 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCommand: Int32, Enum, Verif
   case inputSystemDeviceConnectedEvent = 2049
   /// --- Placeholder Category for XR commands to keep app/host categories in sync ---
   case xrcommandCategory = 2304
+  ///  XRPlaneSubsystem Start
+  case xrplaneSubsystemStart = 2305
+  ///  XRPlaneSubsystem Stop
+  case xrplaneSubsystemStop = 2306
   /// --- Category for general audio commands sent from app to host ---
-  case audioCommandCategory = 4096
+  case audioCommandCategory = 2560
   ///  Streams audio from app to host. Each UpdateAudioStream command is accompanied by a variable length
   ///  float array packet that represents PCM audio data.
-  case updateAudioStream = 4097
+  case updateAudioStream = 2561
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialCommand { return .updateAudioStream }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialCommand { return .systemCommandCategory }
@@ -1763,6 +2011,10 @@ internal enum Unity_PolySpatial_Internals_PolySpatialHostCommand: Int32, Enum, V
   case setConsoleLogMessageEnabled = 65797
   ///  Responds to a state verification request.
   case stateVerificationResult = 65798
+  ///  Adds an ICE candidate for WebRTC communication.
+  case addRtcIceCandidate = 65799
+  ///  Sets a remote session description for WebRTC communication.
+  case setRtcRemoteDescription = 65800
   /// --- Category for lifecycle commands sent from host to app ---
   case lifecycleCommandCategory = 66048
   ///  Acknowledge a BeginConnection command and send back connection data
@@ -1836,8 +2088,10 @@ internal enum Unity_PolySpatial_Internals_PolySpatialHostCommand: Int32, Enum, V
   case updateHandLayout = 67846
   ///  Send an ARMesh with MeshIDs
   case sendXrmeshData = 67847
+  ///  Sets the configuration of the XR display.
+  case setXrdisplayData = 67848
   /// --- Category for audio commands sent from host to app ---
-  case audioCommandCategory = 69632
+  case audioCommandCategory = 68096
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialHostCommand { return .audioCommandCategory }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialHostCommand { return .systemCommandCategory }
@@ -1935,6 +2189,65 @@ internal enum Unity_PolySpatial_Internals_PolySpatialHoverEffectType: Int32, Enu
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialHoverEffectType { return .shader }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialHoverEffectType { return .spotlight }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  ///  R8 G8 B8 A8
+  case rgba32 = 0
+  ///  B8 G8 R8 A8
+  case bgra32 = 1
+  ///  R5 G6 B5
+  case rgb565 = 2
+  ///  R16 G16 B16 A16 signed half-float
+  case r16G16B16A16Sfloat = 3
+  case rgba1010102 = 4
+  case bgra1010102 = 5
+  case r11G11B10Ufloat = 6
+  case bgr101010 = 7
+  ///  No color texture.
+  case none_ = 8
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat { return .none_ }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat { return .rgba32 }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  ///  24-bit or greater depth texture.  Unity prefers 32 bit floating point Z buffer if available on the platform.
+  case use24bitOrGreater = 0
+  ///  If possible, use a 16-bit texture format to save bandwidth.
+  case use16bit = 1
+  ///  No depth texture.
+  case none_ = 2
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat { return .none_ }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat { return .use24bitOrGreater }
+}
+
+
+///  Corresponds to the native UnityXRRenderTextureFlags enum.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags: OptionSet, Enum, Verifiable {
+  internal typealias T = UInt32
+  internal let rawValue: T
+
+  internal init(rawValue: T) {
+    self.rawValue = rawValue
+  }
+
+  internal static var byteSize: Int { return MemoryLayout<UInt32>.size }
+  internal var value: UInt32 { return self.rawValue }
+  ///  Use an sRGB format if possible.
+  internal static let srgb = Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags(rawValue: 1)
+
+  internal static let none: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags = []
+  internal static let all: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags = [.srgb]
 }
 
 
@@ -2130,6 +2443,21 @@ internal enum Unity_PolySpatial_Internals_PolySpatialHostDisplayOrientation: Int
 
   internal static var max: Unity_PolySpatial_Internals_PolySpatialHostDisplayOrientation { return .autoRotation }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialHostDisplayOrientation { return .invalid }
+}
+
+
+///  An enum that specifies the type of the session description.  Values should match WebRTCUtils.SdpType.
+internal enum Unity_PolySpatial_Internals_PolySpatialRtcSdpType: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case answer = 0
+  case offer = 1
+  case pranswer = 2
+  case rollback = 3
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialRtcSdpType { return .rollback }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialRtcSdpType { return .answer }
 }
 
 
@@ -2793,12 +3121,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceID: NativeStruct,
   ///  For identifying the host of the simulation that this instance was created by.
   ///  ConnectionID value of 0 indicates that this instance was created locally.
   private var _hostId: Unity_PolySpatial_Internals_PolySpatialHostID
-  ///  A backend may choose to support multiple volumes by instancing an entity into
-  ///  each volume. In that case the hostVolumeIndex allows each instance to have a unique
-  ///  PSIID. It also allows for looking up the volume of instance.
+  ///  A backend organizes the entities for a session into a ViewSubgraph. A ViewSubgraph contains one or more views into
+  ///  it, which (depending on the platform) can be either a 2D CameraView or a VolumeView. A ViewSubgraph is assigned
+  ///  an index by the host for fast lookup in the backend.
   ///  NOTE: Not intended to be used by simulations. Backends (or backend command handlers)
-  ///  will manage the creation of volume indices and remap PSIIDs accordingly.
-  private var _hostVolumeIndex: UInt8
+  ///  will manage the creation of ViewSubgraph indices and remap PSIIDs accordingly.
+  private var _viewSubgraphIndex: UInt8
   ///  Reserved for future use.
   private var __Padding0: UInt8
   private var __Padding1: UInt16
@@ -2807,15 +3135,15 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceID: NativeStruct,
     let _accessor = Struct(bb: bb, position: o)
     _id = _accessor.readBuffer(of: Int64.self, at: 0)
     _hostId = Unity_PolySpatial_Internals_PolySpatialHostID(_accessor.bb, o: _accessor.postion + 8)
-    _hostVolumeIndex = _accessor.readBuffer(of: UInt8.self, at: 12)
+    _viewSubgraphIndex = _accessor.readBuffer(of: UInt8.self, at: 12)
     __Padding0 = _accessor.readBuffer(of: UInt8.self, at: 13)
     __Padding1 = _accessor.readBuffer(of: UInt16.self, at: 14)
   }
 
-  internal init(id: Int64, hostId: Unity_PolySpatial_Internals_PolySpatialHostID, hostVolumeIndex: UInt8, _Padding0: UInt8, _Padding1: UInt16) {
+  internal init(id: Int64, hostId: Unity_PolySpatial_Internals_PolySpatialHostID, viewSubgraphIndex: UInt8, _Padding0: UInt8, _Padding1: UInt16) {
     _id = id
     _hostId = hostId
-    _hostVolumeIndex = hostVolumeIndex
+    _viewSubgraphIndex = viewSubgraphIndex
     __Padding0 = _Padding0
     __Padding1 = _Padding1
   }
@@ -2823,7 +3151,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceID: NativeStruct,
   internal init() {
     _id = 0
     _hostId = Unity_PolySpatial_Internals_PolySpatialHostID()
-    _hostVolumeIndex = 0
+    _viewSubgraphIndex = 0
     __Padding0 = 0
     __Padding1 = 0
   }
@@ -2834,12 +3162,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceID: NativeStruct,
   ///  For identifying the host of the simulation that this instance was created by.
   ///  ConnectionID value of 0 indicates that this instance was created locally.
   internal var hostId: Unity_PolySpatial_Internals_PolySpatialHostID { _hostId }
-  ///  A backend may choose to support multiple volumes by instancing an entity into
-  ///  each volume. In that case the hostVolumeIndex allows each instance to have a unique
-  ///  PSIID. It also allows for looking up the volume of instance.
+  ///  A backend organizes the entities for a session into a ViewSubgraph. A ViewSubgraph contains one or more views into
+  ///  it, which (depending on the platform) can be either a 2D CameraView or a VolumeView. A ViewSubgraph is assigned
+  ///  an index by the host for fast lookup in the backend.
   ///  NOTE: Not intended to be used by simulations. Backends (or backend command handlers)
-  ///  will manage the creation of volume indices and remap PSIIDs accordingly.
-  internal var hostVolumeIndex: UInt8 { _hostVolumeIndex }
+  ///  will manage the creation of ViewSubgraph indices and remap PSIIDs accordingly.
+  internal var viewSubgraphIndex: UInt8 { _viewSubgraphIndex }
   ///  Reserved for future use.
   internal var _Padding0: UInt8 { __Padding0 }
   internal var _Padding1: UInt16 { __Padding1 }
@@ -2860,18 +3188,18 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceID_Mutable: FlatB
 
   internal var id: Int64 { return _accessor.readBuffer(of: Int64.self, at: 0) }
   internal var hostId: Unity_PolySpatial_Internals_PolySpatialHostID_Mutable { return Unity_PolySpatial_Internals_PolySpatialHostID_Mutable(_accessor.bb, o: _accessor.postion + 8) }
-  internal var hostVolumeIndex: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 12) }
+  internal var viewSubgraphIndex: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 12) }
   internal var _Padding0: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 13) }
   internal var _Padding1: UInt16 { return _accessor.readBuffer(of: UInt16.self, at: 14) }
 }
 
-///  The Header for a PolySpatialInstanceIDList, which is a list of Instance IDs that share the same host and volumeIndex.
+///  The Header for a PolySpatialInstanceIDList, which is a list of Instance IDs that share the same host and viewSubgraphIndex.
 internal struct Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader: NativeStruct, Verifiable, FlatbuffersInitializable {
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
 
   private var _hostId: Unity_PolySpatial_Internals_PolySpatialHostID
-  private var _hostVolumeIndex: UInt8
+  private var _viewSubgraphIndex: UInt8
   ///  Reserved for future use.
   private var __Padding0: UInt8
   private var __Padding1: UInt16
@@ -2879,27 +3207,27 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader: Nat
   internal init(_ bb: ByteBuffer, o: Int32) {
     let _accessor = Struct(bb: bb, position: o)
     _hostId = Unity_PolySpatial_Internals_PolySpatialHostID(_accessor.bb, o: _accessor.postion + 0)
-    _hostVolumeIndex = _accessor.readBuffer(of: UInt8.self, at: 4)
+    _viewSubgraphIndex = _accessor.readBuffer(of: UInt8.self, at: 4)
     __Padding0 = _accessor.readBuffer(of: UInt8.self, at: 5)
     __Padding1 = _accessor.readBuffer(of: UInt16.self, at: 6)
   }
 
-  internal init(hostId: Unity_PolySpatial_Internals_PolySpatialHostID, hostVolumeIndex: UInt8, _Padding0: UInt8, _Padding1: UInt16) {
+  internal init(hostId: Unity_PolySpatial_Internals_PolySpatialHostID, viewSubgraphIndex: UInt8, _Padding0: UInt8, _Padding1: UInt16) {
     _hostId = hostId
-    _hostVolumeIndex = hostVolumeIndex
+    _viewSubgraphIndex = viewSubgraphIndex
     __Padding0 = _Padding0
     __Padding1 = _Padding1
   }
 
   internal init() {
     _hostId = Unity_PolySpatial_Internals_PolySpatialHostID()
-    _hostVolumeIndex = 0
+    _viewSubgraphIndex = 0
     __Padding0 = 0
     __Padding1 = 0
   }
 
   internal var hostId: Unity_PolySpatial_Internals_PolySpatialHostID { _hostId }
-  internal var hostVolumeIndex: UInt8 { _hostVolumeIndex }
+  internal var viewSubgraphIndex: UInt8 { _viewSubgraphIndex }
   ///  Reserved for future use.
   internal var _Padding0: UInt8 { __Padding0 }
   internal var _Padding1: UInt16 { __Padding1 }
@@ -2909,7 +3237,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader: Nat
   }
 }
 
-///  The Header for a PolySpatialInstanceIDList, which is a list of Instance IDs that share the same host and volumeIndex.
+///  The Header for a PolySpatialInstanceIDList, which is a list of Instance IDs that share the same host and viewSubgraphIndex.
 internal struct Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader_Mutable: FlatBufferObject {
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
@@ -2919,7 +3247,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInstanceIDListHeader_Muta
   internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
 
   internal var hostId: Unity_PolySpatial_Internals_PolySpatialHostID_Mutable { return Unity_PolySpatial_Internals_PolySpatialHostID_Mutable(_accessor.bb, o: _accessor.postion + 0) }
-  internal var hostVolumeIndex: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 4) }
+  internal var viewSubgraphIndex: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 4) }
   internal var _Padding0: UInt8 { return _accessor.readBuffer(of: UInt8.self, at: 5) }
   internal var _Padding1: UInt16 { return _accessor.readBuffer(of: UInt16.self, at: 6) }
 }
@@ -3504,6 +3832,67 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleGradientColorKey_
   internal var time: Float32 { return _accessor.readBuffer(of: Float32.self, at: 4) }
 }
 
+internal struct Unity_PolySpatial_Internals_PolySpatialAudioSettings: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  ///  Expected speaker mode. This determines how many audio channels we expect, which
+  ///  in turn impacts the size of the audio packets we are streaming.
+  private var _speakerMode: Int32
+  ///  Size of each audio chunk read from OnAudioFilterRead().
+  ///  Multiply this by the audio channels to get the final size of the audio packets.
+  private var _dspBufferSize: Int32
+  ///  How many samples we take in a second. This also affects how quickly we generate
+  ///  audio chunks from OnAudioFilterRead().
+  private var _sampleRate: Int32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _speakerMode = _accessor.readBuffer(of: Int32.self, at: 0)
+    _dspBufferSize = _accessor.readBuffer(of: Int32.self, at: 4)
+    _sampleRate = _accessor.readBuffer(of: Int32.self, at: 8)
+  }
+
+  internal init(speakerMode: Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode, dspBufferSize: Int32, sampleRate: Int32) {
+    _speakerMode = speakerMode.value
+    _dspBufferSize = dspBufferSize
+    _sampleRate = sampleRate
+  }
+
+  internal init() {
+    _speakerMode = 0
+    _dspBufferSize = 0
+    _sampleRate = 0
+  }
+
+  ///  Expected speaker mode. This determines how many audio channels we expect, which
+  ///  in turn impacts the size of the audio packets we are streaming.
+  internal var speakerMode: Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode { Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode(rawValue: _speakerMode)! }
+  ///  Size of each audio chunk read from OnAudioFilterRead().
+  ///  Multiply this by the audio channels to get the final size of the audio packets.
+  internal var dspBufferSize: Int32 { _dspBufferSize }
+  ///  How many samples we take in a second. This also affects how quickly we generate
+  ///  audio chunks from OnAudioFilterRead().
+  internal var sampleRate: Int32 { _sampleRate }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialAudioSettings.self)
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialAudioSettings_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var speakerMode: Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode { return Unity_PolySpatial_Internals_PolySpatialAudioSpeakerMode(rawValue: _accessor.readBuffer(of: Int32.self, at: 0)) ?? .raw }
+  internal var dspBufferSize: Int32 { return _accessor.readBuffer(of: Int32.self, at: 4) }
+  internal var sampleRate: Int32 { return _accessor.readBuffer(of: Int32.self, at: 8) }
+}
+
 ///  Struct for syncing time between host and app.
 internal struct Unity_PolySpatial_Internals_PolySpatialPingData: NativeStruct, Verifiable, FlatbuffersInitializable {
 
@@ -3792,15 +4181,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities: Nativ
   private var _hardwareShaders: Unity_PolySpatial_Internals_CapabilityStatus
   private var _materialXshaders: Unity_PolySpatial_Internals_CapabilityStatus
   private var _nativeTextures: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _astcTextures: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _dxtcTextures: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _jpgTextures: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _pngTextures: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _webRtcTextures: Unity_PolySpatial_Internals_CapabilityStatus
   private var _lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus
   private var _lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus
   private var _trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus
   private var _renderSettings: Unity_PolySpatial_Internals_CapabilityStatus
   private var _graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _qualitySettings: Unity_PolySpatial_Internals_CapabilityStatus
   private var _halo: Unity_PolySpatial_Internals_CapabilityStatus
   private var _renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus
   private var _spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus
   private var _spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _pixelStreaming: Unity_PolySpatial_Internals_CapabilityStatus
 
   internal init(_ bb: ByteBuffer, o: Int32) {
     let _accessor = Struct(bb: bb, position: o)
@@ -3817,18 +4213,25 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities: Nativ
     _hardwareShaders = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 20)
     _materialXshaders = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 22)
     _nativeTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 24)
-    _lineRendererSerializeProperties = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 26)
-    _lineRendererBakeToMesh = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 28)
-    _trailRenderers = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 30)
-    _renderSettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 32)
-    _graphicsSettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 34)
-    _halo = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 36)
-    _renderingVolumes = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 38)
-    _spriteRendering = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 40)
-    _spriteMasking = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 42)
+    _astcTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 26)
+    _dxtcTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 28)
+    _jpgTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 30)
+    _pngTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 32)
+    _webRtcTextures = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 34)
+    _lineRendererSerializeProperties = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 36)
+    _lineRendererBakeToMesh = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 38)
+    _trailRenderers = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 40)
+    _renderSettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 42)
+    _graphicsSettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 44)
+    _qualitySettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 46)
+    _halo = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 48)
+    _renderingVolumes = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 50)
+    _spriteRendering = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 52)
+    _spriteMasking = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 54)
+    _pixelStreaming = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 56)
   }
 
-  internal init(audio: Unity_PolySpatial_Internals_CapabilityStatus, video: Unity_PolySpatial_Internals_CapabilityStatus, graphics2D: Unity_PolySpatial_Internals_CapabilityStatus, graphics3D: Unity_PolySpatial_Internals_CapabilityStatus, skinnedAnimation: Unity_PolySpatial_Internals_CapabilityStatus, particleEffects: Unity_PolySpatial_Internals_CapabilityStatus, pointLights: Unity_PolySpatial_Internals_CapabilityStatus, imageBasedLighting: Unity_PolySpatial_Internals_CapabilityStatus, renderTargets: Unity_PolySpatial_Internals_CapabilityStatus, localRenderTextures: Unity_PolySpatial_Internals_CapabilityStatus, hardwareShaders: Unity_PolySpatial_Internals_CapabilityStatus, materialXshaders: Unity_PolySpatial_Internals_CapabilityStatus, nativeTextures: Unity_PolySpatial_Internals_CapabilityStatus, lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus, lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus, trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus, renderSettings: Unity_PolySpatial_Internals_CapabilityStatus, graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus, halo: Unity_PolySpatial_Internals_CapabilityStatus, renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus, spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus, spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus) {
+  internal init(audio: Unity_PolySpatial_Internals_CapabilityStatus, video: Unity_PolySpatial_Internals_CapabilityStatus, graphics2D: Unity_PolySpatial_Internals_CapabilityStatus, graphics3D: Unity_PolySpatial_Internals_CapabilityStatus, skinnedAnimation: Unity_PolySpatial_Internals_CapabilityStatus, particleEffects: Unity_PolySpatial_Internals_CapabilityStatus, pointLights: Unity_PolySpatial_Internals_CapabilityStatus, imageBasedLighting: Unity_PolySpatial_Internals_CapabilityStatus, renderTargets: Unity_PolySpatial_Internals_CapabilityStatus, localRenderTextures: Unity_PolySpatial_Internals_CapabilityStatus, hardwareShaders: Unity_PolySpatial_Internals_CapabilityStatus, materialXshaders: Unity_PolySpatial_Internals_CapabilityStatus, nativeTextures: Unity_PolySpatial_Internals_CapabilityStatus, astcTextures: Unity_PolySpatial_Internals_CapabilityStatus, dxtcTextures: Unity_PolySpatial_Internals_CapabilityStatus, jpgTextures: Unity_PolySpatial_Internals_CapabilityStatus, pngTextures: Unity_PolySpatial_Internals_CapabilityStatus, webRtcTextures: Unity_PolySpatial_Internals_CapabilityStatus, lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus, lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus, trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus, renderSettings: Unity_PolySpatial_Internals_CapabilityStatus, graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus, qualitySettings: Unity_PolySpatial_Internals_CapabilityStatus, halo: Unity_PolySpatial_Internals_CapabilityStatus, renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus, spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus, spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus, pixelStreaming: Unity_PolySpatial_Internals_CapabilityStatus) {
     _audio = audio
     _video = video
     _graphics2D = graphics2D
@@ -3842,15 +4245,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities: Nativ
     _hardwareShaders = hardwareShaders
     _materialXshaders = materialXshaders
     _nativeTextures = nativeTextures
+    _astcTextures = astcTextures
+    _dxtcTextures = dxtcTextures
+    _jpgTextures = jpgTextures
+    _pngTextures = pngTextures
+    _webRtcTextures = webRtcTextures
     _lineRendererSerializeProperties = lineRendererSerializeProperties
     _lineRendererBakeToMesh = lineRendererBakeToMesh
     _trailRenderers = trailRenderers
     _renderSettings = renderSettings
     _graphicsSettings = graphicsSettings
+    _qualitySettings = qualitySettings
     _halo = halo
     _renderingVolumes = renderingVolumes
     _spriteRendering = spriteRendering
     _spriteMasking = spriteMasking
+    _pixelStreaming = pixelStreaming
   }
 
   internal init() {
@@ -3867,15 +4277,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities: Nativ
     _hardwareShaders = Unity_PolySpatial_Internals_CapabilityStatus()
     _materialXshaders = Unity_PolySpatial_Internals_CapabilityStatus()
     _nativeTextures = Unity_PolySpatial_Internals_CapabilityStatus()
+    _astcTextures = Unity_PolySpatial_Internals_CapabilityStatus()
+    _dxtcTextures = Unity_PolySpatial_Internals_CapabilityStatus()
+    _jpgTextures = Unity_PolySpatial_Internals_CapabilityStatus()
+    _pngTextures = Unity_PolySpatial_Internals_CapabilityStatus()
+    _webRtcTextures = Unity_PolySpatial_Internals_CapabilityStatus()
     _lineRendererSerializeProperties = Unity_PolySpatial_Internals_CapabilityStatus()
     _lineRendererBakeToMesh = Unity_PolySpatial_Internals_CapabilityStatus()
     _trailRenderers = Unity_PolySpatial_Internals_CapabilityStatus()
     _renderSettings = Unity_PolySpatial_Internals_CapabilityStatus()
     _graphicsSettings = Unity_PolySpatial_Internals_CapabilityStatus()
+    _qualitySettings = Unity_PolySpatial_Internals_CapabilityStatus()
     _halo = Unity_PolySpatial_Internals_CapabilityStatus()
     _renderingVolumes = Unity_PolySpatial_Internals_CapabilityStatus()
     _spriteRendering = Unity_PolySpatial_Internals_CapabilityStatus()
     _spriteMasking = Unity_PolySpatial_Internals_CapabilityStatus()
+    _pixelStreaming = Unity_PolySpatial_Internals_CapabilityStatus()
   }
 
   internal var audio: Unity_PolySpatial_Internals_CapabilityStatus { _audio }
@@ -3891,15 +4308,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities: Nativ
   internal var hardwareShaders: Unity_PolySpatial_Internals_CapabilityStatus { _hardwareShaders }
   internal var materialXshaders: Unity_PolySpatial_Internals_CapabilityStatus { _materialXshaders }
   internal var nativeTextures: Unity_PolySpatial_Internals_CapabilityStatus { _nativeTextures }
+  internal var astcTextures: Unity_PolySpatial_Internals_CapabilityStatus { _astcTextures }
+  internal var dxtcTextures: Unity_PolySpatial_Internals_CapabilityStatus { _dxtcTextures }
+  internal var jpgTextures: Unity_PolySpatial_Internals_CapabilityStatus { _jpgTextures }
+  internal var pngTextures: Unity_PolySpatial_Internals_CapabilityStatus { _pngTextures }
+  internal var webRtcTextures: Unity_PolySpatial_Internals_CapabilityStatus { _webRtcTextures }
   internal var lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus { _lineRendererSerializeProperties }
   internal var lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus { _lineRendererBakeToMesh }
   internal var trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus { _trailRenderers }
   internal var renderSettings: Unity_PolySpatial_Internals_CapabilityStatus { _renderSettings }
   internal var graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus { _graphicsSettings }
+  internal var qualitySettings: Unity_PolySpatial_Internals_CapabilityStatus { _qualitySettings }
   internal var halo: Unity_PolySpatial_Internals_CapabilityStatus { _halo }
   internal var renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus { _renderingVolumes }
   internal var spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus { _spriteRendering }
   internal var spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus { _spriteMasking }
+  internal var pixelStreaming: Unity_PolySpatial_Internals_CapabilityStatus { _pixelStreaming }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialOutputCapabilities.self)
@@ -3927,15 +4351,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialOutputCapabilities_Mutabl
   internal var hardwareShaders: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 20) }
   internal var materialXshaders: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 22) }
   internal var nativeTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 24) }
-  internal var lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 26) }
-  internal var lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 28) }
-  internal var trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 30) }
-  internal var renderSettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 32) }
-  internal var graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 34) }
-  internal var halo: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 36) }
-  internal var renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 38) }
-  internal var spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 40) }
-  internal var spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 42) }
+  internal var astcTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 26) }
+  internal var dxtcTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 28) }
+  internal var jpgTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 30) }
+  internal var pngTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 32) }
+  internal var webRtcTextures: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 34) }
+  internal var lineRendererSerializeProperties: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 36) }
+  internal var lineRendererBakeToMesh: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 38) }
+  internal var trailRenderers: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 40) }
+  internal var renderSettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 42) }
+  internal var graphicsSettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 44) }
+  internal var qualitySettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 46) }
+  internal var halo: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 48) }
+  internal var renderingVolumes: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 50) }
+  internal var spriteRendering: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 52) }
+  internal var spriteMasking: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 54) }
+  internal var pixelStreaming: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 56) }
 }
 
 internal struct Unity_PolySpatial_Internals_PolySpatialARCapabilities: NativeStruct, Verifiable, FlatbuffersInitializable {
@@ -4032,6 +4463,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities: 
   private var _mixedVolumes: Unity_PolySpatial_Internals_CapabilityStatus
   private var _multipleVolumes: Unity_PolySpatial_Internals_CapabilityStatus
   private var _passThrough: Unity_PolySpatial_Internals_CapabilityStatus
+  private var _timeSettings: Unity_PolySpatial_Internals_CapabilityStatus
 
   internal init(_ bb: ByteBuffer, o: Int32) {
     let _accessor = Struct(bb: bb, position: o)
@@ -4040,14 +4472,16 @@ internal struct Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities: 
     _mixedVolumes = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 4)
     _multipleVolumes = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 6)
     _passThrough = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 8)
+    _timeSettings = Unity_PolySpatial_Internals_CapabilityStatus(_accessor.bb, o: _accessor.postion + 10)
   }
 
-  internal init(unboundedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, boundedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, mixedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, multipleVolumes: Unity_PolySpatial_Internals_CapabilityStatus, passThrough: Unity_PolySpatial_Internals_CapabilityStatus) {
+  internal init(unboundedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, boundedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, mixedVolumes: Unity_PolySpatial_Internals_CapabilityStatus, multipleVolumes: Unity_PolySpatial_Internals_CapabilityStatus, passThrough: Unity_PolySpatial_Internals_CapabilityStatus, timeSettings: Unity_PolySpatial_Internals_CapabilityStatus) {
     _unboundedVolumes = unboundedVolumes
     _boundedVolumes = boundedVolumes
     _mixedVolumes = mixedVolumes
     _multipleVolumes = multipleVolumes
     _passThrough = passThrough
+    _timeSettings = timeSettings
   }
 
   internal init() {
@@ -4056,6 +4490,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities: 
     _mixedVolumes = Unity_PolySpatial_Internals_CapabilityStatus()
     _multipleVolumes = Unity_PolySpatial_Internals_CapabilityStatus()
     _passThrough = Unity_PolySpatial_Internals_CapabilityStatus()
+    _timeSettings = Unity_PolySpatial_Internals_CapabilityStatus()
   }
 
   internal var unboundedVolumes: Unity_PolySpatial_Internals_CapabilityStatus { _unboundedVolumes }
@@ -4063,6 +4498,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities: 
   internal var mixedVolumes: Unity_PolySpatial_Internals_CapabilityStatus { _mixedVolumes }
   internal var multipleVolumes: Unity_PolySpatial_Internals_CapabilityStatus { _multipleVolumes }
   internal var passThrough: Unity_PolySpatial_Internals_CapabilityStatus { _passThrough }
+  internal var timeSettings: Unity_PolySpatial_Internals_CapabilityStatus { _timeSettings }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities.self)
@@ -4082,6 +4518,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities_M
   internal var mixedVolumes: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 4) }
   internal var multipleVolumes: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 6) }
   internal var passThrough: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 8) }
+  internal var timeSettings: Unity_PolySpatial_Internals_CapabilityStatus_Mutable { return Unity_PolySpatial_Internals_CapabilityStatus_Mutable(_accessor.bb, o: _accessor.postion + 10) }
 }
 
 internal struct Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities: NativeStruct, Verifiable, FlatbuffersInitializable {
@@ -4097,8 +4534,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities: Nat
     let _accessor = Struct(bb: bb, position: o)
     _inputCapabilities = Unity_PolySpatial_Internals_PolySpatialInputCapabilities(_accessor.bb, o: _accessor.postion + 0)
     _outputCapabilities = Unity_PolySpatial_Internals_PolySpatialOutputCapabilities(_accessor.bb, o: _accessor.postion + 16)
-    _environmentCapabilities = Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities(_accessor.bb, o: _accessor.postion + 60)
-    _arCapabilities = Unity_PolySpatial_Internals_PolySpatialARCapabilities(_accessor.bb, o: _accessor.postion + 70)
+    _environmentCapabilities = Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities(_accessor.bb, o: _accessor.postion + 74)
+    _arCapabilities = Unity_PolySpatial_Internals_PolySpatialARCapabilities(_accessor.bb, o: _accessor.postion + 86)
   }
 
   internal init(inputCapabilities: Unity_PolySpatial_Internals_PolySpatialInputCapabilities, outputCapabilities: Unity_PolySpatial_Internals_PolySpatialOutputCapabilities, environmentCapabilities: Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities, arCapabilities: Unity_PolySpatial_Internals_PolySpatialARCapabilities) {
@@ -4135,8 +4572,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities_Muta
 
   internal var inputCapabilities: Unity_PolySpatial_Internals_PolySpatialInputCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialInputCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 0) }
   internal var outputCapabilities: Unity_PolySpatial_Internals_PolySpatialOutputCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialOutputCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 16) }
-  internal var environmentCapabilities: Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 60) }
-  internal var arCapabilities: Unity_PolySpatial_Internals_PolySpatialARCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialARCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 70) }
+  internal var environmentCapabilities: Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialEnvironmentCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 74) }
+  internal var arCapabilities: Unity_PolySpatial_Internals_PolySpatialARCapabilities_Mutable { return Unity_PolySpatial_Internals_PolySpatialARCapabilities_Mutable(_accessor.bb, o: _accessor.postion + 86) }
 }
 
 internal struct Unity_PolySpatial_Internals_PolySpatialVolumeCameraData_v1: NativeStruct, Verifiable, FlatbuffersInitializable {
@@ -6796,9 +7233,10 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData: Nativ
   private var _fogMode: Int32
   private var _fogStartDistance: Float32
   private var _haloStrength: Float32
+  private let padding2__: UInt32 = 0
+  private var _customReflectionTexture: Unity_PolySpatial_Internals_PolySpatialAssetID
   private var _reflectionBounces: Int32
   private var _reflectionIntensity: Float32
-  private let padding2__: UInt32 = 0
   private var _skybox: Unity_PolySpatial_Internals_PolySpatialAssetID
   private var _subtractiveShadowColor: UnityEngine_Color
   private var _sun: Unity_PolySpatial_Internals_PolySpatialInstanceID
@@ -6823,14 +7261,15 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData: Nativ
     _fogMode = _accessor.readBuffer(of: Int32.self, at: 224)
     _fogStartDistance = _accessor.readBuffer(of: Float32.self, at: 228)
     _haloStrength = _accessor.readBuffer(of: Float32.self, at: 232)
-    _reflectionBounces = _accessor.readBuffer(of: Int32.self, at: 236)
-    _reflectionIntensity = _accessor.readBuffer(of: Float32.self, at: 240)
-    _skybox = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 248)
-    _subtractiveShadowColor = UnityEngine_Color(_accessor.bb, o: _accessor.postion + 272)
-    _sun = Unity_PolySpatial_Internals_PolySpatialInstanceID(_accessor.bb, o: _accessor.postion + 288)
+    _customReflectionTexture = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 240)
+    _reflectionBounces = _accessor.readBuffer(of: Int32.self, at: 264)
+    _reflectionIntensity = _accessor.readBuffer(of: Float32.self, at: 268)
+    _skybox = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 272)
+    _subtractiveShadowColor = UnityEngine_Color(_accessor.bb, o: _accessor.postion + 296)
+    _sun = Unity_PolySpatial_Internals_PolySpatialInstanceID(_accessor.bb, o: _accessor.postion + 312)
   }
 
-  internal init(ambientEquatorColor: UnityEngine_Color, ambientGroundColor: UnityEngine_Color, ambientIntensity: Float32, ambientLight: UnityEngine_Color, ambientMode: Unity_PolySpatial_Internals_PolySpatialAmbientMode, ambientProbe: Unity_PolySpatial_Internals_PolySpatialLightProbeData, ambientSkyColor: UnityEngine_Color, defaultReflectionMode: Unity_PolySpatial_Internals_PolySpatialDefaultReflectionMode, defaultReflectionResolution: Int32, flareFadeSpeed: Float32, flareStrength: Float32, fog: Bool, fogColor: UnityEngine_Color, fogDensity: Float32, fogEndDistance: Float32, fogMode: Unity_PolySpatial_Internals_PolySpatialFogMode, fogStartDistance: Float32, haloStrength: Float32, reflectionBounces: Int32, reflectionIntensity: Float32, skybox: Unity_PolySpatial_Internals_PolySpatialAssetID, subtractiveShadowColor: UnityEngine_Color, sun: Unity_PolySpatial_Internals_PolySpatialInstanceID) {
+  internal init(ambientEquatorColor: UnityEngine_Color, ambientGroundColor: UnityEngine_Color, ambientIntensity: Float32, ambientLight: UnityEngine_Color, ambientMode: Unity_PolySpatial_Internals_PolySpatialAmbientMode, ambientProbe: Unity_PolySpatial_Internals_PolySpatialLightProbeData, ambientSkyColor: UnityEngine_Color, defaultReflectionMode: Unity_PolySpatial_Internals_PolySpatialDefaultReflectionMode, defaultReflectionResolution: Int32, flareFadeSpeed: Float32, flareStrength: Float32, fog: Bool, fogColor: UnityEngine_Color, fogDensity: Float32, fogEndDistance: Float32, fogMode: Unity_PolySpatial_Internals_PolySpatialFogMode, fogStartDistance: Float32, haloStrength: Float32, customReflectionTexture: Unity_PolySpatial_Internals_PolySpatialAssetID, reflectionBounces: Int32, reflectionIntensity: Float32, skybox: Unity_PolySpatial_Internals_PolySpatialAssetID, subtractiveShadowColor: UnityEngine_Color, sun: Unity_PolySpatial_Internals_PolySpatialInstanceID) {
     _ambientEquatorColor = ambientEquatorColor
     _ambientGroundColor = ambientGroundColor
     _ambientIntensity = ambientIntensity
@@ -6849,6 +7288,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData: Nativ
     _fogMode = fogMode.value
     _fogStartDistance = fogStartDistance
     _haloStrength = haloStrength
+    _customReflectionTexture = customReflectionTexture
     _reflectionBounces = reflectionBounces
     _reflectionIntensity = reflectionIntensity
     _skybox = skybox
@@ -6875,6 +7315,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData: Nativ
     _fogMode = 0
     _fogStartDistance = 0.0
     _haloStrength = 0.0
+    _customReflectionTexture = Unity_PolySpatial_Internals_PolySpatialAssetID()
     _reflectionBounces = 0
     _reflectionIntensity = 0.0
     _skybox = Unity_PolySpatial_Internals_PolySpatialAssetID()
@@ -6900,6 +7341,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData: Nativ
   internal var fogMode: Unity_PolySpatial_Internals_PolySpatialFogMode { Unity_PolySpatial_Internals_PolySpatialFogMode(rawValue: _fogMode)! }
   internal var fogStartDistance: Float32 { _fogStartDistance }
   internal var haloStrength: Float32 { _haloStrength }
+  internal var customReflectionTexture: Unity_PolySpatial_Internals_PolySpatialAssetID { _customReflectionTexture }
   internal var reflectionBounces: Int32 { _reflectionBounces }
   internal var reflectionIntensity: Float32 { _reflectionIntensity }
   internal var skybox: Unity_PolySpatial_Internals_PolySpatialAssetID { _skybox }
@@ -6939,11 +7381,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialRenderSettingsData_Mutabl
   internal var fogMode: Unity_PolySpatial_Internals_PolySpatialFogMode { return Unity_PolySpatial_Internals_PolySpatialFogMode(rawValue: _accessor.readBuffer(of: Int32.self, at: 224)) ?? .unused }
   internal var fogStartDistance: Float32 { return _accessor.readBuffer(of: Float32.self, at: 228) }
   internal var haloStrength: Float32 { return _accessor.readBuffer(of: Float32.self, at: 232) }
-  internal var reflectionBounces: Int32 { return _accessor.readBuffer(of: Int32.self, at: 236) }
-  internal var reflectionIntensity: Float32 { return _accessor.readBuffer(of: Float32.self, at: 240) }
-  internal var skybox: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 248) }
-  internal var subtractiveShadowColor: UnityEngine_Color_Mutable { return UnityEngine_Color_Mutable(_accessor.bb, o: _accessor.postion + 272) }
-  internal var sun: Unity_PolySpatial_Internals_PolySpatialInstanceID_Mutable { return Unity_PolySpatial_Internals_PolySpatialInstanceID_Mutable(_accessor.bb, o: _accessor.postion + 288) }
+  internal var customReflectionTexture: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 240) }
+  internal var reflectionBounces: Int32 { return _accessor.readBuffer(of: Int32.self, at: 264) }
+  internal var reflectionIntensity: Float32 { return _accessor.readBuffer(of: Float32.self, at: 268) }
+  internal var skybox: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 272) }
+  internal var subtractiveShadowColor: UnityEngine_Color_Mutable { return UnityEngine_Color_Mutable(_accessor.bb, o: _accessor.postion + 296) }
+  internal var sun: Unity_PolySpatial_Internals_PolySpatialInstanceID_Mutable { return Unity_PolySpatial_Internals_PolySpatialInstanceID_Mutable(_accessor.bb, o: _accessor.postion + 312) }
 }
 
 ///  Contains the graphics settings.  See the documentation for
@@ -6952,22 +7395,86 @@ internal struct Unity_PolySpatial_Internals_PolySpatialGraphicsSettingsData: Nat
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
 
-  private var _currentRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID
+  private var _transparencySortMode: Int32
+  private var _transparencySortAxis: UnityEngine_Vector3
+  private var _realtimeDirectRectangularAreaLights: Bool
+  private var _lightsUseLinearIntensity: Bool
+  private var _lightsUseColorTemperature: Bool
+  private let padding0__: UInt8 = 0
+  private var _defaultGateFitMode: Int32
+  private var _useScriptableRenderPipelineBatching: Bool
+  private var _logWhenShaderIsCompiled: Bool
+  private var _disableBuiltinCustomRenderTextureUpdate: Bool
+  private var _cameraRelativeLightCulling: Bool
+  private var _cameraRelativeShadowCulling: Bool
+  private let padding1__: UInt8 = 0
+  private let padding2__: UInt16 = 0
+  private var _lightProbeOutsideHullStrategy: Int32
+  private let padding3__: UInt32 = 0
+  private var _defaultRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID
 
   internal init(_ bb: ByteBuffer, o: Int32) {
     let _accessor = Struct(bb: bb, position: o)
-    _currentRenderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 0)
+    _transparencySortMode = _accessor.readBuffer(of: Int32.self, at: 0)
+    _transparencySortAxis = UnityEngine_Vector3(_accessor.bb, o: _accessor.postion + 4)
+    _realtimeDirectRectangularAreaLights = _accessor.readBuffer(of: Bool.self, at: 16)
+    _lightsUseLinearIntensity = _accessor.readBuffer(of: Bool.self, at: 17)
+    _lightsUseColorTemperature = _accessor.readBuffer(of: Bool.self, at: 18)
+    _defaultGateFitMode = _accessor.readBuffer(of: Int32.self, at: 20)
+    _useScriptableRenderPipelineBatching = _accessor.readBuffer(of: Bool.self, at: 24)
+    _logWhenShaderIsCompiled = _accessor.readBuffer(of: Bool.self, at: 25)
+    _disableBuiltinCustomRenderTextureUpdate = _accessor.readBuffer(of: Bool.self, at: 26)
+    _cameraRelativeLightCulling = _accessor.readBuffer(of: Bool.self, at: 27)
+    _cameraRelativeShadowCulling = _accessor.readBuffer(of: Bool.self, at: 28)
+    _lightProbeOutsideHullStrategy = _accessor.readBuffer(of: Int32.self, at: 32)
+    _defaultRenderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 40)
   }
 
-  internal init(currentRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID) {
-    _currentRenderPipeline = currentRenderPipeline
+  internal init(transparencySortMode: Unity_PolySpatial_Internals_PolySpatialTransparencySortMode, transparencySortAxis: UnityEngine_Vector3, realtimeDirectRectangularAreaLights: Bool, lightsUseLinearIntensity: Bool, lightsUseColorTemperature: Bool, defaultGateFitMode: Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode, useScriptableRenderPipelineBatching: Bool, logWhenShaderIsCompiled: Bool, disableBuiltinCustomRenderTextureUpdate: Bool, cameraRelativeLightCulling: Bool, cameraRelativeShadowCulling: Bool, lightProbeOutsideHullStrategy: Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy, defaultRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID) {
+    _transparencySortMode = transparencySortMode.value
+    _transparencySortAxis = transparencySortAxis
+    _realtimeDirectRectangularAreaLights = realtimeDirectRectangularAreaLights
+    _lightsUseLinearIntensity = lightsUseLinearIntensity
+    _lightsUseColorTemperature = lightsUseColorTemperature
+    _defaultGateFitMode = defaultGateFitMode.value
+    _useScriptableRenderPipelineBatching = useScriptableRenderPipelineBatching
+    _logWhenShaderIsCompiled = logWhenShaderIsCompiled
+    _disableBuiltinCustomRenderTextureUpdate = disableBuiltinCustomRenderTextureUpdate
+    _cameraRelativeLightCulling = cameraRelativeLightCulling
+    _cameraRelativeShadowCulling = cameraRelativeShadowCulling
+    _lightProbeOutsideHullStrategy = lightProbeOutsideHullStrategy.value
+    _defaultRenderPipeline = defaultRenderPipeline
   }
 
   internal init() {
-    _currentRenderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID()
+    _transparencySortMode = 0
+    _transparencySortAxis = UnityEngine_Vector3()
+    _realtimeDirectRectangularAreaLights = false
+    _lightsUseLinearIntensity = false
+    _lightsUseColorTemperature = false
+    _defaultGateFitMode = 0
+    _useScriptableRenderPipelineBatching = false
+    _logWhenShaderIsCompiled = false
+    _disableBuiltinCustomRenderTextureUpdate = false
+    _cameraRelativeLightCulling = false
+    _cameraRelativeShadowCulling = false
+    _lightProbeOutsideHullStrategy = 0
+    _defaultRenderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID()
   }
 
-  internal var currentRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID { _currentRenderPipeline }
+  internal var transparencySortMode: Unity_PolySpatial_Internals_PolySpatialTransparencySortMode { Unity_PolySpatial_Internals_PolySpatialTransparencySortMode(rawValue: _transparencySortMode)! }
+  internal var transparencySortAxis: UnityEngine_Vector3 { _transparencySortAxis }
+  internal var realtimeDirectRectangularAreaLights: Bool { _realtimeDirectRectangularAreaLights }
+  internal var lightsUseLinearIntensity: Bool { _lightsUseLinearIntensity }
+  internal var lightsUseColorTemperature: Bool { _lightsUseColorTemperature }
+  internal var defaultGateFitMode: Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode { Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode(rawValue: _defaultGateFitMode)! }
+  internal var useScriptableRenderPipelineBatching: Bool { _useScriptableRenderPipelineBatching }
+  internal var logWhenShaderIsCompiled: Bool { _logWhenShaderIsCompiled }
+  internal var disableBuiltinCustomRenderTextureUpdate: Bool { _disableBuiltinCustomRenderTextureUpdate }
+  internal var cameraRelativeLightCulling: Bool { _cameraRelativeLightCulling }
+  internal var cameraRelativeShadowCulling: Bool { _cameraRelativeShadowCulling }
+  internal var lightProbeOutsideHullStrategy: Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy { Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy(rawValue: _lightProbeOutsideHullStrategy)! }
+  internal var defaultRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID { _defaultRenderPipeline }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialGraphicsSettingsData.self)
@@ -6984,7 +7491,395 @@ internal struct Unity_PolySpatial_Internals_PolySpatialGraphicsSettingsData_Muta
 
   internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
 
-  internal var currentRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 0) }
+  internal var transparencySortMode: Unity_PolySpatial_Internals_PolySpatialTransparencySortMode { return Unity_PolySpatial_Internals_PolySpatialTransparencySortMode(rawValue: _accessor.readBuffer(of: Int32.self, at: 0)) ?? .default_ }
+  internal var transparencySortAxis: UnityEngine_Vector3_Mutable { return UnityEngine_Vector3_Mutable(_accessor.bb, o: _accessor.postion + 4) }
+  internal var realtimeDirectRectangularAreaLights: Bool { return _accessor.readBuffer(of: Bool.self, at: 16) }
+  internal var lightsUseLinearIntensity: Bool { return _accessor.readBuffer(of: Bool.self, at: 17) }
+  internal var lightsUseColorTemperature: Bool { return _accessor.readBuffer(of: Bool.self, at: 18) }
+  internal var defaultGateFitMode: Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode { return Unity_PolySpatial_Internals_PolySpatialCameraGateFitMode(rawValue: _accessor.readBuffer(of: Int32.self, at: 20)) ?? .none_ }
+  internal var useScriptableRenderPipelineBatching: Bool { return _accessor.readBuffer(of: Bool.self, at: 24) }
+  internal var logWhenShaderIsCompiled: Bool { return _accessor.readBuffer(of: Bool.self, at: 25) }
+  internal var disableBuiltinCustomRenderTextureUpdate: Bool { return _accessor.readBuffer(of: Bool.self, at: 26) }
+  internal var cameraRelativeLightCulling: Bool { return _accessor.readBuffer(of: Bool.self, at: 27) }
+  internal var cameraRelativeShadowCulling: Bool { return _accessor.readBuffer(of: Bool.self, at: 28) }
+  internal var lightProbeOutsideHullStrategy: Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy { return Unity_PolySpatial_Internals_PolySpatialLightProbeOutsideHullStrategy(rawValue: _accessor.readBuffer(of: Int32.self, at: 32)) ?? .kLightProbeSearchTetrahedralHull }
+  internal var defaultRenderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 40) }
+}
+
+///  Contains Time settings that need to be remapped on the host
+internal struct Unity_PolySpatial_Internals_PolySpatialTimeSettingsData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  private var _fixedDeltaTime: Float32
+  private var _maximumDeltaTime: Float32
+  private var _maximumParticleDeltaTime: Float32
+  private var _timeScale: Float32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _fixedDeltaTime = _accessor.readBuffer(of: Float32.self, at: 0)
+    _maximumDeltaTime = _accessor.readBuffer(of: Float32.self, at: 4)
+    _maximumParticleDeltaTime = _accessor.readBuffer(of: Float32.self, at: 8)
+    _timeScale = _accessor.readBuffer(of: Float32.self, at: 12)
+  }
+
+  internal init(fixedDeltaTime: Float32, maximumDeltaTime: Float32, maximumParticleDeltaTime: Float32, timeScale: Float32) {
+    _fixedDeltaTime = fixedDeltaTime
+    _maximumDeltaTime = maximumDeltaTime
+    _maximumParticleDeltaTime = maximumParticleDeltaTime
+    _timeScale = timeScale
+  }
+
+  internal init() {
+    _fixedDeltaTime = 0.0
+    _maximumDeltaTime = 0.0
+    _maximumParticleDeltaTime = 0.0
+    _timeScale = 0.0
+  }
+
+  internal var fixedDeltaTime: Float32 { _fixedDeltaTime }
+  internal var maximumDeltaTime: Float32 { _maximumDeltaTime }
+  internal var maximumParticleDeltaTime: Float32 { _maximumParticleDeltaTime }
+  internal var timeScale: Float32 { _timeScale }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialTimeSettingsData.self)
+  }
+}
+
+///  Contains Time settings that need to be remapped on the host
+internal struct Unity_PolySpatial_Internals_PolySpatialTimeSettingsData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var fixedDeltaTime: Float32 { return _accessor.readBuffer(of: Float32.self, at: 0) }
+  internal var maximumDeltaTime: Float32 { return _accessor.readBuffer(of: Float32.self, at: 4) }
+  internal var maximumParticleDeltaTime: Float32 { return _accessor.readBuffer(of: Float32.self, at: 8) }
+  internal var timeScale: Float32 { return _accessor.readBuffer(of: Float32.self, at: 12) }
+}
+
+///  Contains the QualitySettings. See the documentation for
+///  https://docs.unity3d.com/ScriptReference/QualitySettings.html
+internal struct Unity_PolySpatial_Internals_PolySpatialQualitySettingsData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  private var _pixelLightCount: Int32
+  private var _shadows: Int32
+  private var _shadowProjection: Int32
+  private var _shadowCascades: Int32
+  private var _shadowDistance: Float32
+  private var _shadowResolution: Int32
+  private var _shadowmaskMode: Int32
+  private var _shadowNearPlaneOffset: Float32
+  private var _shadowCascade2Split: Float32
+  private var _shadowCascade4Split: UnityEngine_Vector3
+  private var _lodBias: Float32
+  private var _anisotropicFiltering: Int32
+  private var _globalTextureMipmapLimit: Int32
+  private var _maximumLodlevel: Int32
+  private var _enableLodcrossFade: Bool
+  private var _softParticles: Bool
+  private var _softVegetation: Bool
+  private let padding0__: UInt8 = 0
+  private var _particleRaycastBudget: Int32
+  private var _vSyncCount: Int32
+  private var _realtimeGicpuusage: Int32
+  private var _antiAliasing: Int32
+  private var _asyncUploadTimeSlice: Int32
+  private var _asyncUploadBufferSize: Int32
+  private var _asyncUploadPersistentBuffer: Bool
+  private var _realtimeReflectionProbes: Bool
+  private var _billboardsFaceCameraPosition: Bool
+  private var _useLegacyDetailDistribution: Bool
+  private var _resolutionScalingFixedDpifactor: Float32
+  private var _terrainQualityOverrides: UInt32
+  private var _terrainPixelError: Float32
+  private var _terrainDetailDensityScale: Float32
+  private var _terrainBasemapDistance: Float32
+  private var _terrainDetailDistance: Float32
+  private var _terrainTreeDistance: Float32
+  private var _terrainBillboardStart: Float32
+  private var _terrainFadeLength: Float32
+  private var _terrainMaxTrees: Float32
+  private var _renderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID
+  private var _skinWeights: Int32
+  private var _streamingMipmapsActive: Bool
+  private var _streamingMipmapsAddAllCameras: Bool
+  private let padding1__: UInt16 = 0
+  private var _streamingMipmapsMemoryBudget: Float32
+  private var _streamingMipmapsRenderersPerFrame: Int32
+  private var _streamingMipmapsMaxLevelReduction: Int32
+  private var _streamingMipmapsMaxFileIorequests: Int32
+  private var _maxQueuedFrames: Int32
+  private var _meshLodThreshold: Float32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _pixelLightCount = _accessor.readBuffer(of: Int32.self, at: 0)
+    _shadows = _accessor.readBuffer(of: Int32.self, at: 4)
+    _shadowProjection = _accessor.readBuffer(of: Int32.self, at: 8)
+    _shadowCascades = _accessor.readBuffer(of: Int32.self, at: 12)
+    _shadowDistance = _accessor.readBuffer(of: Float32.self, at: 16)
+    _shadowResolution = _accessor.readBuffer(of: Int32.self, at: 20)
+    _shadowmaskMode = _accessor.readBuffer(of: Int32.self, at: 24)
+    _shadowNearPlaneOffset = _accessor.readBuffer(of: Float32.self, at: 28)
+    _shadowCascade2Split = _accessor.readBuffer(of: Float32.self, at: 32)
+    _shadowCascade4Split = UnityEngine_Vector3(_accessor.bb, o: _accessor.postion + 36)
+    _lodBias = _accessor.readBuffer(of: Float32.self, at: 48)
+    _anisotropicFiltering = _accessor.readBuffer(of: Int32.self, at: 52)
+    _globalTextureMipmapLimit = _accessor.readBuffer(of: Int32.self, at: 56)
+    _maximumLodlevel = _accessor.readBuffer(of: Int32.self, at: 60)
+    _enableLodcrossFade = _accessor.readBuffer(of: Bool.self, at: 64)
+    _softParticles = _accessor.readBuffer(of: Bool.self, at: 65)
+    _softVegetation = _accessor.readBuffer(of: Bool.self, at: 66)
+    _particleRaycastBudget = _accessor.readBuffer(of: Int32.self, at: 68)
+    _vSyncCount = _accessor.readBuffer(of: Int32.self, at: 72)
+    _realtimeGicpuusage = _accessor.readBuffer(of: Int32.self, at: 76)
+    _antiAliasing = _accessor.readBuffer(of: Int32.self, at: 80)
+    _asyncUploadTimeSlice = _accessor.readBuffer(of: Int32.self, at: 84)
+    _asyncUploadBufferSize = _accessor.readBuffer(of: Int32.self, at: 88)
+    _asyncUploadPersistentBuffer = _accessor.readBuffer(of: Bool.self, at: 92)
+    _realtimeReflectionProbes = _accessor.readBuffer(of: Bool.self, at: 93)
+    _billboardsFaceCameraPosition = _accessor.readBuffer(of: Bool.self, at: 94)
+    _useLegacyDetailDistribution = _accessor.readBuffer(of: Bool.self, at: 95)
+    _resolutionScalingFixedDpifactor = _accessor.readBuffer(of: Float32.self, at: 96)
+    _terrainQualityOverrides = _accessor.readBuffer(of: UInt32.self, at: 100)
+    _terrainPixelError = _accessor.readBuffer(of: Float32.self, at: 104)
+    _terrainDetailDensityScale = _accessor.readBuffer(of: Float32.self, at: 108)
+    _terrainBasemapDistance = _accessor.readBuffer(of: Float32.self, at: 112)
+    _terrainDetailDistance = _accessor.readBuffer(of: Float32.self, at: 116)
+    _terrainTreeDistance = _accessor.readBuffer(of: Float32.self, at: 120)
+    _terrainBillboardStart = _accessor.readBuffer(of: Float32.self, at: 124)
+    _terrainFadeLength = _accessor.readBuffer(of: Float32.self, at: 128)
+    _terrainMaxTrees = _accessor.readBuffer(of: Float32.self, at: 132)
+    _renderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID(_accessor.bb, o: _accessor.postion + 136)
+    _skinWeights = _accessor.readBuffer(of: Int32.self, at: 160)
+    _streamingMipmapsActive = _accessor.readBuffer(of: Bool.self, at: 164)
+    _streamingMipmapsAddAllCameras = _accessor.readBuffer(of: Bool.self, at: 165)
+    _streamingMipmapsMemoryBudget = _accessor.readBuffer(of: Float32.self, at: 168)
+    _streamingMipmapsRenderersPerFrame = _accessor.readBuffer(of: Int32.self, at: 172)
+    _streamingMipmapsMaxLevelReduction = _accessor.readBuffer(of: Int32.self, at: 176)
+    _streamingMipmapsMaxFileIorequests = _accessor.readBuffer(of: Int32.self, at: 180)
+    _maxQueuedFrames = _accessor.readBuffer(of: Int32.self, at: 184)
+    _meshLodThreshold = _accessor.readBuffer(of: Float32.self, at: 188)
+  }
+
+  internal init(pixelLightCount: Int32, shadows: Unity_PolySpatial_Internals_PolySpatialShadowQuality, shadowProjection: Unity_PolySpatial_Internals_PolySpatialShadowProjection, shadowCascades: Int32, shadowDistance: Float32, shadowResolution: Unity_PolySpatial_Internals_PolySpatialShadowResolution, shadowmaskMode: Unity_PolySpatial_Internals_PolySpatialShadowmaskMode, shadowNearPlaneOffset: Float32, shadowCascade2Split: Float32, shadowCascade4Split: UnityEngine_Vector3, lodBias: Float32, anisotropicFiltering: Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering, globalTextureMipmapLimit: Int32, maximumLodlevel: Int32, enableLodcrossFade: Bool, softParticles: Bool, softVegetation: Bool, particleRaycastBudget: Int32, vSyncCount: Int32, realtimeGicpuusage: Int32, antiAliasing: Int32, asyncUploadTimeSlice: Int32, asyncUploadBufferSize: Int32, asyncUploadPersistentBuffer: Bool, realtimeReflectionProbes: Bool, billboardsFaceCameraPosition: Bool, useLegacyDetailDistribution: Bool, resolutionScalingFixedDpifactor: Float32, terrainQualityOverrides: Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides, terrainPixelError: Float32, terrainDetailDensityScale: Float32, terrainBasemapDistance: Float32, terrainDetailDistance: Float32, terrainTreeDistance: Float32, terrainBillboardStart: Float32, terrainFadeLength: Float32, terrainMaxTrees: Float32, renderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID, skinWeights: Unity_PolySpatial_Internals_PolySpatialSkinWeights, streamingMipmapsActive: Bool, streamingMipmapsAddAllCameras: Bool, streamingMipmapsMemoryBudget: Float32, streamingMipmapsRenderersPerFrame: Int32, streamingMipmapsMaxLevelReduction: Int32, streamingMipmapsMaxFileIorequests: Int32, maxQueuedFrames: Int32, meshLodThreshold: Float32) {
+    _pixelLightCount = pixelLightCount
+    _shadows = shadows.value
+    _shadowProjection = shadowProjection.value
+    _shadowCascades = shadowCascades
+    _shadowDistance = shadowDistance
+    _shadowResolution = shadowResolution.value
+    _shadowmaskMode = shadowmaskMode.value
+    _shadowNearPlaneOffset = shadowNearPlaneOffset
+    _shadowCascade2Split = shadowCascade2Split
+    _shadowCascade4Split = shadowCascade4Split
+    _lodBias = lodBias
+    _anisotropicFiltering = anisotropicFiltering.value
+    _globalTextureMipmapLimit = globalTextureMipmapLimit
+    _maximumLodlevel = maximumLodlevel
+    _enableLodcrossFade = enableLodcrossFade
+    _softParticles = softParticles
+    _softVegetation = softVegetation
+    _particleRaycastBudget = particleRaycastBudget
+    _vSyncCount = vSyncCount
+    _realtimeGicpuusage = realtimeGicpuusage
+    _antiAliasing = antiAliasing
+    _asyncUploadTimeSlice = asyncUploadTimeSlice
+    _asyncUploadBufferSize = asyncUploadBufferSize
+    _asyncUploadPersistentBuffer = asyncUploadPersistentBuffer
+    _realtimeReflectionProbes = realtimeReflectionProbes
+    _billboardsFaceCameraPosition = billboardsFaceCameraPosition
+    _useLegacyDetailDistribution = useLegacyDetailDistribution
+    _resolutionScalingFixedDpifactor = resolutionScalingFixedDpifactor
+    _terrainQualityOverrides = terrainQualityOverrides.value
+    _terrainPixelError = terrainPixelError
+    _terrainDetailDensityScale = terrainDetailDensityScale
+    _terrainBasemapDistance = terrainBasemapDistance
+    _terrainDetailDistance = terrainDetailDistance
+    _terrainTreeDistance = terrainTreeDistance
+    _terrainBillboardStart = terrainBillboardStart
+    _terrainFadeLength = terrainFadeLength
+    _terrainMaxTrees = terrainMaxTrees
+    _renderPipeline = renderPipeline
+    _skinWeights = skinWeights.value
+    _streamingMipmapsActive = streamingMipmapsActive
+    _streamingMipmapsAddAllCameras = streamingMipmapsAddAllCameras
+    _streamingMipmapsMemoryBudget = streamingMipmapsMemoryBudget
+    _streamingMipmapsRenderersPerFrame = streamingMipmapsRenderersPerFrame
+    _streamingMipmapsMaxLevelReduction = streamingMipmapsMaxLevelReduction
+    _streamingMipmapsMaxFileIorequests = streamingMipmapsMaxFileIorequests
+    _maxQueuedFrames = maxQueuedFrames
+    _meshLodThreshold = meshLodThreshold
+  }
+
+  internal init() {
+    _pixelLightCount = 0
+    _shadows = 0
+    _shadowProjection = 0
+    _shadowCascades = 0
+    _shadowDistance = 0.0
+    _shadowResolution = 0
+    _shadowmaskMode = 0
+    _shadowNearPlaneOffset = 0.0
+    _shadowCascade2Split = 0.0
+    _shadowCascade4Split = UnityEngine_Vector3()
+    _lodBias = 0.0
+    _anisotropicFiltering = 0
+    _globalTextureMipmapLimit = 0
+    _maximumLodlevel = 0
+    _enableLodcrossFade = false
+    _softParticles = false
+    _softVegetation = false
+    _particleRaycastBudget = 0
+    _vSyncCount = 0
+    _realtimeGicpuusage = 0
+    _antiAliasing = 0
+    _asyncUploadTimeSlice = 0
+    _asyncUploadBufferSize = 0
+    _asyncUploadPersistentBuffer = false
+    _realtimeReflectionProbes = false
+    _billboardsFaceCameraPosition = false
+    _useLegacyDetailDistribution = false
+    _resolutionScalingFixedDpifactor = 0.0
+    _terrainQualityOverrides = 0
+    _terrainPixelError = 0.0
+    _terrainDetailDensityScale = 0.0
+    _terrainBasemapDistance = 0.0
+    _terrainDetailDistance = 0.0
+    _terrainTreeDistance = 0.0
+    _terrainBillboardStart = 0.0
+    _terrainFadeLength = 0.0
+    _terrainMaxTrees = 0.0
+    _renderPipeline = Unity_PolySpatial_Internals_PolySpatialAssetID()
+    _skinWeights = 0
+    _streamingMipmapsActive = false
+    _streamingMipmapsAddAllCameras = false
+    _streamingMipmapsMemoryBudget = 0.0
+    _streamingMipmapsRenderersPerFrame = 0
+    _streamingMipmapsMaxLevelReduction = 0
+    _streamingMipmapsMaxFileIorequests = 0
+    _maxQueuedFrames = 0
+    _meshLodThreshold = 0.0
+  }
+
+  internal var pixelLightCount: Int32 { _pixelLightCount }
+  internal var shadows: Unity_PolySpatial_Internals_PolySpatialShadowQuality { Unity_PolySpatial_Internals_PolySpatialShadowQuality(rawValue: _shadows)! }
+  internal var shadowProjection: Unity_PolySpatial_Internals_PolySpatialShadowProjection { Unity_PolySpatial_Internals_PolySpatialShadowProjection(rawValue: _shadowProjection)! }
+  internal var shadowCascades: Int32 { _shadowCascades }
+  internal var shadowDistance: Float32 { _shadowDistance }
+  internal var shadowResolution: Unity_PolySpatial_Internals_PolySpatialShadowResolution { Unity_PolySpatial_Internals_PolySpatialShadowResolution(rawValue: _shadowResolution)! }
+  internal var shadowmaskMode: Unity_PolySpatial_Internals_PolySpatialShadowmaskMode { Unity_PolySpatial_Internals_PolySpatialShadowmaskMode(rawValue: _shadowmaskMode)! }
+  internal var shadowNearPlaneOffset: Float32 { _shadowNearPlaneOffset }
+  internal var shadowCascade2Split: Float32 { _shadowCascade2Split }
+  internal var shadowCascade4Split: UnityEngine_Vector3 { _shadowCascade4Split }
+  internal var lodBias: Float32 { _lodBias }
+  internal var anisotropicFiltering: Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering { Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering(rawValue: _anisotropicFiltering)! }
+  internal var globalTextureMipmapLimit: Int32 { _globalTextureMipmapLimit }
+  internal var maximumLodlevel: Int32 { _maximumLodlevel }
+  internal var enableLodcrossFade: Bool { _enableLodcrossFade }
+  internal var softParticles: Bool { _softParticles }
+  internal var softVegetation: Bool { _softVegetation }
+  internal var particleRaycastBudget: Int32 { _particleRaycastBudget }
+  internal var vSyncCount: Int32 { _vSyncCount }
+  internal var realtimeGicpuusage: Int32 { _realtimeGicpuusage }
+  internal var antiAliasing: Int32 { _antiAliasing }
+  internal var asyncUploadTimeSlice: Int32 { _asyncUploadTimeSlice }
+  internal var asyncUploadBufferSize: Int32 { _asyncUploadBufferSize }
+  internal var asyncUploadPersistentBuffer: Bool { _asyncUploadPersistentBuffer }
+  internal var realtimeReflectionProbes: Bool { _realtimeReflectionProbes }
+  internal var billboardsFaceCameraPosition: Bool { _billboardsFaceCameraPosition }
+  internal var useLegacyDetailDistribution: Bool { _useLegacyDetailDistribution }
+  internal var resolutionScalingFixedDpifactor: Float32 { _resolutionScalingFixedDpifactor }
+  internal var terrainQualityOverrides: Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides { Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: _terrainQualityOverrides) }
+  internal var terrainPixelError: Float32 { _terrainPixelError }
+  internal var terrainDetailDensityScale: Float32 { _terrainDetailDensityScale }
+  internal var terrainBasemapDistance: Float32 { _terrainBasemapDistance }
+  internal var terrainDetailDistance: Float32 { _terrainDetailDistance }
+  internal var terrainTreeDistance: Float32 { _terrainTreeDistance }
+  internal var terrainBillboardStart: Float32 { _terrainBillboardStart }
+  internal var terrainFadeLength: Float32 { _terrainFadeLength }
+  internal var terrainMaxTrees: Float32 { _terrainMaxTrees }
+  internal var renderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID { _renderPipeline }
+  internal var skinWeights: Unity_PolySpatial_Internals_PolySpatialSkinWeights { Unity_PolySpatial_Internals_PolySpatialSkinWeights(rawValue: _skinWeights)! }
+  internal var streamingMipmapsActive: Bool { _streamingMipmapsActive }
+  internal var streamingMipmapsAddAllCameras: Bool { _streamingMipmapsAddAllCameras }
+  internal var streamingMipmapsMemoryBudget: Float32 { _streamingMipmapsMemoryBudget }
+  internal var streamingMipmapsRenderersPerFrame: Int32 { _streamingMipmapsRenderersPerFrame }
+  internal var streamingMipmapsMaxLevelReduction: Int32 { _streamingMipmapsMaxLevelReduction }
+  internal var streamingMipmapsMaxFileIorequests: Int32 { _streamingMipmapsMaxFileIorequests }
+  internal var maxQueuedFrames: Int32 { _maxQueuedFrames }
+  internal var meshLodThreshold: Float32 { _meshLodThreshold }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialQualitySettingsData.self)
+  }
+}
+
+///  Contains the QualitySettings. See the documentation for
+///  https://docs.unity3d.com/ScriptReference/QualitySettings.html
+internal struct Unity_PolySpatial_Internals_PolySpatialQualitySettingsData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var pixelLightCount: Int32 { return _accessor.readBuffer(of: Int32.self, at: 0) }
+  internal var shadows: Unity_PolySpatial_Internals_PolySpatialShadowQuality { return Unity_PolySpatial_Internals_PolySpatialShadowQuality(rawValue: _accessor.readBuffer(of: Int32.self, at: 4)) ?? .disable }
+  internal var shadowProjection: Unity_PolySpatial_Internals_PolySpatialShadowProjection { return Unity_PolySpatial_Internals_PolySpatialShadowProjection(rawValue: _accessor.readBuffer(of: Int32.self, at: 8)) ?? .closeFit }
+  internal var shadowCascades: Int32 { return _accessor.readBuffer(of: Int32.self, at: 12) }
+  internal var shadowDistance: Float32 { return _accessor.readBuffer(of: Float32.self, at: 16) }
+  internal var shadowResolution: Unity_PolySpatial_Internals_PolySpatialShadowResolution { return Unity_PolySpatial_Internals_PolySpatialShadowResolution(rawValue: _accessor.readBuffer(of: Int32.self, at: 20)) ?? .low }
+  internal var shadowmaskMode: Unity_PolySpatial_Internals_PolySpatialShadowmaskMode { return Unity_PolySpatial_Internals_PolySpatialShadowmaskMode(rawValue: _accessor.readBuffer(of: Int32.self, at: 24)) ?? .shadowmask }
+  internal var shadowNearPlaneOffset: Float32 { return _accessor.readBuffer(of: Float32.self, at: 28) }
+  internal var shadowCascade2Split: Float32 { return _accessor.readBuffer(of: Float32.self, at: 32) }
+  internal var shadowCascade4Split: UnityEngine_Vector3_Mutable { return UnityEngine_Vector3_Mutable(_accessor.bb, o: _accessor.postion + 36) }
+  internal var lodBias: Float32 { return _accessor.readBuffer(of: Float32.self, at: 48) }
+  internal var anisotropicFiltering: Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering { return Unity_PolySpatial_Internals_PolySpatialAnistropicFiltering(rawValue: _accessor.readBuffer(of: Int32.self, at: 52)) ?? .disable }
+  internal var globalTextureMipmapLimit: Int32 { return _accessor.readBuffer(of: Int32.self, at: 56) }
+  internal var maximumLodlevel: Int32 { return _accessor.readBuffer(of: Int32.self, at: 60) }
+  internal var enableLodcrossFade: Bool { return _accessor.readBuffer(of: Bool.self, at: 64) }
+  internal var softParticles: Bool { return _accessor.readBuffer(of: Bool.self, at: 65) }
+  internal var softVegetation: Bool { return _accessor.readBuffer(of: Bool.self, at: 66) }
+  internal var particleRaycastBudget: Int32 { return _accessor.readBuffer(of: Int32.self, at: 68) }
+  internal var vSyncCount: Int32 { return _accessor.readBuffer(of: Int32.self, at: 72) }
+  internal var realtimeGicpuusage: Int32 { return _accessor.readBuffer(of: Int32.self, at: 76) }
+  internal var antiAliasing: Int32 { return _accessor.readBuffer(of: Int32.self, at: 80) }
+  internal var asyncUploadTimeSlice: Int32 { return _accessor.readBuffer(of: Int32.self, at: 84) }
+  internal var asyncUploadBufferSize: Int32 { return _accessor.readBuffer(of: Int32.self, at: 88) }
+  internal var asyncUploadPersistentBuffer: Bool { return _accessor.readBuffer(of: Bool.self, at: 92) }
+  internal var realtimeReflectionProbes: Bool { return _accessor.readBuffer(of: Bool.self, at: 93) }
+  internal var billboardsFaceCameraPosition: Bool { return _accessor.readBuffer(of: Bool.self, at: 94) }
+  internal var useLegacyDetailDistribution: Bool { return _accessor.readBuffer(of: Bool.self, at: 95) }
+  internal var resolutionScalingFixedDpifactor: Float32 { return _accessor.readBuffer(of: Float32.self, at: 96) }
+  internal var terrainQualityOverrides: Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides { return Unity_PolySpatial_Internals_PolySpatialTerrainQualityOverrides(rawValue: _accessor.readBuffer(of: UInt32.self, at: 100))  }
+  internal var terrainPixelError: Float32 { return _accessor.readBuffer(of: Float32.self, at: 104) }
+  internal var terrainDetailDensityScale: Float32 { return _accessor.readBuffer(of: Float32.self, at: 108) }
+  internal var terrainBasemapDistance: Float32 { return _accessor.readBuffer(of: Float32.self, at: 112) }
+  internal var terrainDetailDistance: Float32 { return _accessor.readBuffer(of: Float32.self, at: 116) }
+  internal var terrainTreeDistance: Float32 { return _accessor.readBuffer(of: Float32.self, at: 120) }
+  internal var terrainBillboardStart: Float32 { return _accessor.readBuffer(of: Float32.self, at: 124) }
+  internal var terrainFadeLength: Float32 { return _accessor.readBuffer(of: Float32.self, at: 128) }
+  internal var terrainMaxTrees: Float32 { return _accessor.readBuffer(of: Float32.self, at: 132) }
+  internal var renderPipeline: Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable { return Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.postion + 136) }
+  internal var skinWeights: Unity_PolySpatial_Internals_PolySpatialSkinWeights { return Unity_PolySpatial_Internals_PolySpatialSkinWeights(rawValue: _accessor.readBuffer(of: Int32.self, at: 160)) ?? .none_ }
+  internal var streamingMipmapsActive: Bool { return _accessor.readBuffer(of: Bool.self, at: 164) }
+  internal var streamingMipmapsAddAllCameras: Bool { return _accessor.readBuffer(of: Bool.self, at: 165) }
+  internal var streamingMipmapsMemoryBudget: Float32 { return _accessor.readBuffer(of: Float32.self, at: 168) }
+  internal var streamingMipmapsRenderersPerFrame: Int32 { return _accessor.readBuffer(of: Int32.self, at: 172) }
+  internal var streamingMipmapsMaxLevelReduction: Int32 { return _accessor.readBuffer(of: Int32.self, at: 176) }
+  internal var streamingMipmapsMaxFileIorequests: Int32 { return _accessor.readBuffer(of: Int32.self, at: 180) }
+  internal var maxQueuedFrames: Int32 { return _accessor.readBuffer(of: Int32.self, at: 184) }
+  internal var meshLodThreshold: Float32 { return _accessor.readBuffer(of: Float32.self, at: 188) }
 }
 
 internal struct Unity_PolySpatial_Internals_PolySpatialParticleBurst: NativeStruct, Verifiable, FlatbuffersInitializable {
@@ -7502,6 +8397,209 @@ internal struct Unity_PolySpatial_Internals_PolySpatialHoverEffectData_Mutable: 
   internal var intensityMultiplier: Float32 { return _accessor.readBuffer(of: Float32.self, at: 36) }
   internal var fadeInDuration: Float32 { return _accessor.readBuffer(of: Float32.self, at: 40) }
   internal var fadeOutDuration: Float32 { return _accessor.readBuffer(of: Float32.self, at: 44) }
+}
+
+///  Represents the configuration of a single render parameter within a pass.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  ///  The relative pose from the device anchor to the eye.
+  private var _deviceAnchorToEyePose: UnityEngine_Pose
+  ///  The projection matrix to use for the render.
+  private var _projection: UnityEngine_Matrix4x4
+  ///  The slice to target within the render texture.
+  private var _textureArraySlice: Int32
+  ///  The viewport to target within the render texture.
+  private var _viewport: UnityEngine_Rect
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _deviceAnchorToEyePose = UnityEngine_Pose(_accessor.bb, o: _accessor.postion + 0)
+    _projection = UnityEngine_Matrix4x4(_accessor.bb, o: _accessor.postion + 28)
+    _textureArraySlice = _accessor.readBuffer(of: Int32.self, at: 92)
+    _viewport = UnityEngine_Rect(_accessor.bb, o: _accessor.postion + 96)
+  }
+
+  internal init(deviceAnchorToEyePose: UnityEngine_Pose, projection: UnityEngine_Matrix4x4, textureArraySlice: Int32, viewport: UnityEngine_Rect) {
+    _deviceAnchorToEyePose = deviceAnchorToEyePose
+    _projection = projection
+    _textureArraySlice = textureArraySlice
+    _viewport = viewport
+  }
+
+  internal init() {
+    _deviceAnchorToEyePose = UnityEngine_Pose()
+    _projection = UnityEngine_Matrix4x4()
+    _textureArraySlice = 0
+    _viewport = UnityEngine_Rect()
+  }
+
+  ///  The relative pose from the device anchor to the eye.
+  internal var deviceAnchorToEyePose: UnityEngine_Pose { _deviceAnchorToEyePose }
+  ///  The projection matrix to use for the render.
+  internal var projection: UnityEngine_Matrix4x4 { _projection }
+  ///  The slice to target within the render texture.
+  internal var textureArraySlice: Int32 { _textureArraySlice }
+  ///  The viewport to target within the render texture.
+  internal var viewport: UnityEngine_Rect { _viewport }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData.self)
+  }
+}
+
+///  Represents the configuration of a single render parameter within a pass.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var deviceAnchorToEyePose: UnityEngine_Pose_Mutable { return UnityEngine_Pose_Mutable(_accessor.bb, o: _accessor.postion + 0) }
+  internal var projection: UnityEngine_Matrix4x4_Mutable { return UnityEngine_Matrix4x4_Mutable(_accessor.bb, o: _accessor.postion + 28) }
+  internal var textureArraySlice: Int32 { return _accessor.readBuffer(of: Int32.self, at: 92) }
+  internal var viewport: UnityEngine_Rect_Mutable { return UnityEngine_Rect_Mutable(_accessor.bb, o: _accessor.postion + 96) }
+}
+
+///  Represents the configuration of a single culling pass.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRCullingPassData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  ///  The relative pose from the device anchor to the culling origin.
+  private var _deviceAnchorToCullingPose: UnityEngine_Pose
+  ///  The projection matrix to use for culling.
+  private var _projection: UnityEngine_Matrix4x4
+  ///  The stereo separation between the eyes.
+  private var _separation: Float32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _deviceAnchorToCullingPose = UnityEngine_Pose(_accessor.bb, o: _accessor.postion + 0)
+    _projection = UnityEngine_Matrix4x4(_accessor.bb, o: _accessor.postion + 28)
+    _separation = _accessor.readBuffer(of: Float32.self, at: 92)
+  }
+
+  internal init(deviceAnchorToCullingPose: UnityEngine_Pose, projection: UnityEngine_Matrix4x4, separation: Float32) {
+    _deviceAnchorToCullingPose = deviceAnchorToCullingPose
+    _projection = projection
+    _separation = separation
+  }
+
+  internal init() {
+    _deviceAnchorToCullingPose = UnityEngine_Pose()
+    _projection = UnityEngine_Matrix4x4()
+    _separation = 0.0
+  }
+
+  ///  The relative pose from the device anchor to the culling origin.
+  internal var deviceAnchorToCullingPose: UnityEngine_Pose { _deviceAnchorToCullingPose }
+  ///  The projection matrix to use for culling.
+  internal var projection: UnityEngine_Matrix4x4 { _projection }
+  ///  The stereo separation between the eyes.
+  internal var separation: Float32 { _separation }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialXRCullingPassData.self)
+  }
+}
+
+///  Represents the configuration of a single culling pass.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRCullingPassData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var deviceAnchorToCullingPose: UnityEngine_Pose_Mutable { return UnityEngine_Pose_Mutable(_accessor.bb, o: _accessor.postion + 0) }
+  internal var projection: UnityEngine_Matrix4x4_Mutable { return UnityEngine_Matrix4x4_Mutable(_accessor.bb, o: _accessor.postion + 28) }
+  internal var separation: Float32 { return _accessor.readBuffer(of: Float32.self, at: 92) }
+}
+
+///  Describes a render target to use for the XR display.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  ///  The color format of the render target.
+  private var _colorFormat: Int32
+  ///  The depth format of the render target.
+  private var _depthFormat: Int32
+  ///  The width of the RenderTexture.
+  private var _width: Int32
+  ///  The height of the RenderTexture.
+  private var _height: Int32
+  ///  The array length of the RenderTexture, if it's an array texture.
+  private var _textureArrayLength: Int32
+  ///  The set of flags indicating additional render target properties.
+  private var _flags: UInt32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _colorFormat = _accessor.readBuffer(of: Int32.self, at: 0)
+    _depthFormat = _accessor.readBuffer(of: Int32.self, at: 4)
+    _width = _accessor.readBuffer(of: Int32.self, at: 8)
+    _height = _accessor.readBuffer(of: Int32.self, at: 12)
+    _textureArrayLength = _accessor.readBuffer(of: Int32.self, at: 16)
+    _flags = _accessor.readBuffer(of: UInt32.self, at: 20)
+  }
+
+  internal init(colorFormat: Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat, depthFormat: Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat, width: Int32, height: Int32, textureArrayLength: Int32, flags: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags) {
+    _colorFormat = colorFormat.value
+    _depthFormat = depthFormat.value
+    _width = width
+    _height = height
+    _textureArrayLength = textureArrayLength
+    _flags = flags.value
+  }
+
+  internal init() {
+    _colorFormat = 0
+    _depthFormat = 0
+    _width = 0
+    _height = 0
+    _textureArrayLength = 0
+    _flags = 0
+  }
+
+  ///  The color format of the render target.
+  internal var colorFormat: Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat { Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat(rawValue: _colorFormat)! }
+  ///  The depth format of the render target.
+  internal var depthFormat: Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat { Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat(rawValue: _depthFormat)! }
+  ///  The width of the RenderTexture.
+  internal var width: Int32 { _width }
+  ///  The height of the RenderTexture.
+  internal var height: Int32 { _height }
+  ///  The array length of the RenderTexture, if it's an array texture.
+  internal var textureArrayLength: Int32 { _textureArrayLength }
+  ///  The set of flags indicating additional render target properties.
+  internal var flags: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags { Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags(rawValue: _flags) }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData.self)
+  }
+}
+
+///  Describes a render target to use for the XR display.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var colorFormat: Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat { return Unity_PolySpatial_Internals_PolySpatialXRRenderTextureFormat(rawValue: _accessor.readBuffer(of: Int32.self, at: 0)) ?? .rgba32 }
+  internal var depthFormat: Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat { return Unity_PolySpatial_Internals_PolySpatialXRDepthTextureFormat(rawValue: _accessor.readBuffer(of: Int32.self, at: 4)) ?? .use24bitOrGreater }
+  internal var width: Int32 { return _accessor.readBuffer(of: Int32.self, at: 8) }
+  internal var height: Int32 { return _accessor.readBuffer(of: Int32.self, at: 12) }
+  internal var textureArrayLength: Int32 { return _accessor.readBuffer(of: Int32.self, at: 16) }
+  internal var flags: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags { return Unity_PolySpatial_Internals_PolySpatialXRRenderTargetFlags(rawValue: _accessor.readBuffer(of: UInt32.self, at: 20))  }
 }
 
 ///  This type represents  a slimmed down version of the
@@ -8259,6 +9357,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialSessionData: FlatBufferOb
     case productName = 4
     case capabilities = 6
     case particleReplicationMode = 8
+    case audioSettings = 10
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -8272,21 +9371,28 @@ internal struct Unity_PolySpatial_Internals_PolySpatialSessionData: FlatBufferOb
   ///  The way in which particles will be encoded & replicated over the polyspatial protocol - for example,
   ///  by replicating properties and rendering locally, baking to mesh & materia, etc.
   internal var particleReplicationMode: Unity_PolySpatial_Internals_ParticleReplicationMode { let o = _accessor.offset(VTOFFSET.particleReplicationMode.v); return o == 0 ? .replicateProperties : Unity_PolySpatial_Internals_ParticleReplicationMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .replicateProperties }
-  internal static func startPolySpatialSessionData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  ///  Audio settings, nominally of the sim-side, since we need to sync the host's audio
+  ///  setting to that of the sim's.
+  internal var audioSettings: Unity_PolySpatial_Internals_PolySpatialAudioSettings? { let o = _accessor.offset(VTOFFSET.audioSettings.v); return o == 0 ? nil : _accessor.readBuffer(of: Unity_PolySpatial_Internals_PolySpatialAudioSettings.self, at: o) }
+  internal var mutableAudioSettings: Unity_PolySpatial_Internals_PolySpatialAudioSettings_Mutable? { let o = _accessor.offset(VTOFFSET.audioSettings.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialAudioSettings_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal static func startPolySpatialSessionData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
   internal static func add(productName: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: productName, at: VTOFFSET.productName.p) }
   internal static func add(capabilities: Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities?, _ fbb: inout FlatBufferBuilder) { guard let capabilities = capabilities else { return }; fbb.create(struct: capabilities, position: VTOFFSET.capabilities.p) }
   internal static func add(particleReplicationMode: Unity_PolySpatial_Internals_ParticleReplicationMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: particleReplicationMode.rawValue, def: 0, at: VTOFFSET.particleReplicationMode.p) }
+  internal static func add(audioSettings: Unity_PolySpatial_Internals_PolySpatialAudioSettings?, _ fbb: inout FlatBufferBuilder) { guard let audioSettings = audioSettings else { return }; fbb.create(struct: audioSettings, position: VTOFFSET.audioSettings.p) }
   internal static func endPolySpatialSessionData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialSessionData(
     _ fbb: inout FlatBufferBuilder,
     productNameOffset productName: Offset = Offset(),
     capabilities: Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities? = nil,
-    particleReplicationMode: Unity_PolySpatial_Internals_ParticleReplicationMode = .replicateProperties
+    particleReplicationMode: Unity_PolySpatial_Internals_ParticleReplicationMode = .replicateProperties,
+    audioSettings: Unity_PolySpatial_Internals_PolySpatialAudioSettings? = nil
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialSessionData.startPolySpatialSessionData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialSessionData.add(productName: productName, &fbb)
     Unity_PolySpatial_Internals_PolySpatialSessionData.add(capabilities: capabilities, &fbb)
     Unity_PolySpatial_Internals_PolySpatialSessionData.add(particleReplicationMode: particleReplicationMode, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialSessionData.add(audioSettings: audioSettings, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialSessionData.endPolySpatialSessionData(&fbb, start: __start)
   }
 
@@ -8295,6 +9401,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialSessionData: FlatBufferOb
     try _v.visit(field: VTOFFSET.productName.p, fieldName: "productName", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.capabilities.p, fieldName: "capabilities", required: false, type: Unity_PolySpatial_Internals_PolySpatialPlatformCapabilities.self)
     try _v.visit(field: VTOFFSET.particleReplicationMode.p, fieldName: "particleReplicationMode", required: false, type: Unity_PolySpatial_Internals_ParticleReplicationMode.self)
+    try _v.visit(field: VTOFFSET.audioSettings.p, fieldName: "audioSettings", required: false, type: Unity_PolySpatial_Internals_PolySpatialAudioSettings.self)
     _v.finish()
   }
 }
@@ -9220,24 +10327,27 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
 
   private enum VTOFFSET: VOffset {
     case shape = 4
-    case width = 6
-    case height = 8
-    case depth = 10
-    case filterMode = 12
-    case wrapModeU = 14
-    case wrapModeV = 16
-    case wrapModeW = 18
-    case imageSize = 20
-    case mipCount = 22
-    case fallbackMode = 24
-    case unityGraphicsFormat = 26
-    case depthStencilFormat = 28
-    case mips = 30
+    case dimension = 6
+    case width = 8
+    case height = 10
+    case depth = 12
+    case filterMode = 14
+    case wrapModeU = 16
+    case wrapModeV = 18
+    case wrapModeW = 20
+    case imageSize = 22
+    case mipCount = 24
+    case fallbackMode = 26
+    case transferMode = 28
+    case unityGraphicsFormat = 30
+    case depthStencilFormat = 32
+    case mips = 34
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
   internal var shape: Unity_PolySpatial_Internals_PolySpatialTextureShape { let o = _accessor.offset(VTOFFSET.shape.v); return o == 0 ? .texture2D : Unity_PolySpatial_Internals_PolySpatialTextureShape(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .texture2D }
+  internal var dimension: Unity_PolySpatial_Internals_PolySpatialTextureDimension { let o = _accessor.offset(VTOFFSET.dimension.v); return o == 0 ? .none_ : Unity_PolySpatial_Internals_PolySpatialTextureDimension(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .none_ }
   internal var width: Int32 { let o = _accessor.offset(VTOFFSET.width.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   internal var height: Int32 { let o = _accessor.offset(VTOFFSET.height.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   internal var depth: Int32 { let o = _accessor.offset(VTOFFSET.depth.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
@@ -9248,6 +10358,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
   internal var imageSize: UInt64 { let o = _accessor.offset(VTOFFSET.imageSize.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt64.self, at: o) }
   internal var mipCount: Int32 { let o = _accessor.offset(VTOFFSET.mipCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   internal var fallbackMode: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode { let o = _accessor.offset(VTOFFSET.fallbackMode.v); return o == 0 ? .none_ : Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .none_ }
+  internal var transferMode: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode { let o = _accessor.offset(VTOFFSET.transferMode.v); return o == 0 ? .raw : Unity_PolySpatial_Internals_PolySpatialTextureTransferMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .raw }
   internal var unityGraphicsFormat: UInt32 { let o = _accessor.offset(VTOFFSET.unityGraphicsFormat.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt32.self, at: o) }
   internal var depthStencilFormat: UInt32 { let o = _accessor.offset(VTOFFSET.depthStencilFormat.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt32.self, at: o) }
   internal var hasMips: Bool { let o = _accessor.offset(VTOFFSET.mips.v); return o == 0 ? false : true }
@@ -9255,8 +10366,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
   internal func mips(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureMipData? { let o = _accessor.offset(VTOFFSET.mips.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialTextureMipData.self, offset: _accessor.vector(at: o) + index * 32) }
   internal var mipsAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialTextureMipData>? { return _accessor.getBufferPointer(at: VTOFFSET.mips.v) }
   internal func mutableMips(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureMipData_Mutable? { let o = _accessor.offset(VTOFFSET.mips.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialTextureMipData_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 32) }
-  internal static func startPolySpatialTextureData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 14) }
+  internal static func startPolySpatialTextureData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 16) }
   internal static func add(shape: Unity_PolySpatial_Internals_PolySpatialTextureShape, _ fbb: inout FlatBufferBuilder) { fbb.add(element: shape.rawValue, def: 0, at: VTOFFSET.shape.p) }
+  internal static func add(dimension: Unity_PolySpatial_Internals_PolySpatialTextureDimension, _ fbb: inout FlatBufferBuilder) { fbb.add(element: dimension.rawValue, def: 0, at: VTOFFSET.dimension.p) }
   internal static func add(width: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: width, def: 0, at: VTOFFSET.width.p) }
   internal static func add(height: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: height, def: 0, at: VTOFFSET.height.p) }
   internal static func add(depth: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: depth, def: 0, at: VTOFFSET.depth.p) }
@@ -9267,6 +10379,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
   internal static func add(imageSize: UInt64, _ fbb: inout FlatBufferBuilder) { fbb.add(element: imageSize, def: 0, at: VTOFFSET.imageSize.p) }
   internal static func add(mipCount: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: mipCount, def: 0, at: VTOFFSET.mipCount.p) }
   internal static func add(fallbackMode: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: fallbackMode.rawValue, def: 0, at: VTOFFSET.fallbackMode.p) }
+  internal static func add(transferMode: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: transferMode.rawValue, def: 0, at: VTOFFSET.transferMode.p) }
   internal static func add(unityGraphicsFormat: UInt32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: unityGraphicsFormat, def: 0, at: VTOFFSET.unityGraphicsFormat.p) }
   internal static func add(depthStencilFormat: UInt32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: depthStencilFormat, def: 0, at: VTOFFSET.depthStencilFormat.p) }
   internal static func addVectorOf(mips: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: mips, at: VTOFFSET.mips.p) }
@@ -9277,6 +10390,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
   internal static func createPolySpatialTextureData(
     _ fbb: inout FlatBufferBuilder,
     shape: Unity_PolySpatial_Internals_PolySpatialTextureShape = .texture2D,
+    dimension: Unity_PolySpatial_Internals_PolySpatialTextureDimension = .none_,
     width: Int32 = 0,
     height: Int32 = 0,
     depth: Int32 = 0,
@@ -9287,12 +10401,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
     imageSize: UInt64 = 0,
     mipCount: Int32 = 0,
     fallbackMode: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode = .none_,
+    transferMode: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode = .raw,
     unityGraphicsFormat: UInt32 = 0,
     depthStencilFormat: UInt32 = 0,
     mipsVectorOffset mips: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialTextureData.startPolySpatialTextureData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(shape: shape, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialTextureData.add(dimension: dimension, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(width: width, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(height: height, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(depth: depth, &fbb)
@@ -9303,6 +10419,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(imageSize: imageSize, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(mipCount: mipCount, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(fallbackMode: fallbackMode, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialTextureData.add(transferMode: transferMode, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(unityGraphicsFormat: unityGraphicsFormat, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.add(depthStencilFormat: depthStencilFormat, &fbb)
     Unity_PolySpatial_Internals_PolySpatialTextureData.addVectorOf(mips: mips, &fbb)
@@ -9312,6 +10429,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.shape.p, fieldName: "shape", required: false, type: Unity_PolySpatial_Internals_PolySpatialTextureShape.self)
+    try _v.visit(field: VTOFFSET.dimension.p, fieldName: "dimension", required: false, type: Unity_PolySpatial_Internals_PolySpatialTextureDimension.self)
     try _v.visit(field: VTOFFSET.width.p, fieldName: "width", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.height.p, fieldName: "height", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.depth.p, fieldName: "depth", required: false, type: Int32.self)
@@ -9322,6 +10440,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialTextureData: FlatBufferOb
     try _v.visit(field: VTOFFSET.imageSize.p, fieldName: "imageSize", required: false, type: UInt64.self)
     try _v.visit(field: VTOFFSET.mipCount.p, fieldName: "mipCount", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.fallbackMode.p, fieldName: "fallbackMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialTextureFallbackMode.self)
+    try _v.visit(field: VTOFFSET.transferMode.p, fieldName: "transferMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialTextureTransferMode.self)
     try _v.visit(field: VTOFFSET.unityGraphicsFormat.p, fieldName: "unityGraphicsFormat", required: false, type: UInt32.self)
     try _v.visit(field: VTOFFSET.depthStencilFormat.p, fieldName: "depthStencilFormat", required: false, type: UInt32.self)
     try _v.visit(field: VTOFFSET.mips.p, fieldName: "mips", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialTextureMipData, Unity_PolySpatial_Internals_PolySpatialTextureMipData>>.self)
@@ -9424,9 +10543,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
     case matrix4x4Properties = 64
     case textureProperties = 66
     case textureTransformProperties = 68
-    case hasProperties = 70
-    case keywordValues = 72
-    case enableInstancing = 74
+    case propertyArrayCounts = 70
+    case propertyCount = 72
+    case keywordValues = 74
+    case enableInstancing = 76
+    case passEnabledValues = 78
+    case renderTypeOverrideTag = 80
+    case renderQueue = 82
+    case illuminationFlags = 84
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -9547,12 +10671,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
   internal func textureTransformProperties(at index: Int32) -> UnityEngine_Vector4? { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? nil : _accessor.directRead(of: UnityEngine_Vector4.self, offset: _accessor.vector(at: o) + index * 16) }
   internal var textureTransformPropertiesAsBuffer: UnsafeBufferPointer<UnityEngine_Vector4>? { return _accessor.getBufferPointer(at: VTOFFSET.textureTransformProperties.v) }
   internal func mutableTextureTransformProperties(at index: Int32) -> UnityEngine_Vector4_Mutable? { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? nil : UnityEngine_Vector4_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 16) }
-  ///  For each property in all the lists, whether that property is actually set.
-  internal var hasHasProperties: Bool { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? false : true }
-  internal var hasPropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  internal func hasProperties(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
-  internal var hasProperties: [Bool] { return _accessor.getVector(at: VTOFFSET.hasProperties.v) ?? [] }
-  internal var hasPropertiesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.hasProperties.v) }
+  ///  For each property, the number of values in its array (or zero if unset).
+  internal var hasPropertyArrayCounts: Bool { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? false : true }
+  internal var propertyArrayCountsCount: Int32 { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func propertyArrayCounts(at index: Int32) -> Int32 { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? 0 : _accessor.directRead(of: Int32.self, offset: _accessor.vector(at: o) + index * 4) }
+  internal var propertyArrayCounts: [Int32] { return _accessor.getVector(at: VTOFFSET.propertyArrayCounts.v) ?? [] }
+  internal var propertyArrayCountsAsBuffer: UnsafeBufferPointer<Int32>? { return _accessor.getBufferPointer(at: VTOFFSET.propertyArrayCounts.v) }
+  ///  The material's total set property count (including types we don't support, like buffers).
+  internal var propertyCount: Int32 { let o = _accessor.offset(VTOFFSET.propertyCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   ///  The set of keyword values properties that are to be enabled/disabled for
   ///  the shader used to render this material.
   internal var hasKeywordValues: Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? false : true }
@@ -9562,7 +10688,16 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
   internal var keywordValuesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.keywordValues.v) }
   ///  Should GPU instancing be enabled or not.
   internal var enableInstancing: Bool { let o = _accessor.offset(VTOFFSET.enableInstancing.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal static func startPolySpatialMaterialData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 36) }
+  internal var hasPassEnabledValues: Bool { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? false : true }
+  internal var passEnabledValuesCount: Int32 { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func passEnabledValues(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
+  internal var passEnabledValues: [Bool] { return _accessor.getVector(at: VTOFFSET.passEnabledValues.v) ?? [] }
+  internal var passEnabledValuesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.passEnabledValues.v) }
+  internal var renderTypeOverrideTag: String? { let o = _accessor.offset(VTOFFSET.renderTypeOverrideTag.v); return o == 0 ? nil : _accessor.string(at: o) }
+  internal var renderTypeOverrideTagSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.renderTypeOverrideTag.v) }
+  internal var renderQueue: Int32 { let o = _accessor.offset(VTOFFSET.renderQueue.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags { let o = _accessor.offset(VTOFFSET.illuminationFlags.v); return o == 0 ? .none_ : Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags(rawValue: _accessor.readBuffer(of: UInt32.self, at: o)) ?? .none_ }
+  internal static func startPolySpatialMaterialData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 41) }
   internal static func add(materialType: Unity_PolySpatial_Internals_PolySpatialMaterialType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: materialType.rawValue, def: 0, at: VTOFFSET.materialType.p) }
   internal static func add(shaderId: Unity_PolySpatial_Internals_PolySpatialAssetID?, _ fbb: inout FlatBufferBuilder) { guard let shaderId = shaderId else { return }; fbb.create(struct: shaderId, position: VTOFFSET.shaderId.p) }
   internal static func add(shaderPropertyMapId: Unity_PolySpatial_Internals_PolySpatialAssetID?, _ fbb: inout FlatBufferBuilder) { guard let shaderPropertyMapId = shaderPropertyMapId else { return }; fbb.create(struct: shaderPropertyMapId, position: VTOFFSET.shaderPropertyMapId.p) }
@@ -9613,10 +10748,15 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
   internal static func startVectorOfTextureTransformProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
     builder.startVector(size * MemoryLayout<UnityEngine_Vector4>.size, elementSize: MemoryLayout<UnityEngine_Vector4>.alignment)
   }
-  internal static func addVectorOf(hasProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: hasProperties, at: VTOFFSET.hasProperties.p) }
+  internal static func addVectorOf(propertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: propertyArrayCounts, at: VTOFFSET.propertyArrayCounts.p) }
+  internal static func add(propertyCount: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: propertyCount, def: 0, at: VTOFFSET.propertyCount.p) }
   internal static func addVectorOf(keywordValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: keywordValues, at: VTOFFSET.keywordValues.p) }
   internal static func add(enableInstancing: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: enableInstancing, def: false,
    at: VTOFFSET.enableInstancing.p) }
+  internal static func addVectorOf(passEnabledValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: passEnabledValues, at: VTOFFSET.passEnabledValues.p) }
+  internal static func add(renderTypeOverrideTag: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: renderTypeOverrideTag, at: VTOFFSET.renderTypeOverrideTag.p) }
+  internal static func add(renderQueue: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: renderQueue, def: 0, at: VTOFFSET.renderQueue.p) }
+  internal static func add(illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags, _ fbb: inout FlatBufferBuilder) { fbb.add(element: illuminationFlags.rawValue, def: 0, at: VTOFFSET.illuminationFlags.p) }
   internal static func endPolySpatialMaterialData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [6, 8, 12, 14, 16, 18, 20, 22, 24, 28, 30, 32, 44, 50, 52]); return end }
   internal static func createPolySpatialMaterialData(
     _ fbb: inout FlatBufferBuilder,
@@ -9653,9 +10793,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
     matrix4x4PropertiesVectorOffset matrix4x4Properties: Offset = Offset(),
     texturePropertiesVectorOffset textureProperties: Offset = Offset(),
     textureTransformPropertiesVectorOffset textureTransformProperties: Offset = Offset(),
-    hasPropertiesVectorOffset hasProperties: Offset = Offset(),
+    propertyArrayCountsVectorOffset propertyArrayCounts: Offset = Offset(),
+    propertyCount: Int32 = 0,
     keywordValuesVectorOffset keywordValues: Offset = Offset(),
-    enableInstancing: Bool = false
+    enableInstancing: Bool = false,
+    passEnabledValuesVectorOffset passEnabledValues: Offset = Offset(),
+    renderTypeOverrideTagOffset renderTypeOverrideTag: Offset = Offset(),
+    renderQueue: Int32 = 0,
+    illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags = .none_
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialMaterialData.startPolySpatialMaterialData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialMaterialData.add(materialType: materialType, &fbb)
@@ -9691,9 +10836,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
     Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(matrix4x4Properties: matrix4x4Properties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(textureProperties: textureProperties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(textureTransformProperties: textureTransformProperties, &fbb)
-    Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(hasProperties: hasProperties, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(propertyArrayCounts: propertyArrayCounts, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.add(propertyCount: propertyCount, &fbb)
     Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(keywordValues: keywordValues, &fbb)
     Unity_PolySpatial_Internals_PolySpatialMaterialData.add(enableInstancing: enableInstancing, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.addVectorOf(passEnabledValues: passEnabledValues, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.add(renderTypeOverrideTag: renderTypeOverrideTag, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.add(renderQueue: renderQueue, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialMaterialData.add(illuminationFlags: illuminationFlags, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialMaterialData.endPolySpatialMaterialData(&fbb, start: __start)
   }
 
@@ -9732,9 +10882,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
     try _v.visit(field: VTOFFSET.matrix4x4Properties.p, fieldName: "matrix4x4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
     try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
     try _v.visit(field: VTOFFSET.textureTransformProperties.p, fieldName: "textureTransformProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
-    try _v.visit(field: VTOFFSET.hasProperties.p, fieldName: "hasProperties", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
+    try _v.visit(field: VTOFFSET.propertyArrayCounts.p, fieldName: "propertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
+    try _v.visit(field: VTOFFSET.propertyCount.p, fieldName: "propertyCount", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.keywordValues.p, fieldName: "keywordValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
     try _v.visit(field: VTOFFSET.enableInstancing.p, fieldName: "enableInstancing", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.passEnabledValues.p, fieldName: "passEnabledValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
+    try _v.visit(field: VTOFFSET.renderTypeOverrideTag.p, fieldName: "renderTypeOverrideTag", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.renderQueue.p, fieldName: "renderQueue", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.illuminationFlags.p, fieldName: "illuminationFlags", required: false, type: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags.self)
     _v.finish()
   }
 }
@@ -9752,6 +10907,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData: Fla
   private enum VTOFFSET: VOffset {
     case lightmaps = 4
     case lightmapsMode = 6
+    case bakedGi = 8
+    case usingShadowmask = 10
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -9762,21 +10919,31 @@ internal struct Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData: Fla
   internal var lightmapsAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialLightmapData>? { return _accessor.getBufferPointer(at: VTOFFSET.lightmaps.v) }
   internal func mutableLightmaps(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialLightmapData_Mutable? { let o = _accessor.offset(VTOFFSET.lightmaps.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialLightmapData_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 72) }
   internal var lightmapsMode: Unity_PolySpatial_Internals_PolySpatialLightmapsMode { let o = _accessor.offset(VTOFFSET.lightmapsMode.v); return o == 0 ? .nonDirectional : Unity_PolySpatial_Internals_PolySpatialLightmapsMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .nonDirectional }
-  internal static func startPolySpatialLightmapSettingsData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal var bakedGi: Bool { let o = _accessor.offset(VTOFFSET.bakedGi.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var usingShadowmask: Bool { let o = _accessor.offset(VTOFFSET.usingShadowmask.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal static func startPolySpatialLightmapSettingsData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
   internal static func addVectorOf(lightmaps: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lightmaps, at: VTOFFSET.lightmaps.p) }
   internal static func startVectorOfLightmaps(_ size: Int, in builder: inout FlatBufferBuilder) {
     builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialLightmapData>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialLightmapData>.alignment)
   }
   internal static func add(lightmapsMode: Unity_PolySpatial_Internals_PolySpatialLightmapsMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: lightmapsMode.rawValue, def: 0, at: VTOFFSET.lightmapsMode.p) }
+  internal static func add(bakedGi: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: bakedGi, def: false,
+   at: VTOFFSET.bakedGi.p) }
+  internal static func add(usingShadowmask: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: usingShadowmask, def: false,
+   at: VTOFFSET.usingShadowmask.p) }
   internal static func endPolySpatialLightmapSettingsData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
   internal static func createPolySpatialLightmapSettingsData(
     _ fbb: inout FlatBufferBuilder,
     lightmapsVectorOffset lightmaps: Offset,
-    lightmapsMode: Unity_PolySpatial_Internals_PolySpatialLightmapsMode = .nonDirectional
+    lightmapsMode: Unity_PolySpatial_Internals_PolySpatialLightmapsMode = .nonDirectional,
+    bakedGi: Bool = false,
+    usingShadowmask: Bool = false
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.startPolySpatialLightmapSettingsData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.addVectorOf(lightmaps: lightmaps, &fbb)
     Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.add(lightmapsMode: lightmapsMode, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.add(bakedGi: bakedGi, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.add(usingShadowmask: usingShadowmask, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData.endPolySpatialLightmapSettingsData(&fbb, start: __start)
   }
 
@@ -9784,6 +10951,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialLightmapSettingsData: Fla
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.lightmaps.p, fieldName: "lightmaps", required: true, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialLightmapData, Unity_PolySpatial_Internals_PolySpatialLightmapData>>.self)
     try _v.visit(field: VTOFFSET.lightmapsMode.p, fieldName: "lightmapsMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialLightmapsMode.self)
+    try _v.visit(field: VTOFFSET.bakedGi.p, fieldName: "bakedGi", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.usingShadowmask.p, fieldName: "usingShadowmask", required: false, type: Bool.self)
     _v.finish()
   }
 }
@@ -10284,6 +11453,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent: F
     case deviceVariants = 10
     case deviceId = 12
     case deviceStatus = 14
+    case deviceUsages = 16
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -10299,13 +11469,17 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent: F
   internal var deviceVariantsSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.deviceVariants.v) }
   internal var deviceId: Int32 { let o = _accessor.offset(VTOFFSET.deviceId.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
   internal var deviceStatus: Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus { let o = _accessor.offset(VTOFFSET.deviceStatus.v); return o == 0 ? .added : Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus(rawValue: _accessor.readBuffer(of: Int8.self, at: o)) ?? .added }
-  internal static func startPolySpatialInputSystemDeviceEvent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
+  internal var hasDeviceUsages: Bool { let o = _accessor.offset(VTOFFSET.deviceUsages.v); return o == 0 ? false : true }
+  internal var deviceUsagesCount: Int32 { let o = _accessor.offset(VTOFFSET.deviceUsages.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func deviceUsages(at index: Int32) -> String? { let o = _accessor.offset(VTOFFSET.deviceUsages.v); return o == 0 ? nil : _accessor.directString(at: _accessor.vector(at: o) + index * 4) }
+  internal static func startPolySpatialInputSystemDeviceEvent(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
   internal static func add(deviceName: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: deviceName, at: VTOFFSET.deviceName.p) }
   internal static func add(deviceLayout: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: deviceLayout, at: VTOFFSET.deviceLayout.p) }
   internal static func addVectorOf(deviceBaseLayouts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: deviceBaseLayouts, at: VTOFFSET.deviceBaseLayouts.p) }
   internal static func add(deviceVariants: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: deviceVariants, at: VTOFFSET.deviceVariants.p) }
   internal static func add(deviceId: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: deviceId, def: 0, at: VTOFFSET.deviceId.p) }
   internal static func add(deviceStatus: Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus, _ fbb: inout FlatBufferBuilder) { fbb.add(element: deviceStatus.rawValue, def: 0, at: VTOFFSET.deviceStatus.p) }
+  internal static func addVectorOf(deviceUsages: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: deviceUsages, at: VTOFFSET.deviceUsages.p) }
   internal static func endPolySpatialInputSystemDeviceEvent(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialInputSystemDeviceEvent(
     _ fbb: inout FlatBufferBuilder,
@@ -10314,7 +11488,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent: F
     deviceBaseLayoutsVectorOffset deviceBaseLayouts: Offset = Offset(),
     deviceVariantsOffset deviceVariants: Offset = Offset(),
     deviceId: Int32 = 0,
-    deviceStatus: Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus = .added
+    deviceStatus: Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus = .added,
+    deviceUsagesVectorOffset deviceUsages: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.startPolySpatialInputSystemDeviceEvent(&fbb)
     Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.add(deviceName: deviceName, &fbb)
@@ -10323,6 +11498,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent: F
     Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.add(deviceVariants: deviceVariants, &fbb)
     Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.add(deviceId: deviceId, &fbb)
     Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.add(deviceStatus: deviceStatus, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.addVectorOf(deviceUsages: deviceUsages, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent.endPolySpatialInputSystemDeviceEvent(&fbb, start: __start)
   }
 
@@ -10334,6 +11510,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceEvent: F
     try _v.visit(field: VTOFFSET.deviceVariants.p, fieldName: "deviceVariants", required: false, type: ForwardOffset<String>.self)
     try _v.visit(field: VTOFFSET.deviceId.p, fieldName: "deviceId", required: false, type: Int32.self)
     try _v.visit(field: VTOFFSET.deviceStatus.p, fieldName: "deviceStatus", required: false, type: Unity_PolySpatial_Internals_PolySpatialInputSystemDeviceStatus.self)
+    try _v.visit(field: VTOFFSET.deviceUsages.p, fieldName: "deviceUsages", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     _v.finish()
   }
 }
@@ -10418,6 +11595,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
     case zWriteControl = 26
     case castShadows = 28
     case allowMaterialOverride = 30
+    case passNames = 32
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -10455,7 +11633,10 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
   internal var zWriteControl: Unity_PolySpatial_Internals_PolySpatialZWriteControl { let o = _accessor.offset(VTOFFSET.zWriteControl.v); return o == 0 ? .auto : Unity_PolySpatial_Internals_PolySpatialZWriteControl(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .auto }
   internal var castShadows: Bool { let o = _accessor.offset(VTOFFSET.castShadows.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
   internal var allowMaterialOverride: Bool { let o = _accessor.offset(VTOFFSET.allowMaterialOverride.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal static func startPolySpatialShaderPropertyMapData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 14) }
+  internal var hasPassNames: Bool { let o = _accessor.offset(VTOFFSET.passNames.v); return o == 0 ? false : true }
+  internal var passNamesCount: Int32 { let o = _accessor.offset(VTOFFSET.passNames.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func passNames(at index: Int32) -> String? { let o = _accessor.offset(VTOFFSET.passNames.v); return o == 0 ? nil : _accessor.directString(at: _accessor.vector(at: o) + index * 4) }
+  internal static func startPolySpatialShaderPropertyMapData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 15) }
   internal static func add(name: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: name, at: VTOFFSET.name.p) }
   internal static func addVectorOf(floatProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: floatProperties, at: VTOFFSET.floatProperties.p) }
   internal static func addVectorOf(intProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: intProperties, at: VTOFFSET.intProperties.p) }
@@ -10472,6 +11653,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
    at: VTOFFSET.castShadows.p) }
   internal static func add(allowMaterialOverride: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: allowMaterialOverride, def: false,
    at: VTOFFSET.allowMaterialOverride.p) }
+  internal static func addVectorOf(passNames: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: passNames, at: VTOFFSET.passNames.p) }
   internal static func endPolySpatialShaderPropertyMapData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialShaderPropertyMapData(
     _ fbb: inout FlatBufferBuilder,
@@ -10488,7 +11670,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
     zTestMode: Unity_PolySpatial_Internals_PolySpatialCompareFunction = .disabled,
     zWriteControl: Unity_PolySpatial_Internals_PolySpatialZWriteControl = .auto,
     castShadows: Bool = false,
-    allowMaterialOverride: Bool = false
+    allowMaterialOverride: Bool = false,
+    passNamesVectorOffset passNames: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.startPolySpatialShaderPropertyMapData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.add(name: name, &fbb)
@@ -10505,6 +11688,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
     Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.add(zWriteControl: zWriteControl, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.add(castShadows: castShadows, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.add(allowMaterialOverride: allowMaterialOverride, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.addVectorOf(passNames: passNames, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData.endPolySpatialShaderPropertyMapData(&fbb, start: __start)
   }
 
@@ -10524,6 +11708,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderPropertyMapData: Fl
     try _v.visit(field: VTOFFSET.zWriteControl.p, fieldName: "zWriteControl", required: false, type: Unity_PolySpatial_Internals_PolySpatialZWriteControl.self)
     try _v.visit(field: VTOFFSET.castShadows.p, fieldName: "castShadows", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.allowMaterialOverride.p, fieldName: "allowMaterialOverride", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.passNames.p, fieldName: "passNames", required: false, type: ForwardOffset<Vector<ForwardOffset<String>, String>>.self)
     _v.finish()
   }
 }
@@ -10670,9 +11855,13 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
     case matrix4x4Properties = 16
     case textureProperties = 18
     case textureTransformProperties = 20
-    case hasProperties = 22
+    case propertyArrayCounts = 22
     case keywordValues = 24
     case enableInstancing = 26
+    case passEnabledValues = 28
+    case renderTypeOverrideTag = 30
+    case renderQueue = 32
+    case illuminationFlags = 34
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -10716,11 +11905,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
   internal func textureTransformProperties(at index: Int32) -> UnityEngine_Vector4? { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? nil : _accessor.directRead(of: UnityEngine_Vector4.self, offset: _accessor.vector(at: o) + index * 16) }
   internal var textureTransformPropertiesAsBuffer: UnsafeBufferPointer<UnityEngine_Vector4>? { return _accessor.getBufferPointer(at: VTOFFSET.textureTransformProperties.v) }
   internal func mutableTextureTransformProperties(at index: Int32) -> UnityEngine_Vector4_Mutable? { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? nil : UnityEngine_Vector4_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 16) }
-  internal var hasHasProperties: Bool { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? false : true }
-  internal var hasPropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  internal func hasProperties(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.hasProperties.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
-  internal var hasProperties: [Bool] { return _accessor.getVector(at: VTOFFSET.hasProperties.v) ?? [] }
-  internal var hasPropertiesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.hasProperties.v) }
+  internal var hasPropertyArrayCounts: Bool { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? false : true }
+  internal var propertyArrayCountsCount: Int32 { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func propertyArrayCounts(at index: Int32) -> Int32 { let o = _accessor.offset(VTOFFSET.propertyArrayCounts.v); return o == 0 ? 0 : _accessor.directRead(of: Int32.self, offset: _accessor.vector(at: o) + index * 4) }
+  internal var propertyArrayCounts: [Int32] { return _accessor.getVector(at: VTOFFSET.propertyArrayCounts.v) ?? [] }
+  internal var propertyArrayCountsAsBuffer: UnsafeBufferPointer<Int32>? { return _accessor.getBufferPointer(at: VTOFFSET.propertyArrayCounts.v) }
   internal var hasKeywordValues: Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? false : true }
   internal var keywordValuesCount: Int32 { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   internal func keywordValues(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
@@ -10728,7 +11917,16 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
   internal var keywordValuesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.keywordValues.v) }
   ///  Should GPU instancing be enabled or not.
   internal var enableInstancing: Bool { let o = _accessor.offset(VTOFFSET.enableInstancing.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal static func startPolySpatialShaderMaterial(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 12) }
+  internal var hasPassEnabledValues: Bool { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? false : true }
+  internal var passEnabledValuesCount: Int32 { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func passEnabledValues(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.passEnabledValues.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
+  internal var passEnabledValues: [Bool] { return _accessor.getVector(at: VTOFFSET.passEnabledValues.v) ?? [] }
+  internal var passEnabledValuesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.passEnabledValues.v) }
+  internal var renderTypeOverrideTag: String? { let o = _accessor.offset(VTOFFSET.renderTypeOverrideTag.v); return o == 0 ? nil : _accessor.string(at: o) }
+  internal var renderTypeOverrideTagSegmentArray: [UInt8]? { return _accessor.getVector(at: VTOFFSET.renderTypeOverrideTag.v) }
+  internal var renderQueue: Int32 { let o = _accessor.offset(VTOFFSET.renderQueue.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags { let o = _accessor.offset(VTOFFSET.illuminationFlags.v); return o == 0 ? .none_ : Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags(rawValue: _accessor.readBuffer(of: UInt32.self, at: o)) ?? .none_ }
+  internal static func startPolySpatialShaderMaterial(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 16) }
   internal static func add(shaderId: Unity_PolySpatial_Internals_PolySpatialAssetID?, _ fbb: inout FlatBufferBuilder) { guard let shaderId = shaderId else { return }; fbb.create(struct: shaderId, position: VTOFFSET.shaderId.p) }
   internal static func add(shaderPropertyMapId: Unity_PolySpatial_Internals_PolySpatialAssetID?, _ fbb: inout FlatBufferBuilder) { guard let shaderPropertyMapId = shaderPropertyMapId else { return }; fbb.create(struct: shaderPropertyMapId, position: VTOFFSET.shaderPropertyMapId.p) }
   internal static func addVectorOf(floatProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: floatProperties, at: VTOFFSET.floatProperties.p) }
@@ -10753,10 +11951,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
   internal static func startVectorOfTextureTransformProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
     builder.startVector(size * MemoryLayout<UnityEngine_Vector4>.size, elementSize: MemoryLayout<UnityEngine_Vector4>.alignment)
   }
-  internal static func addVectorOf(hasProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: hasProperties, at: VTOFFSET.hasProperties.p) }
+  internal static func addVectorOf(propertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: propertyArrayCounts, at: VTOFFSET.propertyArrayCounts.p) }
   internal static func addVectorOf(keywordValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: keywordValues, at: VTOFFSET.keywordValues.p) }
   internal static func add(enableInstancing: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: enableInstancing, def: false,
    at: VTOFFSET.enableInstancing.p) }
+  internal static func addVectorOf(passEnabledValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: passEnabledValues, at: VTOFFSET.passEnabledValues.p) }
+  internal static func add(renderTypeOverrideTag: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: renderTypeOverrideTag, at: VTOFFSET.renderTypeOverrideTag.p) }
+  internal static func add(renderQueue: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: renderQueue, def: 0, at: VTOFFSET.renderQueue.p) }
+  internal static func add(illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags, _ fbb: inout FlatBufferBuilder) { fbb.add(element: illuminationFlags.rawValue, def: 0, at: VTOFFSET.illuminationFlags.p) }
   internal static func endPolySpatialShaderMaterial(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialShaderMaterial(
     _ fbb: inout FlatBufferBuilder,
@@ -10769,9 +11971,13 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
     matrix4x4PropertiesVectorOffset matrix4x4Properties: Offset = Offset(),
     texturePropertiesVectorOffset textureProperties: Offset = Offset(),
     textureTransformPropertiesVectorOffset textureTransformProperties: Offset = Offset(),
-    hasPropertiesVectorOffset hasProperties: Offset = Offset(),
+    propertyArrayCountsVectorOffset propertyArrayCounts: Offset = Offset(),
     keywordValuesVectorOffset keywordValues: Offset = Offset(),
-    enableInstancing: Bool = false
+    enableInstancing: Bool = false,
+    passEnabledValuesVectorOffset passEnabledValues: Offset = Offset(),
+    renderTypeOverrideTagOffset renderTypeOverrideTag: Offset = Offset(),
+    renderQueue: Int32 = 0,
+    illuminationFlags: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags = .none_
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialShaderMaterial.startPolySpatialShaderMaterial(&fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.add(shaderId: shaderId, &fbb)
@@ -10783,9 +11989,13 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(matrix4x4Properties: matrix4x4Properties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(textureProperties: textureProperties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(textureTransformProperties: textureTransformProperties, &fbb)
-    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(hasProperties: hasProperties, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(propertyArrayCounts: propertyArrayCounts, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(keywordValues: keywordValues, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderMaterial.add(enableInstancing: enableInstancing, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.addVectorOf(passEnabledValues: passEnabledValues, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.add(renderTypeOverrideTag: renderTypeOverrideTag, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.add(renderQueue: renderQueue, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderMaterial.add(illuminationFlags: illuminationFlags, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialShaderMaterial.endPolySpatialShaderMaterial(&fbb, start: __start)
   }
 
@@ -10800,9 +12010,13 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
     try _v.visit(field: VTOFFSET.matrix4x4Properties.p, fieldName: "matrix4x4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
     try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
     try _v.visit(field: VTOFFSET.textureTransformProperties.p, fieldName: "textureTransformProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
-    try _v.visit(field: VTOFFSET.hasProperties.p, fieldName: "hasProperties", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
+    try _v.visit(field: VTOFFSET.propertyArrayCounts.p, fieldName: "propertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
     try _v.visit(field: VTOFFSET.keywordValues.p, fieldName: "keywordValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
     try _v.visit(field: VTOFFSET.enableInstancing.p, fieldName: "enableInstancing", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.passEnabledValues.p, fieldName: "passEnabledValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
+    try _v.visit(field: VTOFFSET.renderTypeOverrideTag.p, fieldName: "renderTypeOverrideTag", required: false, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.renderQueue.p, fieldName: "renderQueue", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.illuminationFlags.p, fieldName: "illuminationFlags", required: false, type: Unity_PolySpatial_Internals_PolySpatialMaterialGlobalIlluminationFlags.self)
     _v.finish()
   }
 }
@@ -10909,6 +12123,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     case matrixProperties = 12
     case textureProperties = 14
     case keywordValues = 16
+    case floatPropertyArrayCounts = 18
+    case vectorPropertyArrayCounts = 20
+    case matrixPropertyArrayCounts = 22
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -10948,7 +12165,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
   internal func keywordValues(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
   internal var keywordValues: [Bool] { return _accessor.getVector(at: VTOFFSET.keywordValues.v) ?? [] }
   internal var keywordValuesAsBuffer: UnsafeBufferPointer<Bool>? { return _accessor.getBufferPointer(at: VTOFFSET.keywordValues.v) }
-  internal static func startPolySpatialShaderGlobalPropertyValues(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
+  internal var hasFloatPropertyArrayCounts: Bool { let o = _accessor.offset(VTOFFSET.floatPropertyArrayCounts.v); return o == 0 ? false : true }
+  internal var floatPropertyArrayCountsCount: Int32 { let o = _accessor.offset(VTOFFSET.floatPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func floatPropertyArrayCounts(at index: Int32) -> Int32 { let o = _accessor.offset(VTOFFSET.floatPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.directRead(of: Int32.self, offset: _accessor.vector(at: o) + index * 4) }
+  internal var floatPropertyArrayCounts: [Int32] { return _accessor.getVector(at: VTOFFSET.floatPropertyArrayCounts.v) ?? [] }
+  internal var floatPropertyArrayCountsAsBuffer: UnsafeBufferPointer<Int32>? { return _accessor.getBufferPointer(at: VTOFFSET.floatPropertyArrayCounts.v) }
+  internal var hasVectorPropertyArrayCounts: Bool { let o = _accessor.offset(VTOFFSET.vectorPropertyArrayCounts.v); return o == 0 ? false : true }
+  internal var vectorPropertyArrayCountsCount: Int32 { let o = _accessor.offset(VTOFFSET.vectorPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func vectorPropertyArrayCounts(at index: Int32) -> Int32 { let o = _accessor.offset(VTOFFSET.vectorPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.directRead(of: Int32.self, offset: _accessor.vector(at: o) + index * 4) }
+  internal var vectorPropertyArrayCounts: [Int32] { return _accessor.getVector(at: VTOFFSET.vectorPropertyArrayCounts.v) ?? [] }
+  internal var vectorPropertyArrayCountsAsBuffer: UnsafeBufferPointer<Int32>? { return _accessor.getBufferPointer(at: VTOFFSET.vectorPropertyArrayCounts.v) }
+  internal var hasMatrixPropertyArrayCounts: Bool { let o = _accessor.offset(VTOFFSET.matrixPropertyArrayCounts.v); return o == 0 ? false : true }
+  internal var matrixPropertyArrayCountsCount: Int32 { let o = _accessor.offset(VTOFFSET.matrixPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func matrixPropertyArrayCounts(at index: Int32) -> Int32 { let o = _accessor.offset(VTOFFSET.matrixPropertyArrayCounts.v); return o == 0 ? 0 : _accessor.directRead(of: Int32.self, offset: _accessor.vector(at: o) + index * 4) }
+  internal var matrixPropertyArrayCounts: [Int32] { return _accessor.getVector(at: VTOFFSET.matrixPropertyArrayCounts.v) ?? [] }
+  internal var matrixPropertyArrayCountsAsBuffer: UnsafeBufferPointer<Int32>? { return _accessor.getBufferPointer(at: VTOFFSET.matrixPropertyArrayCounts.v) }
+  internal static func startPolySpatialShaderGlobalPropertyValues(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 10) }
   internal static func addVectorOf(floatProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: floatProperties, at: VTOFFSET.floatProperties.p) }
   internal static func addVectorOf(integerProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: integerProperties, at: VTOFFSET.integerProperties.p) }
   internal static func addVectorOf(vectorProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: vectorProperties, at: VTOFFSET.vectorProperties.p) }
@@ -10968,6 +12200,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.alignment)
   }
   internal static func addVectorOf(keywordValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: keywordValues, at: VTOFFSET.keywordValues.p) }
+  internal static func addVectorOf(floatPropertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: floatPropertyArrayCounts, at: VTOFFSET.floatPropertyArrayCounts.p) }
+  internal static func addVectorOf(vectorPropertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: vectorPropertyArrayCounts, at: VTOFFSET.vectorPropertyArrayCounts.p) }
+  internal static func addVectorOf(matrixPropertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: matrixPropertyArrayCounts, at: VTOFFSET.matrixPropertyArrayCounts.p) }
   internal static func endPolySpatialShaderGlobalPropertyValues(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialShaderGlobalPropertyValues(
     _ fbb: inout FlatBufferBuilder,
@@ -10977,7 +12212,10 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     colorPropertiesVectorOffset colorProperties: Offset = Offset(),
     matrixPropertiesVectorOffset matrixProperties: Offset = Offset(),
     texturePropertiesVectorOffset textureProperties: Offset = Offset(),
-    keywordValuesVectorOffset keywordValues: Offset = Offset()
+    keywordValuesVectorOffset keywordValues: Offset = Offset(),
+    floatPropertyArrayCountsVectorOffset floatPropertyArrayCounts: Offset = Offset(),
+    vectorPropertyArrayCountsVectorOffset vectorPropertyArrayCounts: Offset = Offset(),
+    matrixPropertyArrayCountsVectorOffset matrixPropertyArrayCounts: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.startPolySpatialShaderGlobalPropertyValues(&fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(floatProperties: floatProperties, &fbb)
@@ -10987,6 +12225,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(matrixProperties: matrixProperties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(textureProperties: textureProperties, &fbb)
     Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(keywordValues: keywordValues, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(floatPropertyArrayCounts: floatPropertyArrayCounts, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(vectorPropertyArrayCounts: vectorPropertyArrayCounts, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.addVectorOf(matrixPropertyArrayCounts: matrixPropertyArrayCounts, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValues.endPolySpatialShaderGlobalPropertyValues(&fbb, start: __start)
   }
 
@@ -10999,12 +12240,15 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     try _v.visit(field: VTOFFSET.matrixProperties.p, fieldName: "matrixProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
     try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
     try _v.visit(field: VTOFFSET.keywordValues.p, fieldName: "keywordValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
+    try _v.visit(field: VTOFFSET.floatPropertyArrayCounts.p, fieldName: "floatPropertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
+    try _v.visit(field: VTOFFSET.vectorPropertyArrayCounts.p, fieldName: "vectorPropertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
+    try _v.visit(field: VTOFFSET.matrixPropertyArrayCounts.p, fieldName: "matrixPropertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
     _v.finish()
   }
 }
 
-///  Contains Project settings that need to be remapped on the host
-internal struct Unity_PolySpatial_Internals_PolySpatialProjectSettingsData: FlatBufferObject, Verifiable {
+///  Contains Layer settings that need to be remapped on the host
+internal struct Unity_PolySpatial_Internals_PolySpatialLayerSettingsData: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
   internal var __buffer: ByteBuffer! { return _accessor.bb }
@@ -11028,19 +12272,19 @@ internal struct Unity_PolySpatial_Internals_PolySpatialProjectSettingsData: Flat
   internal var hasSortingLayerNames: Bool { let o = _accessor.offset(VTOFFSET.sortingLayerNames.v); return o == 0 ? false : true }
   internal var sortingLayerNamesCount: Int32 { let o = _accessor.offset(VTOFFSET.sortingLayerNames.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   internal func sortingLayerNames(at index: Int32) -> String? { let o = _accessor.offset(VTOFFSET.sortingLayerNames.v); return o == 0 ? nil : _accessor.directString(at: _accessor.vector(at: o) + index * 4) }
-  internal static func startPolySpatialProjectSettingsData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal static func startPolySpatialLayerSettingsData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
   internal static func addVectorOf(sortingLayerIds: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sortingLayerIds, at: VTOFFSET.sortingLayerIds.p) }
   internal static func addVectorOf(sortingLayerNames: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sortingLayerNames, at: VTOFFSET.sortingLayerNames.p) }
-  internal static func endPolySpatialProjectSettingsData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
-  internal static func createPolySpatialProjectSettingsData(
+  internal static func endPolySpatialLayerSettingsData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
+  internal static func createPolySpatialLayerSettingsData(
     _ fbb: inout FlatBufferBuilder,
     sortingLayerIdsVectorOffset sortingLayerIds: Offset = Offset(),
     sortingLayerNamesVectorOffset sortingLayerNames: Offset = Offset()
   ) -> Offset {
-    let __start = Unity_PolySpatial_Internals_PolySpatialProjectSettingsData.startPolySpatialProjectSettingsData(&fbb)
-    Unity_PolySpatial_Internals_PolySpatialProjectSettingsData.addVectorOf(sortingLayerIds: sortingLayerIds, &fbb)
-    Unity_PolySpatial_Internals_PolySpatialProjectSettingsData.addVectorOf(sortingLayerNames: sortingLayerNames, &fbb)
-    return Unity_PolySpatial_Internals_PolySpatialProjectSettingsData.endPolySpatialProjectSettingsData(&fbb, start: __start)
+    let __start = Unity_PolySpatial_Internals_PolySpatialLayerSettingsData.startPolySpatialLayerSettingsData(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialLayerSettingsData.addVectorOf(sortingLayerIds: sortingLayerIds, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialLayerSettingsData.addVectorOf(sortingLayerNames: sortingLayerNames, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialLayerSettingsData.endPolySpatialLayerSettingsData(&fbb, start: __start)
   }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
@@ -12677,6 +13921,134 @@ internal struct Unity_PolySpatial_Internals_PolySpatialARPlaneArray: FlatBufferO
   }
 }
 
+///  Represents the state of an XR display in order to reproduce it on the sim.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRDisplayData: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case running = 4
+    case displayIsTransparent = 6
+    case renderPasses = 8
+    case cullingPasses = 10
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  ///  Whether or not the display subsystem is running.
+  internal var running: Bool { let o = _accessor.offset(VTOFFSET.running.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  ///  If true, the display is transparent (i.e., AR).
+  internal var displayIsTransparent: Bool { let o = _accessor.offset(VTOFFSET.displayIsTransparent.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  ///  The array of render passes for the display.
+  internal var hasRenderPasses: Bool { let o = _accessor.offset(VTOFFSET.renderPasses.v); return o == 0 ? false : true }
+  internal var renderPassesCount: Int32 { let o = _accessor.offset(VTOFFSET.renderPasses.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func renderPasses(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialXRRenderPassData? { let o = _accessor.offset(VTOFFSET.renderPasses.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialXRRenderPassData(_accessor.bb, o: _accessor.indirect(_accessor.vector(at: o) + index * 4)) }
+  ///  The array of culling passes for the display.
+  internal var hasCullingPasses: Bool { let o = _accessor.offset(VTOFFSET.cullingPasses.v); return o == 0 ? false : true }
+  internal var cullingPassesCount: Int32 { let o = _accessor.offset(VTOFFSET.cullingPasses.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func cullingPasses(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialXRCullingPassData? { let o = _accessor.offset(VTOFFSET.cullingPasses.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialXRCullingPassData.self, offset: _accessor.vector(at: o) + index * 96) }
+  internal var cullingPassesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialXRCullingPassData>? { return _accessor.getBufferPointer(at: VTOFFSET.cullingPasses.v) }
+  internal func mutableCullingPasses(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialXRCullingPassData_Mutable? { let o = _accessor.offset(VTOFFSET.cullingPasses.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialXRCullingPassData_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 96) }
+  internal static func startPolySpatialXRDisplayData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 4) }
+  internal static func add(running: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: running, def: false,
+   at: VTOFFSET.running.p) }
+  internal static func add(displayIsTransparent: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: displayIsTransparent, def: false,
+   at: VTOFFSET.displayIsTransparent.p) }
+  internal static func addVectorOf(renderPasses: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: renderPasses, at: VTOFFSET.renderPasses.p) }
+  internal static func addVectorOf(cullingPasses: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: cullingPasses, at: VTOFFSET.cullingPasses.p) }
+  internal static func startVectorOfCullingPasses(_ size: Int, in builder: inout FlatBufferBuilder) {
+    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialXRCullingPassData>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialXRCullingPassData>.alignment)
+  }
+  internal static func endPolySpatialXRDisplayData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [8, 10]); return end }
+  internal static func createPolySpatialXRDisplayData(
+    _ fbb: inout FlatBufferBuilder,
+    running: Bool = false,
+    displayIsTransparent: Bool = false,
+    renderPassesVectorOffset renderPasses: Offset,
+    cullingPassesVectorOffset cullingPasses: Offset
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialXRDisplayData.startPolySpatialXRDisplayData(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRDisplayData.add(running: running, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRDisplayData.add(displayIsTransparent: displayIsTransparent, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRDisplayData.addVectorOf(renderPasses: renderPasses, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRDisplayData.addVectorOf(cullingPasses: cullingPasses, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialXRDisplayData.endPolySpatialXRDisplayData(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.running.p, fieldName: "running", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.displayIsTransparent.p, fieldName: "displayIsTransparent", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.renderPasses.p, fieldName: "renderPasses", required: true, type: ForwardOffset<Vector<ForwardOffset<Unity_PolySpatial_Internals_PolySpatialXRRenderPassData>, Unity_PolySpatial_Internals_PolySpatialXRRenderPassData>>.self)
+    try _v.visit(field: VTOFFSET.cullingPasses.p, fieldName: "cullingPasses", required: true, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialXRCullingPassData, Unity_PolySpatial_Internals_PolySpatialXRCullingPassData>>.self)
+    _v.finish()
+  }
+}
+
+///  Represents the configuration of a single render pass.
+internal struct Unity_PolySpatial_Internals_PolySpatialXRRenderPassData: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case cullingPassIndex = 4
+    case renderTarget = 6
+    case renderParameters = 8
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  ///  The index of the culling pass to use for the render pass.
+  internal var cullingPassIndex: Int32 { let o = _accessor.offset(VTOFFSET.cullingPassIndex.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  ///  Describes the texture to be created for the pass.
+  internal var renderTarget: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData! { let o = _accessor.offset(VTOFFSET.renderTarget.v); return _accessor.readBuffer(of: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData.self, at: o) }
+  internal var mutableRenderTarget: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData_Mutable! { let o = _accessor.offset(VTOFFSET.renderTarget.v); return Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  ///  The array of parameters for the pass.
+  internal var hasRenderParameters: Bool { let o = _accessor.offset(VTOFFSET.renderParameters.v); return o == 0 ? false : true }
+  internal var renderParametersCount: Int32 { let o = _accessor.offset(VTOFFSET.renderParameters.v); return o == 0 ? 0 : _accessor.vector(count: o) }
+  internal func renderParameters(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData? { let o = _accessor.offset(VTOFFSET.renderParameters.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData.self, offset: _accessor.vector(at: o) + index * 112) }
+  internal var renderParametersAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData>? { return _accessor.getBufferPointer(at: VTOFFSET.renderParameters.v) }
+  internal func mutableRenderParameters(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData_Mutable? { let o = _accessor.offset(VTOFFSET.renderParameters.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 112) }
+  internal static func startPolySpatialXRRenderPassData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  internal static func add(cullingPassIndex: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: cullingPassIndex, def: 0, at: VTOFFSET.cullingPassIndex.p) }
+  internal static func add(renderTarget: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData?, _ fbb: inout FlatBufferBuilder) { guard let renderTarget = renderTarget else { return }; fbb.create(struct: renderTarget, position: VTOFFSET.renderTarget.p) }
+  internal static func addVectorOf(renderParameters: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: renderParameters, at: VTOFFSET.renderParameters.p) }
+  internal static func startVectorOfRenderParameters(_ size: Int, in builder: inout FlatBufferBuilder) {
+    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData>.alignment)
+  }
+  internal static func endPolySpatialXRRenderPassData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [6, 8]); return end }
+  internal static func createPolySpatialXRRenderPassData(
+    _ fbb: inout FlatBufferBuilder,
+    cullingPassIndex: Int32 = 0,
+    renderTarget: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData,
+    renderParametersVectorOffset renderParameters: Offset
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialXRRenderPassData.startPolySpatialXRRenderPassData(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRRenderPassData.add(cullingPassIndex: cullingPassIndex, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRRenderPassData.add(renderTarget: renderTarget, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialXRRenderPassData.addVectorOf(renderParameters: renderParameters, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialXRRenderPassData.endPolySpatialXRRenderPassData(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.cullingPassIndex.p, fieldName: "cullingPassIndex", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.renderTarget.p, fieldName: "renderTarget", required: true, type: Unity_PolySpatial_Internals_PolySpatialXRRenderTargetData.self)
+    try _v.visit(field: VTOFFSET.renderParameters.p, fieldName: "renderParameters", required: true, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData, Unity_PolySpatial_Internals_PolySpatialXRRenderParameterData>>.self)
+    _v.finish()
+  }
+}
+
 internal struct Unity_PolySpatial_Internals_PolySpatialJointData: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
@@ -13768,6 +15140,101 @@ internal struct Unity_PolySpatial_Internals_PolySpatialHostDisplayInfo: FlatBuff
     try _v.visit(field: VTOFFSET.safeArea.p, fieldName: "safeArea", required: false, type: UnityEngine_Rect.self)
     try _v.visit(field: VTOFFSET.cutouts.p, fieldName: "cutouts", required: false, type: ForwardOffset<Vector<UnityEngine_Rect, UnityEngine_Rect>>.self)
     try _v.visit(field: VTOFFSET.orientation.p, fieldName: "orientation", required: false, type: Unity_PolySpatial_Internals_PolySpatialHostDisplayOrientation.self)
+    _v.finish()
+  }
+}
+
+///  Describes an ICE candidate for WebRTC communication.  The fields aren't documented in the WebRTC package, either.
+internal struct Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case candidate = 4
+    case sdpMlineIndex = 6
+    case sdpMid = 8
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var candidate: String! { let o = _accessor.offset(VTOFFSET.candidate.v); return _accessor.string(at: o) }
+  internal var candidateSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.candidate.v) }
+  internal var sdpMlineIndex: Int32? { let o = _accessor.offset(VTOFFSET.sdpMlineIndex.v); return o == 0 ? nil : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var sdpMid: String! { let o = _accessor.offset(VTOFFSET.sdpMid.v); return _accessor.string(at: o) }
+  internal var sdpMidSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.sdpMid.v) }
+  internal static func startPolySpatialRtcIceCandidateData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  internal static func add(candidate: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: candidate, at: VTOFFSET.candidate.p) }
+  internal static func add(sdpMlineIndex: Int32?, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sdpMlineIndex, at: VTOFFSET.sdpMlineIndex.p) }
+  internal static func add(sdpMid: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sdpMid, at: VTOFFSET.sdpMid.p) }
+  internal static func endPolySpatialRtcIceCandidateData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4, 8]); return end }
+  internal static func createPolySpatialRtcIceCandidateData(
+    _ fbb: inout FlatBufferBuilder,
+    candidateOffset candidate: Offset,
+    sdpMlineIndex: Int32? = nil,
+    sdpMidOffset sdpMid: Offset
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData.startPolySpatialRtcIceCandidateData(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData.add(candidate: candidate, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData.add(sdpMlineIndex: sdpMlineIndex, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData.add(sdpMid: sdpMid, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialRtcIceCandidateData.endPolySpatialRtcIceCandidateData(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.candidate.p, fieldName: "candidate", required: true, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.sdpMlineIndex.p, fieldName: "sdpMlineIndex", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.sdpMid.p, fieldName: "sdpMid", required: true, type: ForwardOffset<String>.self)
+    _v.finish()
+  }
+}
+
+///  Describes the setup of one side of a connection or proposed connection.
+internal struct Unity_PolySpatial_Internals_PolySpatialRtcSessionDescriptionData: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case sessionDescriptionProtocol = 4
+    case type = 6
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  ///  A string that holds the session's SDP information.
+  internal var sessionDescriptionProtocol: String! { let o = _accessor.offset(VTOFFSET.sessionDescriptionProtocol.v); return _accessor.string(at: o) }
+  internal var sessionDescriptionProtocolSegmentArray: [UInt8]! { return _accessor.getVector(at: VTOFFSET.sessionDescriptionProtocol.v) }
+  ///  An enum that specifies the type of the session description.
+  internal var type: Unity_PolySpatial_Internals_PolySpatialRtcSdpType { let o = _accessor.offset(VTOFFSET.type.v); return o == 0 ? .answer : Unity_PolySpatial_Internals_PolySpatialRtcSdpType(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .answer }
+  internal static func startPolySpatialRtcSessionDescriptionData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal static func add(sessionDescriptionProtocol: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sessionDescriptionProtocol, at: VTOFFSET.sessionDescriptionProtocol.p) }
+  internal static func add(type: Unity_PolySpatial_Internals_PolySpatialRtcSdpType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: type.rawValue, def: 0, at: VTOFFSET.type.p) }
+  internal static func endPolySpatialRtcSessionDescriptionData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
+  internal static func createPolySpatialRtcSessionDescriptionData(
+    _ fbb: inout FlatBufferBuilder,
+    sessionDescriptionProtocolOffset sessionDescriptionProtocol: Offset,
+    type: Unity_PolySpatial_Internals_PolySpatialRtcSdpType = .answer
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialRtcSessionDescriptionData.startPolySpatialRtcSessionDescriptionData(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialRtcSessionDescriptionData.add(sessionDescriptionProtocol: sessionDescriptionProtocol, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialRtcSessionDescriptionData.add(type: type, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialRtcSessionDescriptionData.endPolySpatialRtcSessionDescriptionData(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.sessionDescriptionProtocol.p, fieldName: "sessionDescriptionProtocol", required: true, type: ForwardOffset<String>.self)
+    try _v.visit(field: VTOFFSET.type.p, fieldName: "type", required: false, type: Unity_PolySpatial_Internals_PolySpatialRtcSdpType.self)
     _v.finish()
   }
 }

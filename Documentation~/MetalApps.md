@@ -38,7 +38,7 @@ You may switch **Background Type** from **Solid Color** to **Skybox** in order t
 > When you set **Background Type** to **Skybox** (both in the Inspector and via scripting API), Unity will change the alpha value of the background color to 1. When you switch back to pass-through, you must _also_ set the background color to something transparent.
 
 > [!NOTE]
-> You will need to disable **HDR** on your **Universal Render Pipeline Asset** to get pass-through to work.
+> Unity 6000.0.42f1 or above is required for HDR, post processing, and pass-through to work properly together. Follow all project validation rules to configure HDR settings and alpha output.
 
 ## Porting VR experiences to visionOS
 For users who are looking to port existing VR titles looking to visionOS as a fully immersive experience there are a few things you can do to make the transition smoother, in addition to the build workflow elaborated in the above section.

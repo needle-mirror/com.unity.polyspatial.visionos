@@ -295,7 +295,7 @@ class ParticleManager {
                 // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
                 subEmitterDatum = .init(
                     id: .init(id: subEmitterDatum.id.id, hostId: entity.unityId.hostId,
-                        hostVolumeIndex: entity.unityId.hostVolumeIndex),
+                        viewSubgraphIndex: entity.unityId.viewSubgraphIndex),
                     type: subEmitterDatum.type, inherit: subEmitterDatum.inherit)
                 mainEmitterIdToSubEmitterData[entity.unityId] = subEmitterDatum
                 subEmitterIdToMainEmitterId[subEmitterDatum.id] = entity.unityId

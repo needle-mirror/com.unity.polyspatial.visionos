@@ -106,7 +106,7 @@ class SkinnedMeshManager {
         // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
         let rootBoneId = PolySpatialInstanceID(
             id: info.rootBoneId.id, hostId: skinnedMeshInstanceId.hostId,
-            hostVolumeIndex: skinnedMeshInstanceId.hostVolumeIndex)
+            viewSubgraphIndex: skinnedMeshInstanceId.viewSubgraphIndex)
 
         // Parent to the root bone if we have blend shapes; otherwise, to the parent of the root bone.  We parent to
         // the root bone for blended meshes so that the local bounds supplied to the LowLevelMesh (parts) will be transformed
@@ -128,7 +128,7 @@ class SkinnedMeshManager {
         var boneIndex = 0
         for originalBoneId in boneIds {
             // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-            let boneId = PolySpatialInstanceID.init(id: originalBoneId.id, hostId: skinnedMeshInstanceId.hostId, hostVolumeIndex: skinnedMeshInstanceId.hostVolumeIndex)
+            let boneId = PolySpatialInstanceID.init(id: originalBoneId.id, hostId: skinnedMeshInstanceId.hostId, viewSubgraphIndex: skinnedMeshInstanceId.viewSubgraphIndex)
 
             guard let boneEntity = PolySpatialRealityKit.instance.TryGetEntity(boneId) else {
                 PolySpatialRealityKit.LogWarning("Skinned mesh renderer \(originalEntity.name) was missing a bone during skeleton initialization. If a skinned mesh renderer is using a game object as a bone, do not delete that game object.")

@@ -144,7 +144,7 @@ extension SwiftUICore.EnvironmentValues {
     set
   }
 }
-@_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialViewSubGraph {
+@_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialViewSubgraph {
   @objc deinit
 }
 @_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialVolume : Foundation.ObservableObject, Swift.Equatable, Swift.Hashable {
@@ -183,6 +183,7 @@ extension simd.simd_quatf {
   @_Concurrency.MainActor @preconcurrency public static var sceneDidDisconnect: ((UIKit.UIScene) -> Swift.Void)?
   @_Concurrency.MainActor @preconcurrency public static var sceneDidBecomeActive: ((UIKit.UIScene) -> Swift.Void)?
   @_Concurrency.MainActor @preconcurrency public static var sceneWillResignActive: ((UIKit.UIScene) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public static var compositorUUID: Foundation.UUID?
   @_Concurrency.MainActor @preconcurrency @objc public func scene(_ scene: UIKit.UIScene, willConnectTo session: UIKit.UISceneSession, options connectionOptions: UIKit.UIScene.ConnectionOptions)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneWillEnterForeground(_ scene: UIKit.UIScene)
   @_Concurrency.MainActor @preconcurrency @objc public func sceneDidEnterBackground(_ scene: UIKit.UIScene)
@@ -243,6 +244,7 @@ public struct PackedIdentifier : Swift.CustomStringConvertible {
   public typealias Body = @_opaqueReturnTypeOf("$s21PolySpatialRealityKit0aB18ContentViewWrapperV4bodyQrvp", 0) __
 }
 public protocol PolySpatialWindowManagerDelegate {
+  func initialWindowName() -> Swift.String
   func getAllAvailableWindows() -> [Swift.String]
   func getAvailableWindowsForMatch() -> [simd.simd_float3]
   func requestOpenWindow(_ config: Swift.String)
@@ -264,7 +266,7 @@ public protocol PolySpatialWindowManagerDelegate {
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Equatable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.Hashable {}
 extension PolySpatialRealityKit.PolySpatialConsoleLogType : Swift.RawRepresentable {}
-extension PolySpatialRealityKit.PolySpatialViewSubGraph : Swift.Sendable {}
+extension PolySpatialRealityKit.PolySpatialViewSubgraph : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialVolume : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialSceneDelegate : Swift.Sendable {}
 extension PolySpatialRealityKit.PolySpatialRealityKitAccess : Swift.Sendable {}

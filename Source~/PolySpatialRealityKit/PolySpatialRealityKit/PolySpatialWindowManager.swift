@@ -7,6 +7,8 @@ import Combine
 // call openWindow/dismissWindow. It is passed via PolySpatialWindowManagerAccess
 // to PolySpatialWindowManager.
 public protocol PolySpatialWindowManagerDelegate {
+    func initialWindowName() -> String
+
     func getAllAvailableWindows() -> [String]
 
     func getAvailableWindowsForMatch() -> [simd_float3]
@@ -174,12 +176,8 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
         if (sceneState == .active) {
             // When the app is being brought back from background state and this isn't the first time,
             // then manually open the immersive space if it was previously closed by the OS and the user still wants it around.
-            // Additionally, check if multiple volumes exist - if the immersive space is the only volume that was requested by the user, the OS will automatically bring it back, which means the command below is redundant.
-            let multipleVolumesPresent = allVolumes.count > 1
-            if (userRequestedAnImmersiveSpace() &&
-                immersiveSpaceWasClosed &&
-                multipleVolumesPresent) {
-                pslVolumeLog.trace("Reopening immersive space after it was closed by OS.")
+            if (userRequestedAnImmersiveSpace() && immersiveSpaceWasClosed && PolySpatialWindowManagerAccess.delegate?.initialWindowName() != immersiveSpaceConfig) {
+                pslVolumeLog.trace("Reopening immersive space \(self.immersiveSpaceConfig) after it was closed by OS.")
                 PolySpatialWindowManagerAccess.delegate?.requestOpenWindow(immersiveSpaceConfig)
             }
             
@@ -241,9 +239,15 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
     func on(windowAdded window: PolySpatialWindow, _ delegate: PolySpatialSceneDelegate? = nil, _ actualDimensions: simd_float3? = nil) {
         pslVolumeLog.trace("Window added: uuid \(window.uuid, privacy: .public) as \(window.windowConfiguration, privacy: .public)")
 
-        // ImmersiveSpaces using CompositorServices don't have a scene delegate. They provide their window ID by explicitly
-        // calling PolySpatialWindowManagerAccess.onCompositorSpaceOpened(window) when they are opened
-        if delegate != nil {
+        if delegate == nil {
+            // ImmersiveSpaces using CompositorServices don't have a scene delegate. They provide their window ID by explicitly
+            // calling PolySpatialWindowManagerAccess.onCompositorSpaceOpened(window) when they are opened
+            if (window.windowConfiguration == "CompositorSpace") {
+                PolySpatialSceneDelegate.compositorUUID = window.uuid
+            } else {
+                pslVolumeLog.warning("A PolySpatialWindow was added with no scene delegate, and is not CompositorSpace. This is unexpected.")
+            }
+        } else {
             delegate!.pslWindowUUID = window.uuid
         }
 

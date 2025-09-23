@@ -94,39 +94,39 @@ extension PolySpatialHostID : Equatable, Hashable, CustomStringConvertible {
 // Extension to add Hashable support to the PolySpatialInstanceID type. This allows it
 // to act as a key
 extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
-    public init(id: Int64, hostId: PolySpatialHostID, hostVolumeIndex: UInt8) {
-        self.init(id: id, hostId: hostId, hostVolumeIndex: hostVolumeIndex, _Padding0: 0, _Padding1: 0)
+    public init(id: Int64, hostId: PolySpatialHostID, viewSubgraphIndex: UInt8) {
+        self.init(id: id, hostId: hostId, viewSubgraphIndex: viewSubgraphIndex, _Padding0: 0, _Padding1: 0)
     }
 
     public var description: String {
-        hostVolumeIndex == 0 ? (hostId.IsLocal ? "\(id)" : "\(id):\(hostId)") : "\(id):\(hostId):\(hostVolumeIndex)";
+        viewSubgraphIndex == 0 ? (hostId.IsLocal ? "\(id)" : "\(id):\(hostId)") : "\(id):\(hostId):\(viewSubgraphIndex)";
     }
 
     public static func == (lhs: PolySpatialInstanceID, rhs: PolySpatialInstanceID) -> Bool {
-        return lhs.id == rhs.id && lhs.hostId == rhs.hostId && lhs.hostVolumeIndex == rhs.hostVolumeIndex
+        return lhs.id == rhs.id && lhs.hostId == rhs.hostId && lhs.viewSubgraphIndex == rhs.viewSubgraphIndex
     }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(hostId)
-        hasher.combine(hostVolumeIndex)
+        hasher.combine(viewSubgraphIndex)
     }
 
     public var isValid: Bool { return id != 0 }
 
-    public static let none = PolySpatialInstanceID.init(id: 0, hostId: PolySpatialHostID.init(connectionId: 0), hostVolumeIndex: 0)
+    public static let none = PolySpatialInstanceID.init(id: 0, hostId: PolySpatialHostID.init(connectionId: 0), viewSubgraphIndex: 0)
 
     public init(packed: PackedIdentifier) {
         self.init(
             id: .init(bitPattern: packed.id0),
             hostId: .init(connectionId: .init(truncatingIfNeeded: packed.id1)),
-            hostVolumeIndex: .init(truncatingIfNeeded: (packed.id1 >> 32)))
+            viewSubgraphIndex: .init(truncatingIfNeeded: (packed.id1 >> 32)))
     }
 
     public var packed: PackedIdentifier {
         .init(
             id0: .init(bitPattern: id),
-            id1: .init(hostVolumeIndex) << 32 | .init(hostId.connectionId))
+            id1: .init(viewSubgraphIndex) << 32 | .init(hostId.connectionId))
     }
 }
 
@@ -148,8 +148,8 @@ struct UnsafePolySpatialInstanceIDBufferPointer {
         data.load(as: PolySpatialInstanceIDListHeader.self).hostId
     }
 
-    public var hostVolumeIndex: UInt8 {
-        data.load(as: PolySpatialInstanceIDListHeader.self).hostVolumeIndex
+    public var viewSubgraphIndex: UInt8 {
+        data.load(as: PolySpatialInstanceIDListHeader.self).viewSubgraphIndex
     }
 }
 

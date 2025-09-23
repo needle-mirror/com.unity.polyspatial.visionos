@@ -9,14 +9,14 @@ import SwiftUI
 import Combine
 
 @MainActor
-public class PolySpatialViewSubGraph {
-    let volumeIndex: UInt8
+public class PolySpatialViewSubgraph {
+    let viewSubgraphIndex: UInt8
     let root: Entity
     var entities: [Int64: PolySpatialEntity] = [:]
     var volume: PolySpatialVolume? = nil
 
     init(_ vidx: UInt8) {
-        volumeIndex = vidx
+        viewSubgraphIndex = vidx
         root = Entity()
     }
 }
@@ -37,8 +37,8 @@ class PolySpatialVolumeAlignmentSystem: System {
     }
 
     func update(context: SceneUpdateContext) {
-        for viewSubGraph in PolySpatialRealityKit.instance.viewSubGraphs {
-            viewSubGraph?.volume?.updateAlignmentMarkerTransform(.init(context.deltaTime))
+        for viewSubgraph in PolySpatialRealityKit.instance.viewSubgraphs {
+            viewSubgraph?.volume?.updateAlignmentMarkerTransform(.init(context.deltaTime))
         }
     }
 }

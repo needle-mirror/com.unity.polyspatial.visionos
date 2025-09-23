@@ -25,6 +25,7 @@ class ValidShaderGraph: CachedShaderGraph {
     let hasLightmapProperties: Bool
     let hasLightProbeProperties: Bool
     let hasReflectionProbeProperties: Bool
+    let hasVertexColorsProperty: Bool
     var shaderGlobalProperties: [ShaderGlobalProperty] = []
     var shaderGraphInstances: Set<ValidShaderGraphInstance> = []
 
@@ -119,6 +120,7 @@ class ValidShaderGraph: CachedShaderGraph {
         self.hasLightmapProperties = ShaderManager.kLightmapParams.contains(where: parameterNames.contains)
         self.hasLightProbeProperties = ShaderManager.kLightProbeParams.contains(where: parameterNames.contains)
         self.hasReflectionProbeProperties = ShaderManager.kReflectionProbeParams.contains(where: parameterNames.contains)
+        self.hasVertexColorsProperty = parameterNames.contains(ShaderManager.kHasVertexColorsParam)
         super.init(shaderId)
         updateShaderGlobalProperties()
     }

@@ -21,8 +21,6 @@ namespace Unity.PolySpatial.Internals
 
         public IPolySpatialHostCommandHandler NextHostHandler { get; set; }
 
-        public bool RequiresSessionSceneGraphHandler => true;
-
         static Platform.PolySpatialNativeAPI s_OldAPIPointers;
         static RealityKitBackend s_Instance;
 

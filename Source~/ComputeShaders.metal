@@ -274,6 +274,16 @@ inline void copy(device const T* sourceBegin, device const T* sourceEnd, device 
     }
 }
 
+// Assigns a range of values.  There's no std::fill/memset in MSL, as far as I can tell.
+template<typename T>
+inline void fill(device T* destBegin, device T* destEnd, T value)
+{
+    for (auto dest = destBegin; dest < destEnd; ++dest)
+    {
+        *dest = value;
+    }
+}
+
 // Transfers all the vertex attributes that we support for a single buffer in one pass.
 kernel void transferVertexAttributes(
     device const uint8_t* sourceVertices [[buffer(0)]],
@@ -389,16 +399,6 @@ struct BatchExtents
     int32_t destSize;
 };
 
-// Assigns a range of values.  There's no std::fill/memset in MSL, as far as I can tell.
-template<typename T>
-inline void fill(device T* destBegin, device T* destEnd, T value)
-{
-    for (auto dest = destBegin; dest < destEnd; ++dest)
-    {
-        *dest = value;
-    }
-}
-
 // Transfers a block of vertex data from one buffer to another, applying transforms to the point/vector values
 // and performing simple conversions based on the sizes contained in the attribute extents.
 kernel void batchVertices(
@@ -411,13 +411,15 @@ kernel void batchVertices(
     device const uint32_t& destStart [[buffer(6)]],
     device const float4x4& transformMatrix [[buffer(7)]],
     device const float3x3& normalMatrix [[buffer(8)]],
-    device const BatchExtents& positionExtents [[buffer(9)]],
-    device const BatchExtents& normalExtents [[buffer(10)]],
-    device const BatchExtents& tangentExtents [[buffer(11)]],
-    device const BatchExtents& bitangentExtents [[buffer(12)]],
-    device const BatchExtents& colorExtents [[buffer(13)]],
-    device const BatchExtents* texCoordExtents [[buffer(14)]],
-    device const uint32_t& texCoordExtentsCount [[buffer(15)]],
+    device const float4& lightmapScaleOffset [[buffer(9)]],
+    device const BatchExtents& positionExtents [[buffer(10)]],
+    device const BatchExtents& normalExtents [[buffer(11)]],
+    device const BatchExtents& tangentExtents [[buffer(12)]],
+    device const BatchExtents& bitangentExtents [[buffer(13)]],
+    device const BatchExtents& colorExtents [[buffer(14)]],
+    device const BatchExtents& lightmapTexCoordExtents [[buffer(15)]],
+    device const BatchExtents* otherTexCoordExtents [[buffer(16)]],
+    device const uint32_t& otherTexCoordExtentsCount [[buffer(17)]],
     uint vertexIndex [[thread_position_in_grid]])
 {
     if (vertexIndex >= vertexCount)
@@ -473,8 +475,21 @@ kernel void batchVertices(
                 *(device packed_float4*)dest = packed_float4(color.r, color.g, color.b, color.a) / 255.0f;
         }
     }
+    else if (colorExtents.destOffset >= 0)
+    {
+        // If we have a dest but no source, assume we should fill in white colors.
+        auto dest = destVertex + colorExtents.destOffset;
+        *(device packed_float4*)dest = packed_float4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
 
-    for (auto extents = texCoordExtents, end = extents + texCoordExtentsCount; extents < end; ++extents)
+    if (lightmapTexCoordExtents.sourceOffset >= 0)
+    {
+        auto packed = *(device const packed_float2*)(sourceVertex + lightmapTexCoordExtents.sourceOffset);
+        auto transformed = float2(packed) * lightmapScaleOffset.xy + lightmapScaleOffset.zw;
+        *(device packed_float2*)(destVertex + lightmapTexCoordExtents.destOffset) = packed_float2(transformed);
+    }
+
+    for (auto extents = otherTexCoordExtents, end = extents + otherTexCoordExtentsCount; extents < end; ++extents)
     {
         auto source = (device const float*)(sourceVertex + extents->sourceOffset);
         auto dest = (device float*)(destVertex + extents->destOffset);

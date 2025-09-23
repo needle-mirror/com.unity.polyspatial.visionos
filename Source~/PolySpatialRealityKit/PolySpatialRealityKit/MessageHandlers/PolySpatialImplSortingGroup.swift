@@ -24,10 +24,10 @@ extension PolySpatialRealityKit {
             }
 
             let sortGroup: ModelSortGroup = .init(depthPass: info.depthPass.rk())
-            
+
             for member in info.membersAsBuffer! {
                 // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-                let remappedMember = PolySpatialInstanceID(id: member.renderer.id, hostId: id.hostId, hostVolumeIndex: id.hostVolumeIndex)
+                let remappedMember = PolySpatialInstanceID(id: member.renderer.id, hostId: id.hostId, viewSubgraphIndex: id.viewSubgraphIndex)
                 guard let rendererEntity = TryGetEntity(remappedMember) else {
                     continue
                 }
@@ -41,7 +41,7 @@ extension PolySpatialRealityKit {
             }
         }
     }
-    
+
     func destroySortingGroup(_ id : PolySpatialInstanceID) {
         CleanUpSortingGroups(id)
     }

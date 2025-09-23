@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [2.4.2] - 2025-09-23
+
+### Fixed
+- Fixed issue where sprites and other meshes without vertex colors would appear black when using "GPU Mesh Transfer."
+- Fixed OpenWindow() and CloseWindow() in VolumeCamera not working.
+- Fixed issue where VisionOSVideoComponent didn't display anything on application startup.
+- Fixed failure to batch static GameObjects with lightmaps.
+- Fixed error merging static meshes with "GPU Mesh Transfer" enabled.
+- Reduced memory usage for meshes when "GPU Mesh Transfer" is disabled.
+- Fix an issue where compositor spaces would not properly re-enable in hybrid apps after resuming from the background.
+
+### Security
+
 ## [2.3.1] - 2025-05-12
 
 ### Added

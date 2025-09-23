@@ -19,6 +19,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
     override var hasLightmapProperties: Bool { shaderGraph.hasLightmapProperties }
     override var hasLightProbeProperties: Bool { shaderGraph.hasLightProbeProperties }
     override var hasReflectionProbeProperties: Bool { shaderGraph.hasReflectionProbeProperties }
+    override var hasVertexColorsProperty: Bool { shaderGraph.hasVertexColorsProperty }
 
     init(_ id: PolySpatialAssetID, _ shaderGraph: ValidShaderGraph) {
         self.shaderGraph = shaderGraph
@@ -48,72 +49,102 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
     }
 
     func updateMaterialDefinition(_ materialDef: PolySpatialShaderMaterial) {
-        var hasPropertiesIndex = 0
-        for (index, handle) in shaderGraph.floatHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                let propertyValue = materialDef.floatProperties[index]
-                if let propertyApplier = shaderGraph.floatPropertyAppliers[index] {
-                    propertyApplier(self, propertyValue)
-                } else {
-                    try? material.setParameter(handle: handle, value: .float(propertyValue))
+        var propertyArrayCountIndex = 0
+        do {
+            var offset = 0
+            for (index, handle) in shaderGraph.floatHandles.enumerated() {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
+                    let propertyValue = materialDef.floatProperties[offset]
+                    if let propertyApplier = shaderGraph.floatPropertyAppliers[index] {
+                        propertyApplier(self, propertyValue)
+                    } else {
+                        try? material.setParameter(handle: handle, value: .float(propertyValue))
+                        setParams.insert(handle)
+                    }
+                    offset += Int(count)
+                }
+                propertyArrayCountIndex += 1
+            }
+        }
+        do {
+            var offset = 0
+            for handle in shaderGraph.intHandles {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
+                    let propertyValue = materialDef.intProperties[offset]
+                    try? material.setParameter(handle: handle, value: .int(propertyValue))
                     setParams.insert(handle)
+                    offset += Int(count)
                 }
+                propertyArrayCountIndex += 1
             }
-            hasPropertiesIndex += 1
         }
-        for (index, handle) in shaderGraph.intHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                let propertyValue = materialDef.intProperties[index]
-                try? material.setParameter(handle: handle, value: .int(propertyValue))
-                setParams.insert(handle)
-            }
-            hasPropertiesIndex += 1
-        }
-        for (index, handle) in shaderGraph.vectorHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                let propertyValue = ConvertPolySpatialVec4VectorToFloat4(
-                    materialDef.vector4Properties(at: Int32(index))!)
-                try? material.setParameter(
-                    handle: handle,
-                    value: shaderGraph.vectorIsVector2[index] ?
-                        .simd2Float(propertyValue.xy) : .simd4Float(propertyValue))
-                setParams.insert(handle)
-            }
-            hasPropertiesIndex += 1
-        }
-        for (index, handle) in shaderGraph.colorHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                let propertyValue = materialDef.colorProperties(at: Int32(index))!.cgColor()
-                try? material.setParameter(handle: handle, value: .color(propertyValue))
-                setParams.insert(handle)
-            }
-            hasPropertiesIndex += 1
-        }
-        for (index, handle) in shaderGraph.matrixHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                let propertyValue = ConvertPolySpatialMatrix4x4ToFloat4x4(
-                    materialDef.matrix4x4Properties(at: Int32(index))!)
-                try? material.setParameter(
-                    handle: handle, value: shaderGraph.matrixValueCreators[index](propertyValue))
-                setParams.insert(handle)
-            }
-            hasPropertiesIndex += 1
-        }
-        for (index, handle) in shaderGraph.textureHandles.enumerated() {
-            if materialDef.hasProperties[hasPropertiesIndex] {
-                setTextureParam(
-                    handle,
-                    PolySpatialRealityKit.TextureParam(
-                        materialDef.textureProperties(at: Int32(index))!, shaderGraph.textureSizeHandles[index]))
-
-                if let transformHandle = shaderGraph.textureTransformHandles[index] {
+        do {
+            var offset = 0
+            for (index, handle) in shaderGraph.vectorHandles.enumerated() {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
                     let propertyValue = ConvertPolySpatialVec4VectorToFloat4(
-                        materialDef.textureTransformProperties(at: Int32(index))!)
-                    try? material.setParameter(handle: transformHandle, value: .simd4Float(propertyValue))
+                        materialDef.vector4Properties(at: Int32(offset))!)
+                    try? material.setParameter(
+                        handle: handle,
+                        value: shaderGraph.vectorIsVector2[index] ?
+                            .simd2Float(propertyValue.xy) : .simd4Float(propertyValue))
+                    setParams.insert(handle)
+                    offset += Int(count)
                 }
-                setParams.insert(handle)
+                propertyArrayCountIndex += 1
             }
-            hasPropertiesIndex += 1
+        }
+        do {
+            var offset = 0
+            for handle in shaderGraph.colorHandles {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
+                    let propertyValue = materialDef.colorProperties(at: Int32(offset))!.cgColor()
+                    try? material.setParameter(handle: handle, value: .color(propertyValue))
+                    setParams.insert(handle)
+                    offset += Int(count)
+                }
+                propertyArrayCountIndex += 1
+            }
+        }
+        do {
+            var offset = 0
+            for (index, handle) in shaderGraph.matrixHandles.enumerated() {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
+                    let propertyValue = ConvertPolySpatialMatrix4x4ToFloat4x4(
+                        materialDef.matrix4x4Properties(at: Int32(offset))!)
+                    try? material.setParameter(
+                        handle: handle, value: shaderGraph.matrixValueCreators[index](propertyValue))
+                    setParams.insert(handle)
+                    offset += Int(count)
+                }
+                propertyArrayCountIndex += 1
+            }
+        }
+        do {
+            var offset = 0
+            for (index, handle) in shaderGraph.textureHandles.enumerated() {
+                let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
+                if count > 0 {
+                    setTextureParam(
+                        handle,
+                        PolySpatialRealityKit.TextureParam(
+                            materialDef.textureProperties(at: Int32(offset))!, shaderGraph.textureSizeHandles[index]))
+
+                    if let transformHandle = shaderGraph.textureTransformHandles[index] {
+                        let propertyValue = ConvertPolySpatialVec4VectorToFloat4(
+                            materialDef.textureTransformProperties(at: Int32(offset))!)
+                        try? material.setParameter(handle: transformHandle, value: .simd4Float(propertyValue))
+                    }
+                    setParams.insert(handle)
+                    offset += Int(count)
+                }
+                propertyArrayCountIndex += 1
+            }
         }
         for (index, handle) in shaderGraph.keywordHandles.enumerated() {
             let keywordValue = materialDef.keywordValues[index]

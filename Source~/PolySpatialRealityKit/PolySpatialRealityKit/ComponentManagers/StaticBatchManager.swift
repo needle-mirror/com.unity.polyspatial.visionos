@@ -10,25 +10,28 @@ class StaticBatchManager {
     // The set of static batch roots that need to be updated on the current frame.
     var dirtyStaticBatchRootIds: Set<PolySpatialInstanceID> = []
 
+    static let lightmapUVIdentifier = MeshBuffers.custom(
+        PolySpatialRealityKit.instance.describe(vertexUVIndex: 1), type: simd_float2.self).id
+
     // A key used to group static batch elements to PolySpatialEntity instances.  Each PolySpatialEntity
     // can only have one set of lighting parameters (lightmap, light probes, etc.)
     struct StaticBatchKey: Equatable, Hashable {
         let lightmapColorId: PolySpatialAssetID
         let lightmapDirId: PolySpatialAssetID
-        let lightmapScaleOffset: simd_float4
         let lightProbeCoefficients: [simd_float4]
         let reflectionProbes: [PolySpatialReflectionProbeData]
 
         init(_ lightmapColorId: PolySpatialAssetID,
             _ lightmapDirId: PolySpatialAssetID,
-            _ lightmapScaleOffset: simd_float4,
             _ lightProbeCoefficients: [simd_float4],
             _ reflectionProbes: [PolySpatialReflectionProbeData]) {
 
             self.lightmapColorId = lightmapColorId
             self.lightmapDirId = lightmapDirId
-            self.lightmapScaleOffset = lightmapScaleOffset
-            self.lightProbeCoefficients = lightProbeCoefficients
+            // If we have lightmaps, don't distinguish between groups based on light probe coefficients.  Static
+            // entities shouldn't require both lightmaps and light probes.
+            self.lightProbeCoefficients = (lightmapColorId.isValid || lightmapDirId.isValid) ?
+                [.zero, .zero, .zero, .zero, .zero, .zero, .zero] : lightProbeCoefficients
             self.reflectionProbes = reflectionProbes
         }
     }
@@ -49,7 +52,7 @@ class StaticBatchManager {
     // the scene root entity.
     func getStaticBatchRootEntity(_ id: PolySpatialInstanceID) -> Entity? {
         id.isValid ? PolySpatialRealityKit.instance.TryGetEntity(id) :
-            PolySpatialRealityKit.instance.viewSubGraphs[Int(id.hostVolumeIndex)]?.root
+            PolySpatialRealityKit.instance.viewSubgraphs[Int(id.viewSubgraphIndex)]?.root
     }
 
     // Updates the static batch with the given root id and associated entity, creating one or more children for each
@@ -74,7 +77,8 @@ class StaticBatchManager {
                 var elementTypes: Dictionary<MeshBuffers.Identifier, MeshBuffers.ElementType> = [:]
                 var bytesPerVertex = 0
 
-                mutating func add(_ part: MeshResource.Part) {
+                @MainActor
+                mutating func add(_ part: MeshResource.Part, _ hasLightmaps: Bool) {
                     for (identifier, buffer) in part.buffers {
                         if elementTypes.updateValue(buffer.elementType, forKey: identifier) == nil {
                             switch buffer.elementType {
@@ -84,6 +88,10 @@ class StaticBatchManager {
                                 default: break // UInt32 for indices; added separately.
                             }
                         }
+                    }
+                    if hasLightmaps && elementTypes.updateValue(
+                            .simd2Float, forKey: StaticBatchManager.lightmapUVIdentifier) == nil {
+                        bytesPerVertex += MemoryLayout<simd_float2>.size
                     }
                 }
             }
@@ -120,7 +128,7 @@ class StaticBatchManager {
                     semanticFormats.values.map({ $0.size() }).reduce(0, +)
                 }
 
-                mutating func add(_ lowLevelMesh: LowLevelMesh) {
+                mutating func add(_ lowLevelMesh: LowLevelMesh, _ hasLightmaps: Bool) {
                     for vertexAttribute in lowLevelMesh.descriptor.vertexAttributes {
                         guard let existingFormat = semanticFormats[vertexAttribute.semantic] else {
                             semanticFormats[vertexAttribute.semantic] = vertexAttribute.format
@@ -134,6 +142,9 @@ class StaticBatchManager {
                                 semanticFormats[vertexAttribute.semantic] = .float4
                             default: break
                         }
+                    }
+                    if hasLightmaps {
+                        semanticFormats[.uv1] = .float2
                     }
                 }
             }
@@ -169,6 +180,7 @@ class StaticBatchManager {
             var lowLevelMergedBounds = BoundingBox.empty
 
             // Collect the per-material buffer summaries and all the parts we need to merge for the key.
+            let hasLightmaps = staticBatchKey.lightmapColorId.isValid || staticBatchKey.lightmapDirId.isValid
             for element in elements {
                 let renderInfo = element.renderInfo
                 let mesh = renderInfo.mesh
@@ -180,7 +192,8 @@ class StaticBatchManager {
                     for (part, vertexRange) in zip(lowLevelMesh.parts, vertexRanges) {
                         if part.materialIndex < renderInfo.materialIds.count {
                             let materialId = renderInfo.materialIds[part.materialIndex]
-                            lowLevelMaterialBufferSummaries[materialId, default: .init()].add(lowLevelMesh)
+                            lowLevelMaterialBufferSummaries[materialId, default: .init()].add(
+                                lowLevelMesh, hasLightmaps)
                             let transformMatrix = element.transformMatrix(relativeTo: entity)
                             lowLevelMergeParts.append(.init(
                                 element, materialId, lowLevelMesh, part, vertexRange, transformMatrix))
@@ -192,7 +205,7 @@ class StaticBatchManager {
                         for part in model.parts {
                             if part.materialIndex < renderInfo.materialIds.count {
                                 let materialId = renderInfo.materialIds[part.materialIndex]
-                                materialBufferSummaries[materialId, default: .init()].add(part)
+                                materialBufferSummaries[materialId, default: .init()].add(part, hasLightmaps)
                                 mergeParts.append(.init(
                                     element, materialId, part, element.transformMatrix(relativeTo: entity)))
                             }
@@ -273,9 +286,41 @@ class StaticBatchManager {
                     })
                 }
 
+                // Merges the lightmap texture coordinates for the parts with the specified material.
+                func mergeLightmapUVs(
+                    _ materialId: PolySpatialAssetID,
+                    _ size: Int,
+                    _ identifier: MeshBuffers.Identifier) -> MeshBuffer<simd_float2> {
+
+                    .init(.init(unsafeUninitializedCapacity: size) { buffer, initializedCount in
+                        var bufferIndex = 0
+                        for mergePart in mergeParts[range].filter({ $0.materialId == materialId }) {
+                            // If there's no UV1, the lightmap coordinates will be in UV0 (as in the Plane mesh).
+                            if let source = mergePart.part.buffers[identifier]?.get(simd_float2.self) ??
+                                    mergePart.part.textureCoordinates {
+                                let scaleOffset = mergePart.element.renderInfo.flippedLightmapScaleOffset
+                                for value in source {
+                                    buffer[bufferIndex] = .init(
+                                        value.x * scaleOffset.x + scaleOffset.z,
+                                        value.y * scaleOffset.y + scaleOffset.w)
+                                    bufferIndex += 1
+                                }
+                            } else {
+                                // If the buffer isn't present, just initialize to zero.
+                                for _ in 0..<mergePart.part.positions.count {
+                                    buffer[bufferIndex] = .init()
+                                    bufferIndex += 1
+                                }
+                            }
+                        }
+                        initializedCount = size
+                    })
+                }
+
                 // Used in mergeFloat[2, 3, 4], this creates an array initializer for a merged buffer.
                 func createMergeInitializer<T>(
-                    _ materialId: PolySpatialAssetID, _ size: Int, _ identifier: MeshBuffers.Identifier) ->
+                    _ materialId: PolySpatialAssetID, _ size: Int, _ identifier: MeshBuffers.Identifier,
+                    _ defaultValue: T = .zero) ->
                         (inout UnsafeMutableBufferPointer<T>, inout Int) -> Void where T: SIMD<Float> {
                     { buffer, initializedCount in
                         var bufferIndex = 0
@@ -286,9 +331,9 @@ class StaticBatchManager {
                                     bufferIndex += 1
                                 }
                             } else {
-                                // If the buffer isn't present, just initialize to zero.
+                                // If the buffer isn't present, just initialize to the default value.
                                 for _ in 0..<mergePart.part.positions.count {
-                                    buffer[bufferIndex] = .zero
+                                    buffer[bufferIndex] = defaultValue
                                     bufferIndex += 1
                                 }
                             }
@@ -320,11 +365,12 @@ class StaticBatchManager {
                 func mergeFloat4(
                     _ materialId: PolySpatialAssetID,
                     _ size: Int,
-                    _ identifier: MeshBuffers.Identifier) -> MeshBuffer<simd_float4> {
+                    _ identifier: MeshBuffers.Identifier,
+                    _ defaultValue: simd_float4) -> MeshBuffer<simd_float4> {
 
                     .init(.init(
                         unsafeUninitializedCapacity: size,
-                        initializingWith: createMergeInitializer(materialId, size, identifier)))
+                        initializingWith: createMergeInitializer(materialId, size, identifier, defaultValue)))
                 }
 
                 // Create the mesh contents by merging all merge parts with the same material.
@@ -345,6 +391,9 @@ class StaticBatchManager {
                                 part.bitangents = mergeVectors(materialId, totals.vertices, identifier, false)
                             case MeshBuffers.Identifier.textureCoordinates.name:
                                 part.textureCoordinates = mergeFloat2(materialId, totals.vertices, identifier)
+                            case StaticBatchManager.lightmapUVIdentifier.name where elementType == .simd2Float:
+                                part[MeshBuffers.custom(identifier.name, type: simd_float2.self)] =
+                                    mergeLightmapUVs(materialId, totals.vertices, identifier)
                             default:
                                 switch elementType {
                                     case .simd2Float:
@@ -354,8 +403,12 @@ class StaticBatchManager {
                                         part[MeshBuffers.custom(identifier.name, type: simd_float3.self)] =
                                             mergeFloat3(materialId, totals.vertices, identifier)
                                     case .simd4Float:
+                                        // Note that the default for vertex colors needs to be .one, not .zero.
                                         part[MeshBuffers.custom(identifier.name, type: simd_float4.self)] =
-                                            mergeFloat4(materialId, totals.vertices, identifier)
+                                            mergeFloat4(
+                                                materialId, totals.vertices, identifier,
+                                                identifier == PolySpatialRealityKit.vertexColorSemantic.id ?
+                                                    .one : .zero)
                                     default:
                                         PolySpatialRealityKit.LogError(
                                             "Unsupported vertex buffer type: \(elementType)")
@@ -437,19 +490,23 @@ class StaticBatchManager {
                 for (materialId, bufferTotals) in materialIdToBufferTotals {
                     let bufferSummary = lowLevelMaterialBufferSummaries[materialId]!
 
+                    // Keep the attributes in our defined order so that they're consistent for state verification.
+                    var orderedAttributes: [LowLevelMesh.Attribute] = []
                     var semanticAttributes: [LowLevelMesh.VertexSemantic: LowLevelMesh.Attribute] = [:]
                     var attributeOffset = 0
                     for semantic in PolySpatialRealityKit.orderedVertexSemantics {
                         if let format = bufferSummary.semanticFormats[semantic] {
-                            semanticAttributes[semantic] = .init(
+                            let attribute = LowLevelMesh.Attribute(
                                 semantic: semantic, format: format, layoutIndex: 0, offset: attributeOffset)
+                            orderedAttributes.append(attribute)
+                            semanticAttributes[semantic] = attribute
                             attributeOffset += format.size()
                         }
                     }
 
                     let lowLevelMesh = try! LowLevelMesh(descriptor: .init(
                         vertexCapacity: bufferTotals.vertices,
-                        vertexAttributes: .init(semanticAttributes.values),
+                        vertexAttributes: orderedAttributes,
                         vertexLayouts: [.init(bufferIndex: 0, bufferOffset: 0, bufferStride: attributeOffset)],
                         indexCapacity: bufferTotals.indices,
                         indexType: .uint32))
@@ -495,6 +552,8 @@ class StaticBatchManager {
                         commandEncoder.setBytes(&transformMatrix, length: MemoryLayout<simd_float4x4>.size, index: 7)
                         var normalMatrix = mergePart.normalMatrix
                         commandEncoder.setBytes(&normalMatrix, length: MemoryLayout<simd_float3x3>.size, index: 8)
+                        var lightmapScaleOffset = mergePart.element.renderInfo.flippedLightmapScaleOffset
+                        commandEncoder.setBytes(&lightmapScaleOffset, length: MemoryLayout<simd_float4>.size, index: 9)
 
                         // We assign one buffer per layout when we create the LowLevelMesh.
                         for layout in mergePart.lowLevelMesh.descriptor.vertexLayouts {
@@ -514,16 +573,29 @@ class StaticBatchManager {
                                 let destSize: Int32
                             }
 
-                            // Start off with position/normal/tangent/bitangent/color set to "unused."
+                            // Start off with position/normal/tangent/bitangent/lightmap coords set to "unused."
                             var unusedExtents = BatchExtents(
                                 sourceOffset: -1, destOffset: -1, sourceSize: -1, destSize: -1)
-                            commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 9)
                             commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 10)
                             commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 11)
                             commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 12)
                             commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 13)
+                            commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 15)
 
-                            var texCoordExtents: [BatchExtents] = []
+                            // For colors, if writing, default to dest with no source (which will fill in white values).
+                            if let colorDestAttribute = semanticAttributes[.color] {
+                                var whiteExtents = BatchExtents(
+                                    sourceOffset: -1,
+                                    destOffset: Int32(colorDestAttribute.offset),
+                                    sourceSize: -1,
+                                    destSize: Int32(colorDestAttribute.format.size()))
+                                commandEncoder.setBytes(&whiteExtents, length: MemoryLayout<BatchExtents>.size, index: 14)
+                            } else {
+                                commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 14)
+                            }
+
+                            var otherTexCoordExtents: [BatchExtents] = []
+                            let hasUV1 = mergePart.lowLevelMesh.descriptor.vertexAttributes.contains { $0.semantic == .uv1 }
                             for sourceAttribute in mergePart.lowLevelMesh.descriptor.vertexAttributes {
                                 if sourceAttribute.layoutIndex != layout.bufferIndex {
                                     continue
@@ -536,32 +608,53 @@ class StaticBatchManager {
                                     destSize: Int32(destAttribute.format.size()))
                                 switch sourceAttribute.semantic {
                                     case .position:
-                                        commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 9)
-                                    case .normal:
                                         commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 10)
-                                    case .tangent:
+                                    case .normal:
                                         commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 11)
-                                    case .bitangent:
+                                    case .tangent:
                                         commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 12)
-                                    case .color:
+                                    case .bitangent:
                                         commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 13)
-                                    case .uv0, .uv1, .uv2, .uv3, .uv4, .uv5, .uv6, .uv7:
-                                        texCoordExtents.append(extents)
+                                    case .color:
+                                        commandEncoder.setBytes(&extents, length: MemoryLayout<BatchExtents>.size, index: 14)
+                                    case .uv0:
+                                        // If we don't have a UV1, we substitute UV0 (as in the Plane mesh).
+                                        if hasLightmaps && !hasUV1 {
+                                            let uv1Attribute = semanticAttributes[.uv1]!
+                                            var uv1Extents = BatchExtents(
+                                                sourceOffset: extents.sourceOffset,
+                                                destOffset: Int32(uv1Attribute.offset),
+                                                sourceSize: extents.sourceSize,
+                                                destSize: Int32(uv1Attribute.format.size()))
+                                            commandEncoder.setBytes(
+                                                &uv1Extents, length: MemoryLayout<BatchExtents>.size, index: 15)
+                                        }
+                                        // We still want the untransformed UV0 as UV0.
+                                        otherTexCoordExtents.append(extents)
+                                    case .uv1:
+                                        if hasLightmaps {
+                                            commandEncoder.setBytes(
+                                                &extents, length: MemoryLayout<BatchExtents>.size, index: 15)
+                                        } else {
+                                            otherTexCoordExtents.append(extents)
+                                        }
+                                    case .uv2, .uv3, .uv4, .uv5, .uv6, .uv7:
+                                        otherTexCoordExtents.append(extents)
                                     default:
                                         fatalError("Unsupported semantic: \(sourceAttribute.semantic)")
                                 }
                             }
                             // Setting the buffer to "zero" (empty array) causes a "missing buffer binding" exception,
                             // so instead we use a single unused extents struct as a placeholder.
-                            if texCoordExtents.isEmpty {
-                                commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 14)
+                            if otherTexCoordExtents.isEmpty {
+                                commandEncoder.setBytes(&unusedExtents, length: MemoryLayout<BatchExtents>.size, index: 16)
                             } else {
-                                texCoordExtents.withUnsafeMutableBytes {
-                                    commandEncoder.setBytes($0.baseAddress!, length: $0.count, index: 14)
+                                otherTexCoordExtents.withUnsafeMutableBytes {
+                                    commandEncoder.setBytes($0.baseAddress!, length: $0.count, index: 16)
                                 }
                             }
-                            var texCoordExtentsCount = UInt32(texCoordExtents.count)
-                            commandEncoder.setBytes(&texCoordExtentsCount, length: MemoryLayout<UInt32>.size, index: 15)
+                            var otherTexCoordExtentsCount = UInt32(otherTexCoordExtents.count)
+                            commandEncoder.setBytes(&otherTexCoordExtentsCount, length: MemoryLayout<UInt32>.size, index: 17)
 
                             commandEncoder.dispatchThreadgroups(
                                 .init(width: mergePart.vertexCount, height: 1, depth: 1),

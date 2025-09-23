@@ -212,7 +212,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     init(_ unityId: PolySpatialInstanceID) {
         super.init()
 
-        self.name = "\(unityId.id):\(unityId.hostId):\(unityId.hostVolumeIndex)"
+        self.name = "\(unityId.id):\(unityId.hostId):\(unityId.viewSubgraphIndex)"
         self.components.set(PolySpatialComponents.InstanceRef(unityId))
     }
 
@@ -279,9 +279,15 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     func meshOrMaterialUpdated(_ id: PolySpatialAssetID, _ referencePreserved: Bool) {
         if let renderInfo = components[PolySpatialComponents.RenderInfo.self],
                 renderInfo.meshId == id || renderInfo.materialIds.contains(id) {
+            // If we're part of a static batch, update the batch (only) if the mesh changes.  Materials will be handled by
+            // the merged entity.
+            if let staticBatchElementInfo = components[PolySpatialComponents.StaticBatchElementInfo.self] {
+                if renderInfo.meshId == id {
+                    StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(staticBatchElementInfo.rootId)
+                }
             // If the reference is preserved and we have the same number of materials, then we only
             // need to update the raycast target transforms (which are based on the mesh contents).
-            if referencePreserved,
+            } else if referencePreserved,
                 let mesh = PolySpatialRealityKit.instance.TryGetMeshForId(id),
                 let model = self.model,
                 mesh.expectedMaterialCount == model.materials.count {
@@ -341,9 +347,10 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         if let blendedMeshInstance = components[PolySpatialComponents.BlendedMeshInstance.self],
                 blendedMeshInstance.asset === meshAsset, blendedMeshInstance.version == meshAsset?.version {
             newMesh = blendedMeshInstance.mesh
-        } else if let currentMeshAsset = meshAsset, currentMeshAsset.blendShapes.count > 0 {
-            let blendedMeshInstance = currentMeshAsset.createBlendedMeshInstance(blendLocalBounds!)
+        } else if let currentMeshAsset = meshAsset, currentMeshAsset.blendShapes.count > 0, let blendLocalBounds {
+            let blendedMeshInstance = currentMeshAsset.createBlendedMeshInstance(blendLocalBounds)
             components.set(blendedMeshInstance)
+            PolySpatialRealityKit.instance.skinnedMeshManager.dirtyBlendedMeshInstances.insert(self)
             newMesh = blendedMeshInstance.mesh
         } else {
             components.remove(PolySpatialComponents.BlendedMeshInstance.self)
@@ -354,7 +361,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
 
         // create or update components, carve out a special exception for entities affected by video so we don't overwrite the video material.
         if self.components.has(PolySpatialComponents.UnityVideoPlayer.self) {
-            self.updateVideoPlayerMesh(newMesh)
+            self.updateVideoPlayerMesh()
         } else if components.has(PolySpatialComponents.StaticBatchElementInfo.self) {
             // If we're part of a static batch, the batch will handle our rendering; we don't want a ModelComponent.
             components.remove(ModelComponent.self)
@@ -908,115 +915,132 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
 
         let material = PolySpatialRealityKit.instance.GetMaterialForID(id, isMirrored)
 
-            if let instance = ShaderManager.instance.shaderGraphInstances[id],
-                var shaderGraphMaterial = material as? ShaderGraphMaterial {
+        guard let instance = ShaderManager.instance.shaderGraphInstances[id],
+                var shaderGraphMaterial = material as? ShaderGraphMaterial else {
+            return material
+        }
 
-                castShadows = castShadows && instance.castShadows
+        castShadows = castShadows && instance.castShadows
 
-                if instance.hasVolumeToWorldTextureProperty,
-                        let volume = PolySpatialRealityKit.instance.tryGetVolume(unityId) {
-                    try! shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kVolumeToWorldTextureHandle,
-                        value: .textureResource(volume.volumeToWorldTextureResource))
-                }
+        if instance.hasVolumeToWorldTextureProperty,
+                let volume = PolySpatialRealityKit.instance.tryGetVolume(unityId) {
+            try! shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kVolumeToWorldTextureHandle,
+                value: .textureResource(volume.volumeToWorldTextureResource))
+        }
 
-                if instance.hasObjectBoundsProperties {
-                    let bounds = PolySpatialRealityKit.instance.GetMeshForId(renderInfo.meshId).bounds
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kObjectBoundsCenterHandle,
-                        value: .simd3Float(bounds.center))
+        if instance.hasObjectBoundsProperties {
+            let bounds = PolySpatialRealityKit.instance.GetMeshForId(renderInfo.meshId).bounds
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kObjectBoundsCenterHandle,
+                value: .simd3Float(bounds.center))
 
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kObjectBoundsExtentsHandle,
-                        value: .simd3Float(bounds.extents))
-                }
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kObjectBoundsExtentsHandle,
+                value: .simd3Float(bounds.extents))
+        }
 
-                if instance.hasLightmapProperties {
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kLightmapHandle,
-                        value: .textureResource(PolySpatialRealityKit.instance.GetTextureAssetForId(
-                            renderInfo.lightmapColorId).texture.resource))
+        if instance.hasLightmapProperties {
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kLightmapHandle,
+                value: .textureResource(PolySpatialRealityKit.instance.GetTextureAssetForId(
+                    renderInfo.lightmapColorId).texture.resource))
 
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kLightmapIndHandle,
-                        value: .textureResource(PolySpatialRealityKit.instance.GetTextureAssetForId(
-                            renderInfo.lightmapDirId).texture.resource))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kLightmapIndHandle,
+                value: .textureResource(PolySpatialRealityKit.instance.GetTextureAssetForId(
+                    renderInfo.lightmapDirId).texture.resource))
 
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kLightmapSTHandle,
-                        value: .simd4Float(renderInfo.lightmapScaleOffset))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kLightmapSTHandle,
+                value: .simd4Float(renderInfo.lightmapScaleOffset))
 
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kLightmapOnHandle,
-                        value: .bool(renderInfo.lightmapColorId.isValid))
-                }
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kLightmapOnHandle,
+                value: .bool(renderInfo.lightmapColorId.isValid))
+        }
 
-                if instance.hasLightProbeProperties {
-                    for (index, handle) in ShaderManager.kLightProbeHandles.enumerated() {
-                        try? shaderGraphMaterial.setParameter(
-                            handle: handle, value: .simd4Float(renderInfo.lightProbeCoefficients[index]))
-                    }
-                }
-
-                if instance.hasReflectionProbeProperties {
-                    for i in 0..<ShaderManager.kReflectionProbeCount {
-                        let reflectionProbe = (i < renderInfo.reflectionProbes.count) ?
-                            renderInfo.reflectionProbes[i] : .init()
-                        try? shaderGraphMaterial.setParameter(
-                            handle: ShaderManager.kReflectionProbeTextureHandles[i],
-                            value: .textureResource(
-                                PolySpatialRealityKit.instance.GetTextureAssetForId(
-                                    reflectionProbe.textureAssetId).texture.resource))
-                        try? shaderGraphMaterial.setParameter(
-                            handle: ShaderManager.kReflectionProbeWeightHandles[i],
-                            value: .float(reflectionProbe.weight))
-                    }
-                }
-
-                if let maskedRendererInfo = components[PolySpatialComponents.MaskedRendererInfo.self] {
-                    let colorValue = MaterialParameters.Value.color(maskedRendererInfo.color)
-                    try? shaderGraphMaterial.setParameter(handle: ShaderManager.kColorHandle, value: colorValue)
-                    if let maskedHoverColors = components[PolySpatialComponents.MaskedHoverColors.self],
-                            maskedRendererInfo.color.approximatelyEqual(maskedHoverColors.normalColor) {
-                        // Set the hover color to the one configured only if the base color is equal to the
-                        // Selectable's "normal" color: this ensures that the hover transition doesn't happen if
-                        // the Selectable is in the Pressed or Selected states.
-                        try? shaderGraphMaterial.setParameter(
-                            handle: ShaderManager.kHoverColorHandle, value: .color(maskedHoverColors.hoverColor))
-                    } else {
-                        // Default to hover color same as base color.
-                        try? shaderGraphMaterial.setParameter(
-                            handle: ShaderManager.kHoverColorHandle, value: colorValue)
-                    }
-                    if maskedRendererInfo.mainTextureId.isValid {
-                        try? shaderGraphMaterial.setParameter(
-                            handle: ShaderManager.kMainTexHandle,
-                            value: .textureResource(
-                                PolySpatialRealityKit.instance.GetTextureAssetForId(
-                                    maskedRendererInfo.mainTextureId).texture.resource))
-                    }
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kMaskTextureHandle,
-                        value: .textureResource(
-                            PolySpatialRealityKit.instance.GetTextureAssetForId(
-                                maskedRendererInfo.maskTextureId).texture.resource))
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kUVTransformHandle,
-                        value: .float4x4(maskedRendererInfo.maskUVTransform))
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kMaskOperationHandle,
-                        value: .float(Float(maskedRendererInfo.maskingOperation.rawValue)))
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kAlphaCutoffHandle,
-                        value: .float(maskedRendererInfo.maskAlphaCutoff))
-                    try? shaderGraphMaterial.setParameter(
-                        handle: ShaderManager.kHasGammaSpaceVertexColorsHandle, value: .float(1))
-                }
-
-                return shaderGraphMaterial
+        if instance.hasLightProbeProperties {
+            for (index, handle) in ShaderManager.kLightProbeHandles.enumerated() {
+                try? shaderGraphMaterial.setParameter(
+                    handle: handle, value: .simd4Float(renderInfo.lightProbeCoefficients[index]))
             }
+        }
 
-        return material
+        if instance.hasReflectionProbeProperties {
+            for i in 0..<ShaderManager.kReflectionProbeCount {
+                let reflectionProbe = (i < renderInfo.reflectionProbes.count) ?
+                    renderInfo.reflectionProbes[i] : .init()
+                try? shaderGraphMaterial.setParameter(
+                    handle: ShaderManager.kReflectionProbeTextureHandles[i],
+                    value: .textureResource(
+                        PolySpatialRealityKit.instance.GetTextureAssetForId(
+                            reflectionProbe.textureAssetId).texture.resource))
+                try? shaderGraphMaterial.setParameter(
+                    handle: ShaderManager.kReflectionProbeWeightHandles[i],
+                    value: .float(reflectionProbe.weight))
+            }
+        }
+
+        if instance.hasVertexColorsProperty {
+            var hasVertexColors = false
+            let mesh = renderInfo.mesh
+            if let lowLevelMesh = mesh.lowLevelMesh {
+                hasVertexColors = lowLevelMesh.descriptor.vertexAttributes.contains { $0.semantic == .color }
+            } else {
+                for model in mesh.contents.models {
+                    if model.parts.contains(where: { $0[PolySpatialRealityKit.vertexColorSemantic] != nil }) {
+                        hasVertexColors = true
+                        break
+                    }
+                }
+            }
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kHasVertexColorsHandle,
+                value: .bool(hasVertexColors))
+        }
+
+        if let maskedRendererInfo = components[PolySpatialComponents.MaskedRendererInfo.self] {
+            let colorValue = MaterialParameters.Value.color(maskedRendererInfo.color)
+            try? shaderGraphMaterial.setParameter(handle: ShaderManager.kColorHandle, value: colorValue)
+            if let maskedHoverColors = components[PolySpatialComponents.MaskedHoverColors.self],
+                    maskedRendererInfo.color.approximatelyEqual(maskedHoverColors.normalColor) {
+                // Set the hover color to the one configured only if the base color is equal to the
+                // Selectable's "normal" color: this ensures that the hover transition doesn't happen if
+                // the Selectable is in the Pressed or Selected states.
+                try? shaderGraphMaterial.setParameter(
+                    handle: ShaderManager.kHoverColorHandle, value: .color(maskedHoverColors.hoverColor))
+            } else {
+                // Default to hover color same as base color.
+                try? shaderGraphMaterial.setParameter(
+                    handle: ShaderManager.kHoverColorHandle, value: colorValue)
+            }
+            if maskedRendererInfo.mainTextureId.isValid {
+                try? shaderGraphMaterial.setParameter(
+                    handle: ShaderManager.kMainTexHandle,
+                    value: .textureResource(
+                        PolySpatialRealityKit.instance.GetTextureAssetForId(
+                            maskedRendererInfo.mainTextureId).texture.resource))
+            }
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kMaskTextureHandle,
+                value: .textureResource(
+                    PolySpatialRealityKit.instance.GetTextureAssetForId(
+                        maskedRendererInfo.maskTextureId).texture.resource))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kUVTransformHandle,
+                value: .float4x4(maskedRendererInfo.maskUVTransform))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kMaskOperationHandle,
+                value: .float(Float(maskedRendererInfo.maskingOperation.rawValue)))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kAlphaCutoffHandle,
+                value: .float(maskedRendererInfo.maskAlphaCutoff))
+            try? shaderGraphMaterial.setParameter(
+                handle: ShaderManager.kHasGammaSpaceVertexColorsHandle, value: .float(1))
+        }
+
+        return shaderGraphMaterial
     }
 
     // Updates the transforms of the backing entities used for raycast targets: the child, which transforms the unit
@@ -1251,16 +1275,21 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     }
 
     // Special handling for meshes with video materials - they need their uvs inverted to work with RK video materials.
-    func updateVideoPlayerMesh(_ newMesh: MeshResource) {
+    func updateVideoPlayerMesh() {
         guard let videoComp = self.components[PolySpatialComponents.UnityVideoPlayer.self] as PolySpatialComponents.UnityVideoPlayer? else {
             return
         }
 
-        let renderComp = self.components[PolySpatialComponents.RenderInfo.self]! as PolySpatialComponents.RenderInfo
-
-        if videoComp.invertAndCacheMesh(newMesh, renderComp.meshId) {
-            let modelComp = self.components[ModelComponent.self]! as ModelComponent
-            components.set(ModelComponent(mesh: videoComp.meshAsset!, materials: modelComp.materials))
+        guard let ric = self.components[PolySpatialComponents.RenderInfo.self] as PolySpatialComponents.RenderInfo? else {
+            PolySpatialRealityKit.instance.LogWarning("Could not find a render info component for \(name) while updating video meshes.")
+            return
         }
+
+        guard let currentMeshAsset = PolySpatialRealityKit.instance.tryGetMeshAssetForId(ric.meshId) else {
+            PolySpatialRealityKit.instance.LogWarning("Could not find a mesh for VisionOSVideoComponent target entity \(name) while updating video meshes.")
+            return
+        }
+
+        components.set(ModelComponent(mesh: currentMeshAsset.invertedMesh, materials: [videoComp.videoMaterial]))
     }
 }

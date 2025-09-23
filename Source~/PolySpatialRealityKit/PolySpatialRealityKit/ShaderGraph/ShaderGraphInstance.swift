@@ -15,6 +15,7 @@ class ShaderGraphInstance: Hashable {
     var hasLightmapProperties: Bool { false }
     var hasLightProbeProperties: Bool { false }
     var hasReflectionProbeProperties: Bool { false }
+    var hasVertexColorsProperty: Bool { false }
 
     init(_ id: PolySpatialAssetID) {
         self.id = id

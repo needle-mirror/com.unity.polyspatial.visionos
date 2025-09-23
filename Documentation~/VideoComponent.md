@@ -71,11 +71,14 @@ You can use Unity's default `VideoPlayer` component to play video on visionOS wi
 Setting the `Render Mode` property on the `VideoPlayer` component to anything but `Render Texture` will result in a warning and the `VideoPlayer` will not render anything.
 
 
-## Video Player vs VisionOS Video Component
+## VisionOS Video Component vs Video Player
 
 There are tradeoffs that come with choosing one video component over the other.
 
-The `VisionOSVideoComponent` utilizes visionOS's native video player to display and render video, allowing it to display video in a performant manner. More importantly, the `VisionOSVideoComponent` is also capable of playing 3D spatial video (MV-HEVC video) in visionOS. However, the public API for this component is much more limited than that of the normal VideoPlayer component, and more complex video player functionality (such as Events and Delegates) cannot be used with it. Additionally, because the video texture is created in visionOS, there is no access to that video texture through Unity. Additionally, the `VisionOSVideoComponent` will not work with debugging tools like PlayToDevice.
+### VisionOS Video Component
+The `VisionOSVideoComponent` utilizes visionOS's native video player to display and render video, allowing it to display video in a performant manner. More importantly, the `VisionOSVideoComponent` is also capable of playing 3D spatial video (MV-HEVC video) in visionOS. However, the public API for this component is much more limited than that of the normal VideoPlayer component, and more complex video player functionality (such as Events and Delegates) cannot be used with it. Additionally, because the video texture is created in visionOS, there is no access to that video texture through Unity.
 
+Additionally, the `VisionOSVideoComponent` will not fully work with debugging tools such as [Play To Device](xref:psl-play-to-device). While `VisionOSVideoComponent` can be previewed through Play To Device running on visionOS Simulator, it cannot be previewed through Play To Device running on an Apple Vision Pro device.
 
-Using the normal `VideoPlayer` component comes with performance costs, because it must update the render texture each frame, but has the advantage of being able to utilize all of the Unity Video Player's extensive methods, events, and delegates. Additionally, you have access to the video texture and can use it like any other texture - for example, using it in a shader graph material. Using the normal `VideoPlayer` component also allows streaming over a network, and works with [Play To Device](xref:psl-play-to-device).
+### Video Player
+Using the normal `VideoPlayer` component comes with performance costs, because it must update the render texture each frame, but has the advantage of being able to utilize all of the Unity Video Player's extensive methods, events, and delegates. Additionally, you have access to the video texture and can use it like any other texture - for example, using it in a shader graph material. Using the normal `VideoPlayer` component also allows streaming over a network, and works with [Play To Device](xref:psl-play-to-device), regardless of whether Play To Device is running on visionOS Simulator or on an Apple Vision Pro device.

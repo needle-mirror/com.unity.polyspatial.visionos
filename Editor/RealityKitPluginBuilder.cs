@@ -36,8 +36,7 @@ namespace Unity.PolySpatial.Internals.Editor
                         throw new BuildFailedException($"{xrSrcPath} not found");
                     }
 
-                    (success, output) = BuildUtils.RunCommandWithOutput(Path.Combine(xrSrcPath, "bee"), null, xrSrcPath, k_BuildTimeoutSeconds,
-                            new () { ["XRSDK_USE_LOCAL_TOOLCHAIN"] = "1" });
+                    (success, output) = BuildUtils.RunCommandWithOutput(Path.Combine(xrSrcPath, "bee"), null, xrSrcPath, k_BuildTimeoutSeconds);
                 } else {
                     var pkgPath = FileUtil.GetPhysicalPath("Packages/com.unity.polyspatial.visionos");
                     var repoRoot = Path.Combine(pkgPath, "../..");

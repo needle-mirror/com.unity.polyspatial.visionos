@@ -133,7 +133,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
                     setTextureParam(
                         handle,
                         PolySpatialRealityKit.TextureParam(
-                            materialDef.textureProperties(at: Int32(offset))!, shaderGraph.textureSizeHandles[index]))
+                            materialDef.textureProperties(at: Int32(offset))!.id, shaderGraph.textureSizeHandles[index]))
 
                     if let transformHandle = shaderGraph.textureTransformHandles[index] {
                         let propertyValue = ConvertPolySpatialVec4VectorToFloat4(

@@ -8,7 +8,7 @@ internal enum Unity_PolySpatial_PolySpatialMagicCookie: UInt64, Enum, Verifiable
   internal typealias T = UInt64
   internal static var byteSize: Int { return MemoryLayout<UInt64>.size }
   internal var value: UInt64 { return self.rawValue }
-  case value = 1754062704675767000
+  case value = 1765825986201357000
 
   internal static var max: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
   internal static var min: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
@@ -10662,9 +10662,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
   ///  that is used to render this material.
   internal var hasTextureProperties: Bool { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? false : true }
   internal var texturePropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialAssetID.self, offset: _accessor.vector(at: o) + index * 24) }
-  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialAssetID>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
-  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 24) }
+  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialTextureId.self, offset: _accessor.vector(at: o) + index * 32) }
+  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialTextureId>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
+  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 32) }
   ///  The set of Texture transform vector properties (scale in xy, offset in zw) to be mapped to the shader.
   internal var hasTextureTransformProperties: Bool { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? false : true }
   internal var textureTransformPropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
@@ -10742,7 +10742,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
   }
   internal static func addVectorOf(textureProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: textureProperties, at: VTOFFSET.textureProperties.p) }
   internal static func startVectorOfTextureProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
-    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.alignment)
+    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.alignment)
   }
   internal static func addVectorOf(textureTransformProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: textureTransformProperties, at: VTOFFSET.textureTransformProperties.p) }
   internal static func startVectorOfTextureTransformProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
@@ -10880,7 +10880,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialMaterialData: FlatBufferO
     try _v.visit(field: VTOFFSET.vector4Properties.p, fieldName: "vector4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
     try _v.visit(field: VTOFFSET.colorProperties.p, fieldName: "colorProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Color32, UnityEngine_Color32>>.self)
     try _v.visit(field: VTOFFSET.matrix4x4Properties.p, fieldName: "matrix4x4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
-    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
+    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialTextureId, Unity_PolySpatial_Internals_PolySpatialTextureId>>.self)
     try _v.visit(field: VTOFFSET.textureTransformProperties.p, fieldName: "textureTransformProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
     try _v.visit(field: VTOFFSET.propertyArrayCounts.p, fieldName: "propertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
     try _v.visit(field: VTOFFSET.propertyCount.p, fieldName: "propertyCount", required: false, type: Int32.self)
@@ -11897,9 +11897,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
   internal func mutableMatrix4x4Properties(at index: Int32) -> UnityEngine_Matrix4x4_Mutable? { let o = _accessor.offset(VTOFFSET.matrix4x4Properties.v); return o == 0 ? nil : UnityEngine_Matrix4x4_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 64) }
   internal var hasTextureProperties: Bool { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? false : true }
   internal var texturePropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialAssetID.self, offset: _accessor.vector(at: o) + index * 24) }
-  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialAssetID>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
-  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 24) }
+  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialTextureId.self, offset: _accessor.vector(at: o) + index * 32) }
+  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialTextureId>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
+  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 32) }
   internal var hasTextureTransformProperties: Bool { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? false : true }
   internal var textureTransformPropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   internal func textureTransformProperties(at index: Int32) -> UnityEngine_Vector4? { let o = _accessor.offset(VTOFFSET.textureTransformProperties.v); return o == 0 ? nil : _accessor.directRead(of: UnityEngine_Vector4.self, offset: _accessor.vector(at: o) + index * 16) }
@@ -11945,7 +11945,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
   }
   internal static func addVectorOf(textureProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: textureProperties, at: VTOFFSET.textureProperties.p) }
   internal static func startVectorOfTextureProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
-    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.alignment)
+    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.alignment)
   }
   internal static func addVectorOf(textureTransformProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: textureTransformProperties, at: VTOFFSET.textureTransformProperties.p) }
   internal static func startVectorOfTextureTransformProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
@@ -12008,7 +12008,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderMaterial: FlatBuffe
     try _v.visit(field: VTOFFSET.vector4Properties.p, fieldName: "vector4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
     try _v.visit(field: VTOFFSET.colorProperties.p, fieldName: "colorProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Color32, UnityEngine_Color32>>.self)
     try _v.visit(field: VTOFFSET.matrix4x4Properties.p, fieldName: "matrix4x4Properties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
-    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
+    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialTextureId, Unity_PolySpatial_Internals_PolySpatialTextureId>>.self)
     try _v.visit(field: VTOFFSET.textureTransformProperties.p, fieldName: "textureTransformProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
     try _v.visit(field: VTOFFSET.propertyArrayCounts.p, fieldName: "propertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
     try _v.visit(field: VTOFFSET.keywordValues.p, fieldName: "keywordValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
@@ -12157,9 +12157,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
   internal func mutableMatrixProperties(at index: Int32) -> UnityEngine_Matrix4x4_Mutable? { let o = _accessor.offset(VTOFFSET.matrixProperties.v); return o == 0 ? nil : UnityEngine_Matrix4x4_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 64) }
   internal var hasTextureProperties: Bool { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? false : true }
   internal var texturePropertiesCount: Int32 { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? 0 : _accessor.vector(count: o) }
-  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialAssetID.self, offset: _accessor.vector(at: o) + index * 24) }
-  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialAssetID>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
-  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialAssetID_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 24) }
+  internal func textureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialTextureId.self, offset: _accessor.vector(at: o) + index * 32) }
+  internal var texturePropertiesAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialTextureId>? { return _accessor.getBufferPointer(at: VTOFFSET.textureProperties.v) }
+  internal func mutableTextureProperties(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable? { let o = _accessor.offset(VTOFFSET.textureProperties.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialTextureId_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 32) }
   internal var hasKeywordValues: Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? false : true }
   internal var keywordValuesCount: Int32 { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   internal func keywordValues(at index: Int32) -> Bool { let o = _accessor.offset(VTOFFSET.keywordValues.v); return o == 0 ? true : _accessor.directRead(of: Bool.self, offset: _accessor.vector(at: o) + index * 1) }
@@ -12197,7 +12197,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
   }
   internal static func addVectorOf(textureProperties: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: textureProperties, at: VTOFFSET.textureProperties.p) }
   internal static func startVectorOfTextureProperties(_ size: Int, in builder: inout FlatBufferBuilder) {
-    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialAssetID>.alignment)
+    builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialTextureId>.alignment)
   }
   internal static func addVectorOf(keywordValues: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: keywordValues, at: VTOFFSET.keywordValues.p) }
   internal static func addVectorOf(floatPropertyArrayCounts: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: floatPropertyArrayCounts, at: VTOFFSET.floatPropertyArrayCounts.p) }
@@ -12238,7 +12238,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialShaderGlobalPropertyValue
     try _v.visit(field: VTOFFSET.vectorProperties.p, fieldName: "vectorProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Vector4, UnityEngine_Vector4>>.self)
     try _v.visit(field: VTOFFSET.colorProperties.p, fieldName: "colorProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Color32, UnityEngine_Color32>>.self)
     try _v.visit(field: VTOFFSET.matrixProperties.p, fieldName: "matrixProperties", required: false, type: ForwardOffset<Vector<UnityEngine_Matrix4x4, UnityEngine_Matrix4x4>>.self)
-    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialAssetID, Unity_PolySpatial_Internals_PolySpatialAssetID>>.self)
+    try _v.visit(field: VTOFFSET.textureProperties.p, fieldName: "textureProperties", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialTextureId, Unity_PolySpatial_Internals_PolySpatialTextureId>>.self)
     try _v.visit(field: VTOFFSET.keywordValues.p, fieldName: "keywordValues", required: false, type: ForwardOffset<Vector<Bool, Bool>>.self)
     try _v.visit(field: VTOFFSET.floatPropertyArrayCounts.p, fieldName: "floatPropertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)
     try _v.visit(field: VTOFFSET.vectorPropertyArrayCounts.p, fieldName: "vectorPropertyArrayCounts", required: false, type: ForwardOffset<Vector<Int32, Int32>>.self)

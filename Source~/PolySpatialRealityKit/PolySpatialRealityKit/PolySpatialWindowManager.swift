@@ -81,6 +81,7 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
     //We get console errors about using these methods in this context, but they work...
     @Environment(\.openWindow) var openWindow
     @Environment(\.dismissWindow) var dismissWindow
+    @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
 
     // on visionOS, the first window is opened by the OS, so we need to wait for it
     var seenFirstWindow = false
@@ -176,9 +177,26 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
         if (sceneState == .active) {
             // When the app is being brought back from background state and this isn't the first time,
             // then manually open the immersive space if it was previously closed by the OS and the user still wants it around.
-            if (userRequestedAnImmersiveSpace() && immersiveSpaceWasClosed && PolySpatialWindowManagerAccess.delegate?.initialWindowName() != immersiveSpaceConfig) {
-                pslVolumeLog.trace("Reopening immersive space \(self.immersiveSpaceConfig) after it was closed by OS.")
-                PolySpatialWindowManagerAccess.delegate?.requestOpenWindow(immersiveSpaceConfig)
+            let initialWindowName = PolySpatialWindowManagerAccess.delegate?.initialWindowName()
+            if (userRequestedAnImmersiveSpace() && immersiveSpaceWasClosed && initialWindowName != immersiveSpaceConfig) {
+                Task {
+                    if initialWindowName == "Unbounded" {
+                        openWindow(id: "LoadingWindow")
+
+                        // Only if the initial window is unbounded do we need to dismiss the existing space. If the startup space is a compositor space,
+                        // it will be dismissed later on by the window manager. Dismissing the startup immersive space in that situation is not necessary,
+                        // and will send the app to the background. The following error message is expected, and safe to ignore:
+                        // "Unable to present another Immersive Space when one is already requested or connected"
+                        await dismissImmersiveSpace()
+                    }
+
+                    pslVolumeLog.trace("Reopening immersive space \(self.immersiveSpaceConfig) after it was closed by OS.")
+                    PolySpatialWindowManagerAccess.delegate?.requestOpenWindow(immersiveSpaceConfig)
+
+                    if initialWindowName == "Unbounded" {
+                        dismissWindow(id: "LoadingWindow")
+                    }
+                }
             }
             
             immersiveSpaceWasClosed = false

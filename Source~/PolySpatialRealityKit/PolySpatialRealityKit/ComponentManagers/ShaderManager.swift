@@ -202,7 +202,7 @@ class ShaderManager {
             assert(offset == shaderGlobalPropertyValues.matrixPropertiesCount)
         }
         for (index, property) in shaderGlobalTextureProperties.enumerated() {
-            property.setTexture(shaderGlobalPropertyValues.textureProperties(at: Int32(index))!,
+            property.setTexture(shaderGlobalPropertyValues.textureProperties(at: Int32(index))!.id,
                 shaderGlobalTextureSizeProperties[index])
         }
         for (index, property) in shaderGlobalKeywordProperties.enumerated() {

@@ -26,8 +26,8 @@ Depending on how you are running your application, you will need to install the 
 * To run the Play to Device Host on the _visionOS simulator_, you can find the Xcode .app files in the [following link](https://drive.google.com/drive/u/0/folders/1ZmWoS6NhrrmvabYia79hlvbyPV1mUN2p).
 * To run the Play to Device Host on an _Apple Vision Pro device_, you can find the TestFlight link below:
 
-  * If you are using 1.x PolySpatial package version use [this link](https://testflight.apple.com/join/FVMH8aiG).
-  * If you are using 2.x PolySpatial package version use [this link](https://testflight.apple.com/join/15PwZO6I).
+  * If you are using a 1.x PolySpatial package version use [this link](https://testflight.apple.com/join/FVMH8aiG).
+  * If you are using a 2.x or greater PolySpatial package version use [this link](https://testflight.apple.com/join/15PwZO6I).
 
 **It is important to note that the Play to Device Host must match your PolySpatial package version exactly.** Refer to the [Compatibility Matrix](https://discussions.unity.com/t/play-to-device/309359#version-compatibility-matrix-1) for more information about the specific editor versions supported depending on the PolySpatial package version you are running.
 

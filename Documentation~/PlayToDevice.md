@@ -26,8 +26,8 @@ Depending on how you are running your application, you will need to install the 
 * To run the Play to Device Host on the _visionOS simulator_, you can find the Xcode .app files in the [following link](https://drive.google.com/drive/u/0/folders/1ZmWoS6NhrrmvabYia79hlvbyPV1mUN2p).
 * To run the Play to Device Host on an _Apple Vision Pro device_, you can find the TestFlight link below:
 
-  * If you are using a 1.x PolySpatial package version use [this link](https://testflight.apple.com/join/FVMH8aiG).
-  * If you are using a 2.x or greater PolySpatial package version use [this link](https://testflight.apple.com/join/15PwZO6I).
+  * If you are using 1.x PolySpatial package version use [this link](https://testflight.apple.com/join/FVMH8aiG).
+  * If you are using 2.x PolySpatial package version use [this link](https://testflight.apple.com/join/15PwZO6I).
 
 **It is important to note that the Play to Device Host must match your PolySpatial package version exactly.** Refer to the [Compatibility Matrix](https://discussions.unity.com/t/play-to-device/309359#version-compatibility-matrix-1) for more information about the specific editor versions supported depending on the PolySpatial package version you are running.
 
@@ -58,7 +58,7 @@ Once you've installed a host app for device or simulator (see above):
 
 1. Launch the PlayToDeviceHost app in your device or the Apple VisionOS simulator.
 2. In the Unity Editor, open the Play to Device Editor window via the main menu under  \
-**Window > PolySpatial > Play to Device**.
+**Window > Play to Device > Play to Device**.
 3. If the Play to Device host app is running locally on the same machine (such as with the visionOS simulator), its connection will be automatically detected and you can jump to step **4**. Otherwise, follow the steps below to add a direct connection:
    1. Open the **Direct Connection** section inside the **Advanced Settings** foldout.
    2. Set a **Host Name** that uniquely identifies the host app for you.

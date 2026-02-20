@@ -107,8 +107,7 @@ extension PolySpatialRealityKit {
         renderEntity.components.set(textComponent)
     }
     
-    func destroyEntityText(_ id: PolySpatialInstanceID) {
-        let renderEntity = GetEntity(id)
+    func destroyEntityText(_ renderEntity: PolySpatialEntity) {
         renderEntity.components.remove(TextComponent.self)
     }
 }

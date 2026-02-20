@@ -4,7 +4,6 @@ import UIKit
 
 // CurveKey Aliases
 typealias PolySpatialParticleCurveMode = Unity_PolySpatial_Internals_PolySpatialParticleCurveMode
-typealias PolySpatialParticleCurveKey = Unity_PolySpatial_Internals_PolySpatialParticleCurveKey
 typealias PolySpatialParticleMinMaxCurve = Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve
 typealias PolySpatialParticleMinMaxCurveVector3 = Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3
 
@@ -93,7 +92,7 @@ extension PolySpatialParticleSpawnOccasion {
 }
 
 extension PolySpatialParticleMinMaxCurve {
-    func getValueAndVariation(_ keyBuffer: UnsafeBufferPointer<PolySpatialParticleCurveKey>?) -> (value: Float, valueVariation: Float) {
+    func getValueAndVariation(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> (value: Float, valueVariation: Float) {
         switch self.mode {
             case .constant:
                 return (self.minValue, 0)
@@ -125,7 +124,7 @@ extension PolySpatialParticleMinMaxCurve {
         }
     }
 
-    func getCurveValues(_ keyBuffer: UnsafeBufferPointer<PolySpatialParticleCurveKey>?) -> (firstVal: Float, lastVal: Float, valueVariation: Float) {
+    func getCurveValues(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> (firstVal: Float, lastVal: Float, valueVariation: Float) {
         switch self.mode {
             case .constant:
                 return (firstVal: self.minValue,
@@ -167,7 +166,7 @@ extension PolySpatialParticleMinMaxCurve {
     }
 
     // Determines how quickly the size value changes from beginning to end.
-    func toSizeForce(_ keyBuffer: UnsafeBufferPointer<PolySpatialParticleCurveKey>?) -> Float {
+    func toSizeForce(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> Float {
         switch self.mode {
             case .constant:
                 // Default values for size mult and size force for a constant unchanging value.
@@ -196,7 +195,7 @@ extension PolySpatialParticleMinMaxCurve {
 }
 
 extension PolySpatialParticleMinMaxCurveVector3 {
-    func rk(_ keyBuffer: UnsafeBufferPointer<PolySpatialParticleCurveKey>?) ->
+    func rk(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) ->
     (value: SIMD3<Float>,
      valueVariation: SIMD3<Float>) {
         let x = self.x!.getValueAndVariation(keyBuffer)

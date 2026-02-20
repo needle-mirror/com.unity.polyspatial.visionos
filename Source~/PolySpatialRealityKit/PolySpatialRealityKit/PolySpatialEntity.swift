@@ -285,12 +285,13 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
                 if renderInfo.meshId == id {
                     StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(staticBatchElementInfo.rootId)
                 }
-            // If the reference is preserved and we have the same number of materials, then we only
+            // If the reference is preserved and the mesh's properties still match the materials, then we only
             // need to update the raycast target transforms (which are based on the mesh contents).
             } else if referencePreserved,
                 let mesh = PolySpatialRealityKit.instance.TryGetMeshForId(id),
                 let model = self.model,
-                mesh.expectedMaterialCount == model.materials.count {
+                mesh.expectedMaterialCount == model.materials.count,
+                shaderGraphParametersMatchMesh(model) {
 
                 updateRaycastTargetTransforms()
             } else {
@@ -302,6 +303,35 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
                 updateMeshCollisionShape(componentId, collisionShape.info)
             }
         }
+    }
+
+    // Checks whether the parameters of the shader graph materials on the specified model
+    // still match the properties of its mesh.
+    func shaderGraphParametersMatchMesh(_ model: ModelComponent) -> Bool {
+        for material in model.materials {
+            guard let shaderGraphMaterial = material as? ShaderGraphMaterial else {
+                continue
+            }
+            if case .simd3Float(let boundsCenter) = shaderGraphMaterial.getParameter(
+                    handle: ShaderManager.kObjectBoundsCenterHandle),
+                boundsCenter != model.mesh.bounds.center {
+
+                return false
+            }
+            if case .simd3Float(let boundsExtents) = shaderGraphMaterial.getParameter(
+                    handle: ShaderManager.kObjectBoundsExtentsHandle),
+                boundsExtents != model.mesh.bounds.extents {
+
+                return false
+            }
+            if case .bool(let hasVertexColors) = shaderGraphMaterial.getParameter(
+                    handle: ShaderManager.kHasVertexColorsHandle),
+                hasVertexColors != meshHasVertexColors(model.mesh) {
+
+                return false
+            }
+        }
+        return true
     }
 
     func setParent(_ parent: Entity?, preservingWorldTransform: Bool = false) {
@@ -983,21 +1013,9 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
 
         if instance.hasVertexColorsProperty {
-            var hasVertexColors = false
-            let mesh = renderInfo.mesh
-            if let lowLevelMesh = mesh.lowLevelMesh {
-                hasVertexColors = lowLevelMesh.descriptor.vertexAttributes.contains { $0.semantic == .color }
-            } else {
-                for model in mesh.contents.models {
-                    if model.parts.contains(where: { $0[PolySpatialRealityKit.vertexColorSemantic] != nil }) {
-                        hasVertexColors = true
-                        break
-                    }
-                }
-            }
             try? shaderGraphMaterial.setParameter(
                 handle: ShaderManager.kHasVertexColorsHandle,
-                value: .bool(hasVertexColors))
+                value: .bool(meshHasVertexColors(renderInfo.mesh)))
         }
 
         if let maskedRendererInfo = components[PolySpatialComponents.MaskedRendererInfo.self] {
@@ -1041,6 +1059,18 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
 
         return shaderGraphMaterial
+    }
+
+    func meshHasVertexColors(_ mesh: MeshResource) -> Bool {
+        if let lowLevelMesh = mesh.lowLevelMesh {
+            return lowLevelMesh.descriptor.vertexAttributes.contains { $0.semantic == .color }
+        }
+        for model in mesh.contents.models {
+            if model.parts.contains(where: { $0[PolySpatialRealityKit.vertexColorSemantic] != nil }) {
+                return true
+            }
+        }
+        return false
     }
 
     // Updates the transforms of the backing entities used for raycast targets: the child, which transforms the unit

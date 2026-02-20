@@ -17,9 +17,9 @@ extension PolySpatialRealityKit {
         createOrUpdateMeshRenderer(id, &renderData)
     }
     
-    func destroySpriteRenderer(_ id: PolySpatialInstanceID) {
-        GetEntity(id).clearMaskedRendererInfo()
-        destroyMeshRenderer(id)
+    func destroySpriteRenderer(_ entity: PolySpatialEntity) {
+        entity.clearMaskedRendererInfo()
+        destroyMeshRenderer(entity)
     }
 
     func createOrUpdateSpriteMask(_ id: PolySpatialInstanceID, _ spriteMaskData: UnsafeMutablePointer<PolySpatialSpriteMaskData>?) {
@@ -27,6 +27,6 @@ extension PolySpatialRealityKit {
         // when called in createOrUpdateSpriteRenderer.
     }
     
-    func destroySpriteMask(_ id: PolySpatialInstanceID) {
+    func destroySpriteMask(_ entity: PolySpatialEntity) {
     }
 }

@@ -38,7 +38,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
         const string k_DiscoveryPortHelpBoxText = "Port number <b>{0}</b> is being used by the broadcast manager and cannot be used by Play To Device.";
 
         const string k_PlayToDeviceWindowTitle = "Play To Device";
-        const string k_PlayToDeviceWindowMenuPath = "Window/PolySpatial/" + k_PlayToDeviceWindowTitle;
+        const string k_PlayToDeviceWindowMenuPath = "Window/" + k_PlayToDeviceWindowTitle + "/" + k_PlayToDeviceWindowTitle;
         const string k_PlayToDeviceWindowIconPath = "Packages/com.unity.polySpatial/Assets/Textures/Icons/ARVR@4x.png";
         const string k_PlayToDeviceWindowTreeAssetPath = "Packages/com.unity.polyspatial.visionos/Editor/PlayToDevice/PlayToDeviceWindow.uxml";
         const string k_ConnectionListEntryTreeAssetPath = "Packages/com.unity.polyspatial.visionos/Editor/PlayToDevice/ConnectionListEntry.uxml";
@@ -76,7 +76,9 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
         internal const ulong k_DirectConnectionMagicCookie = 0;
 
+#if UNITY_VISIONOS
         [MenuItem(k_PlayToDeviceWindowMenuPath)]
+#endif
         static void LoadPlayToDeviceWindow()
         {
             var window = GetWindow<PlayToDeviceWindow>();
@@ -222,6 +224,10 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 
         void OnEnable()
         {
+#if !UNITY_VISIONOS
+            // Platforms other than visionOS should use the window on the Play To Device package
+            Close();
+#else
             minSize = new Vector2(380, 400);
             m_InfoFoldoutState = new SavedBool("PolySpatial.PlayToDeviceWindow.InfoFoldoutState", false);
             m_AvailableConnectionsFoldoutState = new SavedBool("PolySpatial.PlayToDeviceWindow.AvailableConnectionsFoldoutState", true);
@@ -241,6 +247,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
 #if UNITY_HAS_XR_VISIONOS
             m_PreviousAppMode = VisionOSSettings.currentSettings == null ? VisionOSSettings.AppMode.RealityKit : VisionOSSettings.currentSettings.appMode;
 #endif
+#endif // UNITY_VISIONOS
         }
 
         void OnDisable()
@@ -573,7 +580,8 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                 ServerPort = m_HostPort,
                 Status = ConnectionDiscoveryStatus.Lost,
                 HostPolySpatialVersion = string.Empty,
-                LastContact = DateTime.Now
+                LastContact = DateTime.UtcNow,
+                IsSelected = true
             };
 
             PolySpatialUserSettings.Instance.ConnectionCandidates.Add(newConnection, newConnectionCandidate);

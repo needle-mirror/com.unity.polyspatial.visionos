@@ -32,12 +32,12 @@ The `VisionOSVideoComponent` component exposes the following properties:
 | **Property**               | **Description**                                                                                                                                                                                                                                                         |
 |----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Source**                 | Determines whether `VisionOSVideoComponent` attempts to load the video clip asset from a clip reference or from an URL. If `VisionOSVideoComponent` is loading the video clip from an URL, there is no need for the clip to be present in the `StreamingAssets` folder. |
-| **Url**                    | Path to the video asset. This can be an absolute path to an asset, or it can just be the name of the asset and the extension (for example, "videoclip.mov").                                                                                                            |
+| **Url**                    | Path to the video asset. This can be an absolute path to an asset, or it can just be the name of the asset and the extension (for example, "videoclip.mov"). If network conditions are bad, the video player may be stalled until network conditions improve and the video can be played at rate. See `VideoClipStateChanged` for the current status of the asset clip.                                                                                                           |
 | **Clip**                   | The video clip asset to be played. The clip asset must also be copied into the `StreamingAssets` folder.                                                                                                                                                                |
 | **TargetMaterialRenderer** | Reference to the `MeshRenderer` on which the video should render. The video will overwrite the current material on that `MeshRenderer`.                                                                                                                                 |
 | **IsLooping**              | Whether the video should repeat when playback reaches the end of the clip.                                                                                                                                                                                              |
 | **PlayOnAwake**            | Whether the video should start playing when `Awake()` is called.                                                                                                                                                                                                        |
-| **RequestPreroll**         | When true, `VisionOSVideoComponent` will attempt to load media data and prime the media pipeline for playback. This is a request, and is not guaranteed to work in all cases                                                                                            |
+| **RequestPreroll**         | When true, `VisionOSVideoComponent` will attempt to load media data and prime the media pipeline for playback. This is a request, and is not guaranteed to work in all cases.                                                                                            |
 | **Mute**                   | When true, audio playback is suppressed; when false, the volume value is respected.                                                                                                                                                                                     |
 | **Volume**                 | The current volume of audio playback for the clip, ranging between 0 and 1.                                                                                                                                                                                             |
 
@@ -58,7 +58,9 @@ At runtime, you can use the following methods to control video playback:
 
 `VisionOSVideoComponent` has the following events that can be subscribed to:
 
-`VideoClipStateChanged` An event that represents the state of the video clip asset on visionOS. This event will be triggered if the clip cannot be found, if the clip failed to preroll, or if the clip successfully prerolled.
+`VideoClipPrerollResult` An event that represents the result of a preroll request. This event will be triggered on preroll success or on failure.
+
+`VideoClipStateChanged` An event that represents the state of the video clip asset on visionOS. This event will be triggered if the clip cannot be found, if the clip is paused, if the clip is playing, or if the clip is stalled. The stalled state will not happen unless the `Source` is set to `URL` and is triggered when network conditions will not allow the video player to play at rate.
 
 <a id="video-player"></a>
 ## Unity Video Player support

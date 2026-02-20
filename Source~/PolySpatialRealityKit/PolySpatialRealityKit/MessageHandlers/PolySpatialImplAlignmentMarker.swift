@@ -12,8 +12,7 @@ extension PolySpatialRealityKit {
         entity.setAlignmentMarkerInfo(info)
     }
 
-    func destroyAlignmentMarker(_ id: PolySpatialInstanceID) {
-        let entity = GetEntity(id)
+    func destroyAlignmentMarker(_ entity: PolySpatialEntity) {
         entity.clearAlignmentMarkerInfo()
     }
 }

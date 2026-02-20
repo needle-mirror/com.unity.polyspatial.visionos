@@ -187,7 +187,8 @@ struct XROSPolySpatialContentView: View {
                 kind: kind,
                 phase: phase,
                 targetId: colliderId,
-                volumeId: volumeId
+                volumeId: volumeId,
+                playerId: Int64(0)
             )
 
             Self.polyspatialPointerEvents[i] = sendPointerEvent

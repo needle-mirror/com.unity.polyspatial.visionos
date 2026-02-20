@@ -88,7 +88,7 @@ namespace Unity.PolySpatial.Internals.Editor
         /// <inheritdoc/>
         public void OnPreprocessBuild(BuildReport report)
         {
-            if (!PolySpatialRuntime.Enabled)
+            if (!PolySpatialRuntime.InitializeOnStartup)
                 return;
 
             try

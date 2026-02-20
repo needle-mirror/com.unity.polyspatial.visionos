@@ -9,13 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [3.1.0] - 2026-02-20
+
+### Added
+- Added support for optimized Skinned Mesh Renderers (Skinned Mesh Renderers with Optimize Game Objects ticked true). This feature requires a change in editor version 6000.5.0a3 and above.
+- Added the ability to listen for asset clip status specifically instead of just preroll status with VisionOSVideoComponent.UpdateVideoAssetState. This allows for figuring out if a video player is stalling, paused, or playing.
+
+### Fixed
+- Fixed failure to use vertex colors in shader graphs when running over Play to Device (seen when using Bake to Mesh particles).
+- Fixed a possible memory leak when looping video players were deleted and created.
+- Fixed a crash/hang that can occur in Hybrid mode when the user opens Control Center while a Metal volume camera is rendering.
+- Fixed prerolling edge cases and improved prerolling stability.
+- Fixed a crash that can occur when PolySpatial setting GPU Mesh Transfer is used with VisionOSVideoComponent.
+- Fixed failure to render sprites.
+
 ## [3.0.5] - 2026-01-08
 
 ## [3.0.3-pre.4] - 2025-11-19
-
-## [3.0.3-pre.3] - 2025-10-22
-
-## [3.0.3-pre.2] - 2025-10-20
 
 ## [3.0.3-pre.1] - 2025-10-13
 

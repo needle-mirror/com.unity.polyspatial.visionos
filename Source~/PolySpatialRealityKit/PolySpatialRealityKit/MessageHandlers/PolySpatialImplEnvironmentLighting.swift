@@ -13,8 +13,7 @@ extension PolySpatialRealityKit {
         entity.updateBackingEntityComponents(EnvironmentLightingConfigurationComponent.self)
     }
     
-    func destroyEnvironmentLightingConfiguration(_ id: PolySpatialInstanceID) {
-        let entity = GetEntity(id)
+    func destroyEnvironmentLightingConfiguration(_ entity: PolySpatialEntity) {
         entity.components.remove(EnvironmentLightingConfigurationComponent.self)
         entity.updateBackingEntityComponents(EnvironmentLightingConfigurationComponent.self)
     }

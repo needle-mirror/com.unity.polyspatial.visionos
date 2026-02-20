@@ -180,6 +180,8 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
             let initialWindowName = PolySpatialWindowManagerAccess.delegate?.initialWindowName()
             if (userRequestedAnImmersiveSpace() && immersiveSpaceWasClosed && initialWindowName != immersiveSpaceConfig) {
                 Task {
+                    // If we've gotten this far, and the initial window is Unbounded, we previously closed a Metal immersive space, and we need to
+                    // open the loading window before closing the unbounded space to prevent the OS from sending our app to the background.
                     if initialWindowName == "Unbounded" {
                         openWindow(id: "LoadingWindow")
 
@@ -425,6 +427,12 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
         }
 
         PolySpatialWindowManagerAccess.delegate?.onWindowRemoved(win)
+        
+        if (!win.rootEntity.children.isEmpty) {
+            win.rootEntity.children.removeAll()
+        }
+        
+        win.rootEntity.removeFromParent()
 
         freeWindows.remove(win)
         allWindows.removeValue(forKey: uuid)

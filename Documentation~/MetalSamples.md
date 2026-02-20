@@ -10,8 +10,8 @@ The **Apple visionOS XR Plugin** provides two samples that demonstrate how to se
 
 The Metal samples use the following, additional packages:
 
-* [XR Interaction Toolkit](https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@latest?subfolder=/manual/installation.html): The XR Interaction Toolkit package is a high-level, component-based, interaction system for creating VR, MR, and AR experiences.
-* [XR Hands](https://docs.unity3d.com/Packages/com.unity.xr.handslatest?subfolder=/manual/project-setup/install-xrhands.html): The XR Hands package provides access to hand tracking data from ARKit on visionOS.
+* [XR Interaction Toolkit](https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@latest): The XR Interaction Toolkit package is a high-level, component-based, interaction system for creating VR, MR, and AR experiences.
+* [XR Hands](https://docs.unity3d.com/Packages/com.unity.xr.hands@latest): The XR Hands package provides access to hand tracking data from ARKit on visionOS.
 
 The **XR Interaction Toolkit** is required by the sample scenes, but the **XR Hands** package is optional. You can find instructions on how to install these packages at the links above.
 

@@ -74,10 +74,11 @@ extension PolySpatialRealityKit {
             // Handle first time loop setup.
             videoComp.setLooping(info.isLooping)
             if info.playOnAwake {
-                videoComp.player.play()
+                videoComp.play()
             } else {
                 videoComp.player.pause()
             }
+
             return
         }
 
@@ -103,8 +104,20 @@ extension PolySpatialRealityKit {
         }
 
         if let videoPlayer = oldRenderEntity.components[PolySpatialComponents.UnityVideoPlayer.self] as PolySpatialComponents.UnityVideoPlayer? {
+            
+            // Sort of a shotgun approach to video player cleanup -
+            // AVPlayerLooper can persist with a copy of the player if they aren't explicitly cleaned up.
+            videoPlayer.avPlayerLooper?.disableLooping()
+            videoPlayer.avPlayerLooper = nil
+            
+            videoPlayer.videoMaterial.avPlayer?.pause()
+            videoPlayer.videoMaterial.avPlayer?.replaceCurrentItem(with: nil)
+                                    
             videoPlayer.player.pause()
+            videoPlayer.player.cancelPendingPrerolls()
             videoPlayer.player.removeAllItems()
+            
+            videoPlayer.observerObject = nil
         }
 
         oldRenderEntity.components.remove(PolySpatialComponents.UnityVideoPlayer.self)

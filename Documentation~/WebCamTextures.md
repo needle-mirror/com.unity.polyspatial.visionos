@@ -10,7 +10,8 @@ By default, Unity does not enable WebCamTexture support. You must create a scrip
 On the Apple Vision Pro, WebCamTexture provides a feed of the user's Spatial Persona. In general, support for WebCamTextures is dependent on the underlying API support on the target platform. This support may vary and might be entirely missing so take care to validate your needs on the platforms you wish to run on.
 
 ## Texture updates and manual dirtying
-WebCamTextures are not auto dirtied when the camera updates the texture. This means that PolySpatial will not know that it needs to update the texture on the target host platform unless told. You can do this by using the `Unity.PolySpatial.PolySpatialObjectUtils.MarkDirty(webCamTexture)` on every frame (Usually in Update) in which the WebCamTexture is being changed while playing.
+
+For Unity 6000.4.0a6, WebCanTextures now auto dirty and are tracked correctly. For Unity prior to 6000.4.0a6, WebCamTextures are not auto dirtied when the camera updates the texture. This means that PolySpatial will not know that it needs to update the texture on the target host platform unless told. You can do this by using the `Unity.PolySpatial.PolySpatialObjectUtils.MarkDirty(webCamTexture)` on every frame (Usually in Update) in which the WebCamTexture is being changed while playing.
 
 ```
 using UnityEngine;

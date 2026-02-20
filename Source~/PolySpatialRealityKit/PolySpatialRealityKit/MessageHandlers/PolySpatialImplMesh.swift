@@ -78,6 +78,9 @@ extension PolySpatialRealityKit {
 
         // The total number of joints, as determined by their influence indices.
         private var jointCount = 0
+        
+        // Bind pose counts in this mesh, if any. For optimized skinned meshes, they won't have bones, but they will have bind poses.
+        private(set) var bindPoseCount = 0
 
         // The number of UV sets used in the mesh.
         private(set) var numUVSets: Int
@@ -182,9 +185,10 @@ extension PolySpatialRealityKit {
             contents.models.first?.parts.first
         }
 
-        init(_ contents: MeshResource.Contents, _ numUVSets: Int = 0, _ blendShapes: [BlendShape] = []) {
+        init(_ contents: MeshResource.Contents, _ numUVSets: Int = 0,  _ bindPoseCount: Int = 0, _ blendShapes: [BlendShape] = []) {
             self.contents = contents
             self.numUVSets = numUVSets
+            self.bindPoseCount = bindPoseCount
             self.blendShapes = blendShapes
             self.mesh = try! .generate(from: contents)
             self.lowLevelMeshVertexRanges = []
@@ -208,10 +212,11 @@ extension PolySpatialRealityKit {
             self.lowLevelMeshVertexRanges = vertexRanges
         }
 
-        func replace(_ contents: MeshResource.Contents, _ numUVSets: Int = 0, _ blendShapes: [BlendShape] = []) {
+        func replace(_ contents: MeshResource.Contents, _ numUVSets: Int = 0, _ bindPoseCount: Int = 0, _ blendShapes: [BlendShape] = []) {
             try! mesh.replace(with: contents)
             self.contents = contents
             self.numUVSets = numUVSets
+            self.bindPoseCount = bindPoseCount
             self.blendShapes = blendShapes
             updateCounts()
             updateBaseBuffers()
@@ -830,15 +835,17 @@ extension PolySpatialRealityKit {
                     unityFrame.deltaTangentsAsBuffer!.map { $0.swapCoordinateSystem() })
             })
         }
+        
+        let bindPosesCount = Int(unityMesh.bindPosesCount)
 
         // TODO (LXR-2993): Figure out why replacing the MeshResource/ModelComponent is causing a performance
         // regression with (at least) bake to mesh particles, since that is the approach that Apple recommended.
         if let existingAsset = meshAssets[id] {
-            existingAsset.replace(contents, numUVSets, blendShapes)
+            existingAsset.replace(contents, numUVSets, bindPosesCount, blendShapes)
             ModifyMeshAsset(id, mesh, existingAsset)
             NotifyMeshOrMaterialObservers(id, true)
         } else {
-            let newAsset = MeshAsset(contents, numUVSets, blendShapes)
+            let newAsset = MeshAsset(contents, numUVSets, bindPosesCount, blendShapes)
             ModifyMeshAsset(id, mesh, newAsset)
             UpdateMeshDefinition(id, newAsset) { id in
                 // Special mesh asset deleter to clean out the cachedSkinnedMesh dictionary.

@@ -259,6 +259,33 @@ extension PolySpatialMatrix4x4 {
     func toFloat4x4() -> simd_float4x4 {
         ConvertPolySpatialMatrix4x4ToFloat4x4(self)
     }
+    
+    // Swap to get values in RealityKit's coordinate space.
+    func getPosition() -> SIMD3<Float> {
+        let swapped = self.swapCoordinateSystem()
+        return .init(swapped[3][0], swapped[3][1], swapped[3][2])
+    }
+    
+    func getRotation() -> simd_quatf {
+        return .init(self.swapCoordinateSystem())
+    }
+    
+    func getLossyScale() -> SIMD3<Float> {
+        let axisX: SIMD3<Float> = .init(x: self.m00, y: self.m10, z: self.m20)
+        let axisY: SIMD3<Float> = .init(x: self.m01, y: self.m11, z: self.m21)
+        let axisZ: SIMD3<Float> = .init(x: self.m02, y: self.m12, z: self.m22)
+        
+        var result: SIMD3<Float> = .init(x: axisX.magnitudeSquared,
+                                         y: axisY.magnitudeSquared,
+                                         z: axisZ.magnitudeSquared)
+        
+        let determinant = self.toFloat4x4().determinant
+        if (determinant < 0) {
+            result.x *= -1
+        }
+        
+        return result
+    }
 
     func exactlyEqual(_ rhs: PolySpatialMatrix4x4) -> Bool {
         return (self.m00 == rhs.m00 && self.m10 == rhs.m10 && self.m20 == rhs.m20 && self.m30 == rhs.m30

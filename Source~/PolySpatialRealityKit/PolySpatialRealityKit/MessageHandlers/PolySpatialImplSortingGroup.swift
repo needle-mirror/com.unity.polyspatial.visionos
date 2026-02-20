@@ -42,8 +42,8 @@ extension PolySpatialRealityKit {
         }
     }
 
-    func destroySortingGroup(_ id : PolySpatialInstanceID) {
-        CleanUpSortingGroups(id)
+    func destroySortingGroup(_ entity : PolySpatialEntity) {
+        CleanUpSortingGroups(entity.unityId)
     }
 
     func setSortingGroupRecursively(

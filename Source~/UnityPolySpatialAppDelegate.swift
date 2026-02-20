@@ -5,6 +5,11 @@ import PolySpatialRealityKit
 @_silgen_name("SetPolySpatialNativeAPIImplementation")
 private func SetPolySpatialNativeAPIImplementation(_ api: UnsafeRawPointer, _ size: Int32)
 
+// NB: Although we know the type this method returns (LayerRenderer), we cause an access violation in the XR plugin when we try to use the
+// layer renderer. Returning UnsafeMutableRawPointer? avoids this problem, presumably because we avoid counting a reference to the pointer.
+@_silgen_name("UnityVisionOS_GetLayerRenderer")
+private func GetLayerRenderer() -> UnsafeMutableRawPointer?
+
 class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     var unity: UnityLibrary
 
@@ -161,7 +166,12 @@ class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableOb
         if activeScenes.count == 0 {
             if let instance = UnityLibrary.instance {
                 // If runInBackground is true, do not call willResignActive, which results in pausing Unity
-                if !instance.shouldRunInBackground() {
+                // unless we're using the special CompositorServices render loop. The logic in repaintCompositorLayer
+                // (from  UnityAppController+Rendering+visionOS.mm) relies on this signal to detect the situation
+                // where the Control Center system UI is visible, and we need to keep rendering despite other signals
+                // telling the app to pause. Without the second part of this check, the app will stop submitting frames
+                // to the compositor when the user opens Control Center, and will be killed by the OS.
+                if (!instance.shouldRunInBackground() || GetLayerRenderer() != nil) {
                     instance.willResignActive()
                 }
             }

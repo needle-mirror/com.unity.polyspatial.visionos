@@ -18,8 +18,7 @@ extension PolySpatialRealityKit {
             info.intensityExponent)
     }
 
-    func destroyImageBasedLight(_ id: PolySpatialInstanceID) {
-        let entity = GetEntity(id)
+    func destroyImageBasedLight(_ entity: PolySpatialEntity) {
         entity.clearImageBasedLightInfo()
     }
 
@@ -39,8 +38,7 @@ extension PolySpatialRealityKit {
         entity.updateBackingEntityComponents(ImageBasedLightReceiverComponent.self)
     }
 
-    func destroyImageBasedLightReceiver(_ id: PolySpatialInstanceID) {
-        let entity = GetEntity(id)
+    func destroyImageBasedLightReceiver(_ entity: PolySpatialEntity) {
         entity.components.remove(ImageBasedLightReceiverComponent.self)
         entity.updateBackingEntityComponents(ImageBasedLightReceiverComponent.self)
     }

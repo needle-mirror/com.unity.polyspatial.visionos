@@ -74,6 +74,7 @@ By default, PolySpatial maintains extra copies of resources such as textures and
 
 - Make sure both the host machine and the mobile device are connected to the same LAN. Make sure you have added a direct connection using **Advanced Settings** in the Play To Device Editor Window.
 - Make sure your firewall is not blocking the connection. If it is, then you may have to temporarily disable it using the appropriate tool for your OS.
+- If you encounter the error, "SocketException: No route to host," make sure that the Unity Hub has permission to find and communicate with devices on your local network. The Unity Editor inherits permissions from the Unity Hub and requires this permission to connect to the Vision Pro device over the network. (On macOS, enable this setting in **System Settings** under **Privacy & Security > Local Network**.)
 
 **I'm observing lag, or my editor seems to hang.**
 

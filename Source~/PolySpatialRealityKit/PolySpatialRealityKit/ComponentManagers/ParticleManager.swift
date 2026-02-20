@@ -100,11 +100,10 @@ class ParticleManager {
         }
     }
 
-    func destroyParticleSystem(_ id: PolySpatialInstanceID) {
-        let entity = PolySpatialRealityKit.instance.GetEntity(id)
+    func destroyParticleSystem(_ entity: PolySpatialEntity) {
         removeParticleBackingEntity(entity)
         removeTrailBackingEntity(entity)
-        removeSubEmitterDatum(id)
+        removeSubEmitterDatum(entity.unityId)
     }
 
     func getOrCreateParticleBackingEntity(
@@ -507,7 +506,7 @@ class ParticleManager {
         _ source: PolySpatialParticleSystemData,
         _ component: inout ParticleEmitterComponent,
         _ emitter: inout ParticleEmitterComponent.ParticleEmitter,
-        _ curveKeyBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialParticleCurveKey>?) {
+        _ curveKeyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) {
         // !! Handle shape module first before handling speed and velocityOverLifetime if it is available - the initial emitter direction is closely linked with the emitter shape !!
 
         // Set a default shape if user never specifies emitter shape module.

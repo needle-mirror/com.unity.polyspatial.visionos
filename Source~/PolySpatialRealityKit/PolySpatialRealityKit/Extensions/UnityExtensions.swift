@@ -130,28 +130,33 @@ extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
     }
 }
 
-// Read-Only access into a PolySpatialInstanceIdList data buffer.
-struct UnsafePolySpatialInstanceIDBufferPointer {
+// Read-Only access into a PolySpatialIdList data buffer.
+struct UnsafePolySpatialIDBufferPointer<T> {
     private let data: UnsafeRawBufferPointer
+    private let headerSize = MemoryLayout<PolySpatialIDListHeader>.size
 
     public init(_ data: UnsafeRawBufferPointer) {
+        precondition(data.count >= headerSize, "Buffer too small to contain header")
         self.data = data
     }
 
-    public var count: Int { (data.count - MemoryLayout<PolySpatialInstanceIDListHeader>.size) / MemoryLayout<Int64>.size }
+    public var count: Int { (data.count - headerSize) / MemoryLayout<T>.size }
 
-    public var instanceIds: UnsafeBufferPointer<Int64> {
-        data[MemoryLayout<PolySpatialInstanceIDListHeader>.size...].bindMemory(to: Int64.self)
+    public var values: UnsafeBufferPointer<T> {
+        data[headerSize...].bindMemory(to: T.self)
     }
 
     public var hostId: PolySpatialHostID {
-        data.load(as: PolySpatialInstanceIDListHeader.self).hostId
+        data.load(as: PolySpatialIDListHeader.self).hostId
     }
 
     public var viewSubgraphIndex: UInt8 {
-        data.load(as: PolySpatialInstanceIDListHeader.self).viewSubgraphIndex
+        data.load(as: PolySpatialIDListHeader.self).viewSubgraphIndex
     }
 }
+
+typealias UnsafePolySpatialInstanceIDBufferPointer = UnsafePolySpatialIDBufferPointer<Int64>
+typealias UnsafePolySpatialComponentIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialInstanceComponentIDPair>
 
 // Extension to add Hashable support to the PolySpatialComponentID type.
 extension PolySpatialComponentID: Equatable, Hashable, CustomStringConvertible {

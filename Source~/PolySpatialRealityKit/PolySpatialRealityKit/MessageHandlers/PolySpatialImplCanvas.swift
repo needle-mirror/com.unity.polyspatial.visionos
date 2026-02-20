@@ -16,8 +16,8 @@ extension PolySpatialRealityKit {
         createOrUpdateMeshRenderer(id, &renderData)
     }
     
-    func destroyCanvasRenderer(_ id: PolySpatialInstanceID) {
-        GetEntity(id).clearMaskedRendererInfo()
-        destroyMeshRenderer(id)
+    func destroyCanvasRenderer(_ entity: PolySpatialEntity) {
+        entity.clearMaskedRendererInfo()
+        destroyMeshRenderer(entity)
     }
 }

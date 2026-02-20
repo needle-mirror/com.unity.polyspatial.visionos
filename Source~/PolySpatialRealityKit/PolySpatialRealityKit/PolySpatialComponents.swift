@@ -257,11 +257,18 @@ class PolySpatialComponents {
 
     @MainActor
     class UnityVideoPlayer: Component {
+        enum PrerollState {
+            case idle
+            case loading
+            case complete
+        }
+        
         // AVPlayer status isn't always immediately ready to play right after
         // load. This observer tracks and ensures that the clip is prerolled
         // as needed when the player is ready.
         class VideoPlayerStatusObserver: NSObject {
             @objc var player: AVPlayer
+            var prerollObserver: NSKeyValueObservation?
             var statusObserver: NSKeyValueObservation?
 
             init(object: AVPlayer, playerComponent: UnityVideoPlayer) {
@@ -269,6 +276,15 @@ class PolySpatialComponents {
                 super.init()
 
                 statusObserver = observe(
+                    \.player.timeControlStatus,
+                    options: []
+                ) { object, change in
+                    Task { @MainActor in
+                        playerComponent.notifyClipState()
+                    }
+                }
+                
+                prerollObserver = observe(
                     \.player.status,
                     options: []
                 ) { object, change in
@@ -279,7 +295,11 @@ class PolySpatialComponents {
             }
 
             deinit {
+                prerollObserver?.invalidate()
+                prerollObserver = nil
+                
                 statusObserver?.invalidate()
+                statusObserver = nil
             }
         }
 
@@ -292,23 +312,37 @@ class PolySpatialComponents {
         public var playerItem: AVPlayerItem
         public var avPlayerLooper: AVPlayerLooper?
         public var shouldPreroll: Bool
-        var observerObject: VideoPlayerStatusObserver?
+        public var prerollState: PrerollState
+        public var observerObject: VideoPlayerStatusObserver?
 
         public init(_ id: PolySpatialInstanceID,
                     _ url: URL,
                     _ shouldPreroll: Bool) {
             self.id = id
             self.shouldPreroll = shouldPreroll
+            prerollState = .idle
             videoUrl = url
             playerItem = AVPlayerItem(asset: AVURLAsset(url: videoUrl))
             player = AVQueuePlayer(items: [playerItem])
             videoMaterial = VideoMaterial(avPlayer: player)
             // videoMaterial.controller.audioInputMode = .spatial
             observerObject = .init(object: player, playerComponent: self)
+            
+            if let scheme = url.scheme {
+                if (scheme.starts(with: "http")) {
+                    player.automaticallyWaitsToMinimizeStalling = true
+                }
+            }
         }
-
-        deinit {
-            player.cancelPendingPrerolls()
+        
+        // Use this instead of AVPlayer.play() - this checks to see if we are in the state of prerolling
+        // and if we are, we shouldn't interrupt it.
+        public func play() {
+            if (self.prerollState == .loading) {
+                return
+            }
+            
+            player.play()
         }
 
         public func changeUrl(_ url: URL) {
@@ -324,10 +358,19 @@ class PolySpatialComponents {
             avPlayerLooper = nil
 
             videoMaterial = VideoMaterial(avPlayer: player)
+            
+            player.cancelPendingPrerolls()
+            prerollState = .idle
+            
+            if let scheme = videoUrl.scheme {
+                if (scheme.starts(with: "http")) {
+                    player.automaticallyWaitsToMinimizeStalling = true
+                }
+            }
 
             // If this player had been set to preroll, the user might change the url too quickly for preroll to finish, so finish it here.
             if (shouldPreroll) {
-                player.cancelPendingPrerolls()
+                prerollIfNeeded()
             }
         }
 
@@ -347,7 +390,7 @@ class PolySpatialComponents {
                     if player.rate == 0 {
                         // Restart the looper up if we should be looping, or remove it now.
                         setLooping(looping)
-                        player.play()
+                        play()
                     }
             }
         }
@@ -360,24 +403,57 @@ class PolySpatialComponents {
                 avPlayerLooper = .init(player: player, templateItem: playerItem)
             }
         }
+        
+        public func notifyClipState() {
+            var clipStatus: PolySpatialVideoAssetStatus = .stalled
+            
+            switch (self.player.timeControlStatus) {
+                case .paused:
+                    clipStatus = .paused
+                    break
+                case .playing:
+                    clipStatus = .playing
+                    break
+                case .waitingToPlayAtSpecifiedRate:
+                    clipStatus = .stalled
+                    break
+                @unknown default:
+                    PolySpatialRealityKit.instance.LogWarning("Unhandled video player clip status \(self.player.timeControlStatus).")
+            }
+ 
+            withUnsafePointer(to: self.id) { id in
+                var clipStatusRawValue = clipStatus.rawValue
+                PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &clipStatusRawValue)
+            }
+        }
 
         public func prerollIfNeeded() {
             if (player.rate == 0 &&
                 player.status == .readyToPlay &&
+                self.prerollState == .idle &&
                 self.shouldPreroll) {
+                
+                self.prerollState = .loading
 
                 player.preroll(atRate: player.defaultRate,
                                completionHandler:({ (wasSuccess: Bool) -> Void in
                     Task { @MainActor in
-                        var assetStatus: PolySpatialVideoAssetStatus = .prerolled
+                        var prerollStatus: PolySpatialVideoAssetStatus = .prerolled
+                        self.prerollState = .complete
+
                         if (!wasSuccess) {
-                            assetStatus = .failedToPreroll
+                            prerollStatus = .failedToPreroll
+                            self.prerollState = .idle
                         }
 
                         withUnsafePointer(to: self.id) { id in
-                            var assetStatusRawValue = assetStatus.rawValue
-                            PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &assetStatusRawValue)
+                            var prerollRawValue = prerollStatus.rawValue
+                            PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &prerollRawValue)
                         }
+                        
+                        // After preroll fail or success, re-affirm current state of AVPlayer.
+                        let wasLooping = self.avPlayerLooper != nil
+                        self.setState(self.state, wasLooping)
                     }
                 }))
             }

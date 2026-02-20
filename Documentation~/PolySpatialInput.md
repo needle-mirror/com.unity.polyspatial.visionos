@@ -32,7 +32,7 @@ The `SpatialPointerDevice` provides the following properties:
 * `.kind`: the interaction kind, Touch (poke), In Direct Pinch, Direct Pinch, Pointer, Stylus.
 * `.targetId`: the instance ID of the object being interacted with.
 * `.phase`: the spatial pointer touch phase of the current interaction.
-* `.modifierKeys`: any modifer keys that are active while the interaction is happening.
+* `.modifierKeys`: any modifier keys that are active while the interaction is happening.
 * `.targetObject`: a direct reference to the game object the interaction targets.
 
 ## Use a spatial pointer in an Action Map

@@ -35,8 +35,7 @@ class LineRendererManager {
         }
     }
 
-    func destroyLineRenderer(_ id: PolySpatialInstanceID) {
-        let entity = PolySpatialRealityKit.instance.GetEntity(id)
+    func destroyLineRenderer(_ entity: PolySpatialEntity) {
         removeLineRendererBackingEntity(entity)
     }
     

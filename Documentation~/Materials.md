@@ -3,6 +3,9 @@ uid: psl-vos-materials
 ---
 # PolySpatial Material support
 
+> [!IMPORTANT]
+> The Built-In Render Pipeline is deprecated and will be made obsolete in a future release. For more information, refer to [Migrating from the Built-In Render Pipeline to URP](https://docs.unity3d.com/Manual/urp/upgrading-from-birp.html) and [Render pipeline feature comparison](https://docs.unity3d.com/Manual/render-pipelines-feature-comparison.html).
+
 Several important standard shaders for each pipeline have been mapped to their closest available RealityKit analog. Current support includes:
 * Standard URP shaders: Lit, Simple Lit, Unlit, (+TBD - more coming)
 * Standard Builtin shaders: Standard, (+TBD – more coming)

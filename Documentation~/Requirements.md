@@ -34,7 +34,10 @@ Note that rendering for Virtual Reality (Fully Immersive) applications and Windo
 
 ### Render pipeline
 
-While your project can use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline, we recommend using URP when developing for visionOS. Features like Foveated Rendering for Metal and Stereo Render Targets will only be compatible with URP. Refer to our Migration guide to move from the Built-in pipeline to URP: [Move on over to the Universal Render Pipeline with our advanced guide | Unity Blog](https://blog.unity.com/technology/move-on-over-to-the-universal-render-pipeline-with-our-advanced-guide).
+> [!IMPORTANT]
+> The Built-In Render Pipeline is deprecated and will be made obsolete in a future release. For more information, refer to [Migrating from the Built-In Render Pipeline to URP](https://docs.unity3d.com/Manual/urp/upgrading-from-birp.html) and [Render pipeline feature comparison](https://docs.unity3d.com/Manual/render-pipelines-feature-comparison.html).
+
+While your project can use either the Universal Render Pipeline (URP) or the Built-in Render Pipeline, we recommend using URP when developing for visionOS. Features like Foveated Rendering for Metal and Stereo Render Targets will only be compatible with URP.
 
 ### Color space
 

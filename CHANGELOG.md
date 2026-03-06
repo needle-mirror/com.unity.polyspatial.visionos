@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [3.1.0] - 2026-02-20
+## [3.1.1] - 2026-03-06
 
 ### Added
 - Added support for optimized Skinned Mesh Renderers (Skinned Mesh Renderers with Optimize Game Objects ticked true). This feature requires a change in editor version 6000.5.0a3 and above.

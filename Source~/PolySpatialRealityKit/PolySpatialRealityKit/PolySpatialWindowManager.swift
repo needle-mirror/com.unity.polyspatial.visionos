@@ -36,6 +36,10 @@ public class PolySpatialWindowManagerAccess {
         PolySpatialRealityKit.instance.getEntities(unityInstanceId: id)
     }
 
+    public static func entitiesForUnityEntityId(id: UInt64) -> [Entity] {
+        PolySpatialRealityKit.instance.getEntities(unityEntityId: id)
+    }
+
     public static func entityForIdentifier(id: PackedIdentifier) -> Entity? {
         PolySpatialRealityKit.instance.TryGetEntity(.init(packed: id))
     }

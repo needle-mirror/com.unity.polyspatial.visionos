@@ -601,6 +601,23 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         }
         return entities
     }
+    
+    // Used in Unity 6000.4 and greater
+    func getEntities(unityEntityId: UInt64) -> [PolySpatialEntity] {
+        var entities: [PolySpatialEntity] = []
+        for viewSubgraph in viewSubgraphs {
+            guard let viewSubgraph = viewSubgraph else {
+                continue
+            }
+
+            guard let entity = viewSubgraph.entities[Int64(bitPattern: unityEntityId)] else {
+                continue
+            }
+
+            entities.append(entity)
+        }
+        return entities
+    }
 
     func TryGetEntity(_ id: PolySpatialInstanceID) -> PolySpatialEntity? {
         return getViewSubgraph(id.viewSubgraphIndex).entities[id.id]

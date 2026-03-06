@@ -255,6 +255,7 @@ public protocol PolySpatialWindowManagerDelegate {
 @_hasMissingDesignatedInitializers @_Concurrency.MainActor public class PolySpatialWindowManagerAccess {
   @_Concurrency.MainActor public static var delegate: (any PolySpatialRealityKit.PolySpatialWindowManagerDelegate)?
   @_Concurrency.MainActor public static func entitiesForUnityInstanceId(id: Swift.Int32) -> [RealityFoundation.Entity]
+  @_Concurrency.MainActor public static func entitiesForUnityEntityId(id: Swift.UInt64) -> [RealityFoundation.Entity]
   @_Concurrency.MainActor public static func entityForIdentifier(id: PolySpatialRealityKit.PackedIdentifier) -> RealityFoundation.Entity?
   @_Concurrency.MainActor public static func identifierForEntity(entity: RealityFoundation.Entity) -> PolySpatialRealityKit.PackedIdentifier?
   @_Concurrency.MainActor public static func onCompositorSpaceOpened(_ window: PolySpatialRealityKit.PolySpatialWindow)

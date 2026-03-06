@@ -27,6 +27,9 @@ By default, Unity builds that target visionOS will be set up to run in windowed 
 
 Windowed Apps use Unity's own rendering pipeline, such as the Built-in Render Pipeline or Universal Render Pipeline. See [Windowed Apps](WindowedApps.md) for details.
 
+> [!IMPORTANT]
+> The Built-In Render Pipeline is deprecated and will be made obsolete in a future release. For more information, refer to [Migrating from the Built-In Render Pipeline to URP](https://docs.unity3d.com/Manual/urp/upgrading-from-birp.html) and [Render pipeline feature comparison](https://docs.unity3d.com/Manual/render-pipelines-feature-comparison.html).
+
 ## Metal Rendering with Compositor Services (Fully Immersive Virtual and Mixed Reality)
 
 1. Open the **Project Settings** window (menu:**Edit &gt; Project Settings**).

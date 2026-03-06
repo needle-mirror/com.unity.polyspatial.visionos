@@ -14,6 +14,10 @@ Projects that use [Unity's classic input system](https://docs.unity3d.com/Script
 ## Rendering
 
 ### Render Pipelines
+
+> [!IMPORTANT]
+> The Built-In Render Pipeline is deprecated and will be made obsolete in a future release. For more information, refer to [Migrating from the Built-In Render Pipeline to URP](https://docs.unity3d.com/Manual/urp/upgrading-from-birp.html) and [Render pipeline feature comparison](https://docs.unity3d.com/Manual/render-pipelines-feature-comparison.html).
+
 By default Unity PolySpatial XR supports both [Universal Render Pipeline (URP)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest/index.html) and [Unity's Built-in Render Pipeline](https://docs.unity3d.com/Manual/built-in-render-pipeline.html).
 
 Unity PolySpatial XR doesn't support **custom ShaderLab shaders** on any render pipeline, and if your project uses custom shaders, all of them will have to be authored using [Unity's Shader graph](https://docs.unity3d.com/Packages/com.unity.shadergraph@latest/index.html). The ParticleSystem component only supports materials with Unity's built-in shaders. Unity's Shader Graph support is an ongoing work in progress for particles.

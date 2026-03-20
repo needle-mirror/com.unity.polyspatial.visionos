@@ -8,7 +8,7 @@ internal enum Unity_PolySpatial_PolySpatialMagicCookie: UInt64, Enum, Verifiable
   internal typealias T = UInt64
   internal static var byteSize: Int { return MemoryLayout<UInt64>.size }
   internal var value: UInt64 { return self.rawValue }
-  case value = 1771564488423120000
+  case value = 1773665536455084000
 
   internal static var max: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
   internal static var min: Unity_PolySpatial_PolySpatialMagicCookie { return .value }
@@ -1636,6 +1636,98 @@ internal enum Unity_PolySpatial_Internals_PolySpatialParticleTimeMode: Int32, En
 }
 
 
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case view = 0
+  case world = 1
+  case local = 2
+  case facing = 3
+  case velocity = 4
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment { return .velocity }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment { return .view }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleTextureMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case stretch = 0
+  case tile = 1
+  case distributePerSegment = 2
+  case repeatPerSegment = 3
+  case static_ = 4
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode { return .static_ }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode { return .stretch }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialTrailMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case perParticle = 0
+  case ribbon = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialTrailMode { return .ribbon }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialTrailMode { return .perParticle }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case low = 0
+  case medium = 1
+  case high = 2
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality { return .high }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality { return .low }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleGravitySource: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case physics3D = 0
+  case physics2D = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleGravitySource { return .physics2D }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleGravitySource { return .physics3D }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case disabled = 0
+  case pauseUntilReplaced = 1
+  case loopUntilReplaced = 2
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode { return .loopUntilReplaced }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode { return .disabled }
+}
+
+
+internal enum Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode: Int32, Enum, Verifiable {
+  internal typealias T = Int32
+  internal static var byteSize: Int { return MemoryLayout<Int32>.size }
+  internal var value: Int32 { return self.rawValue }
+  case initial = 0
+  case current = 1
+
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode { return .current }
+  internal static var min: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode { return .initial }
+}
+
+
 internal enum Unity_PolySpatial_Internals_PolySpatialVideoPlayerState: Int32, Enum, Verifiable {
   internal typealias T = Int32
   internal static var byteSize: Int { return MemoryLayout<Int32>.size }
@@ -1905,6 +1997,9 @@ internal enum Unity_PolySpatial_Internals_PolySpatialCommand: Int32, Enum, Verif
   ///  Create/update/destroy a halo component
   case createOrUpdateHalo = 1325
   case destroyHalo = 1326
+  ///  Create/update/destroy a character component.
+  case createOrUpdateCharacter = 1327
+  case destroyCharacter = 1328
   /// --- Category for camera commands sent from app to host ---
   case cameraCommandCategory = 1536
   ///  Request the current camera pose from a platform.
@@ -2105,8 +2200,9 @@ internal enum Unity_PolySpatial_Internals_PolySpatialHostCommand: Int32, Enum, V
   case playerRemoved = 68356
   case playerMouse = 68357
   case playerKeyboard = 68358
+  case updateCharacter = 68359
 
-  internal static var max: Unity_PolySpatial_Internals_PolySpatialHostCommand { return .playerKeyboard }
+  internal static var max: Unity_PolySpatial_Internals_PolySpatialHostCommand { return .updateCharacter }
   internal static var min: Unity_PolySpatial_Internals_PolySpatialHostCommand { return .systemCommandCategory }
 }
 
@@ -7759,6 +7855,80 @@ internal struct Unity_PolySpatial_Internals_PolySpatialPlayerKey_Mutable: FlatBu
   internal var padding1: UInt32 { return _accessor.readBuffer(of: UInt32.self, at: 12) }
 }
 
+internal struct Unity_PolySpatial_Internals_PolySpatialCharacterData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  private var _maxSpeed: Float32
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _maxSpeed = _accessor.readBuffer(of: Float32.self, at: 0)
+  }
+
+  internal init(maxSpeed: Float32) {
+    _maxSpeed = maxSpeed
+  }
+
+  internal init() {
+    _maxSpeed = 0.0
+  }
+
+  internal var maxSpeed: Float32 { _maxSpeed }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialCharacterData.self)
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialCharacterData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var maxSpeed: Float32 { return _accessor.readBuffer(of: Float32.self, at: 0) }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialHostCharacterData: NativeStruct, Verifiable, FlatbuffersInitializable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+
+  private var _pose: UnityEngine_Pose
+
+  internal init(_ bb: ByteBuffer, o: Int32) {
+    let _accessor = Struct(bb: bb, position: o)
+    _pose = UnityEngine_Pose(_accessor.bb, o: _accessor.postion + 0)
+  }
+
+  internal init(pose: UnityEngine_Pose) {
+    _pose = pose
+  }
+
+  internal init() {
+    _pose = UnityEngine_Pose()
+  }
+
+  internal var pose: UnityEngine_Pose { _pose }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    try verifier.inBuffer(position: position, of: Unity_PolySpatial_Internals_PolySpatialHostCharacterData.self)
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialHostCharacterData_Mutable: FlatBufferObject {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Struct
+
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Struct(bb: bb, position: o) }
+
+  internal var pose: UnityEngine_Pose_Mutable { return UnityEngine_Pose_Mutable(_accessor.bb, o: _accessor.postion + 0) }
+}
+
 internal struct Unity_PolySpatial_Internals_LogWithMarkup: FlatBufferObject, Verifiable {
 
   static func validateVersion() { FlatBuffersVersion_23_3_3() }
@@ -13075,6 +13245,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
     case scalingMode = 28
     case playOnAwake = 30
     case maxParticles = 32
+    case startDelay = 34
+    case flipRotation = 36
+    case autoRandomSeed = 38
+    case randomSeed = 40
+    case ringBufferMode = 42
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -13094,7 +13269,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
   internal var scalingMode: Unity_PolySpatial_Internals_PolySpatialParticleScalingMode { let o = _accessor.offset(VTOFFSET.scalingMode.v); return o == 0 ? .hierarchy : Unity_PolySpatial_Internals_PolySpatialParticleScalingMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .hierarchy }
   internal var playOnAwake: Bool { let o = _accessor.offset(VTOFFSET.playOnAwake.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
   internal var maxParticles: Int32 { let o = _accessor.offset(VTOFFSET.maxParticles.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
-  internal static func startPolySpatialParticleMain(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 15) }
+  internal var startDelay: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve! { let o = _accessor.offset(VTOFFSET.startDelay.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var flipRotation: Float32 { let o = _accessor.offset(VTOFFSET.flipRotation.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var autoRandomSeed: Bool { let o = _accessor.offset(VTOFFSET.autoRandomSeed.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var randomSeed: UInt32 { let o = _accessor.offset(VTOFFSET.randomSeed.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt32.self, at: o) }
+  internal var ringBufferMode: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode { let o = _accessor.offset(VTOFFSET.ringBufferMode.v); return o == 0 ? .disabled : Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .disabled }
+  internal static func startPolySpatialParticleMain(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 20) }
   internal static func add(duration: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: duration, def: 0.0, at: VTOFFSET.duration.p) }
   internal static func add(looping: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: looping, def: false,
    at: VTOFFSET.looping.p) }
@@ -13114,7 +13294,13 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
   internal static func add(playOnAwake: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: playOnAwake, def: false,
    at: VTOFFSET.playOnAwake.p) }
   internal static func add(maxParticles: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: maxParticles, def: 0, at: VTOFFSET.maxParticles.p) }
-  internal static func endPolySpatialParticleMain(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [10, 12, 14, 18, 20, 24]); return end }
+  internal static func add(startDelay: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: startDelay, at: VTOFFSET.startDelay.p) }
+  internal static func add(flipRotation: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: flipRotation, def: 0.0, at: VTOFFSET.flipRotation.p) }
+  internal static func add(autoRandomSeed: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: autoRandomSeed, def: false,
+   at: VTOFFSET.autoRandomSeed.p) }
+  internal static func add(randomSeed: UInt32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: randomSeed, def: 0, at: VTOFFSET.randomSeed.p) }
+  internal static func add(ringBufferMode: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: ringBufferMode.rawValue, def: 0, at: VTOFFSET.ringBufferMode.p) }
+  internal static func endPolySpatialParticleMain(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [10, 12, 14, 18, 20, 24, 34]); return end }
   internal static func createPolySpatialParticleMain(
     _ fbb: inout FlatBufferBuilder,
     duration: Float32 = 0.0,
@@ -13131,7 +13317,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
     simulationSpace: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace = .local,
     scalingMode: Unity_PolySpatial_Internals_PolySpatialParticleScalingMode = .hierarchy,
     playOnAwake: Bool = false,
-    maxParticles: Int32 = 0
+    maxParticles: Int32 = 0,
+    startDelayOffset startDelay: Offset,
+    flipRotation: Float32 = 0.0,
+    autoRandomSeed: Bool = false,
+    randomSeed: UInt32 = 0,
+    ringBufferMode: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode = .disabled
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleMain.startPolySpatialParticleMain(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleMain.add(duration: duration, &fbb)
@@ -13149,6 +13340,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
     Unity_PolySpatial_Internals_PolySpatialParticleMain.add(scalingMode: scalingMode, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleMain.add(playOnAwake: playOnAwake, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleMain.add(maxParticles: maxParticles, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleMain.add(startDelay: startDelay, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleMain.add(flipRotation: flipRotation, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleMain.add(autoRandomSeed: autoRandomSeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleMain.add(randomSeed: randomSeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleMain.add(ringBufferMode: ringBufferMode, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleMain.endPolySpatialParticleMain(&fbb, start: __start)
   }
 
@@ -13169,6 +13365,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleMain: FlatBufferO
     try _v.visit(field: VTOFFSET.scalingMode.p, fieldName: "scalingMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleScalingMode.self)
     try _v.visit(field: VTOFFSET.playOnAwake.p, fieldName: "playOnAwake", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.maxParticles.p, fieldName: "maxParticles", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.startDelay.p, fieldName: "startDelay", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.flipRotation.p, fieldName: "flipRotation", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.autoRandomSeed.p, fieldName: "autoRandomSeed", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.randomSeed.p, fieldName: "randomSeed", required: false, type: UInt32.self)
+    try _v.visit(field: VTOFFSET.ringBufferMode.p, fieldName: "ringBufferMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleRingBufferMode.self)
     _v.finish()
   }
 }
@@ -13184,19 +13385,22 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleEmission: FlatBuf
 
   private enum VTOFFSET: VOffset {
     case rateOverTime = 4
-    case burst = 6
+    case rateOverDistance = 6
+    case burst = 8
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
   internal var rateOverTime: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.rateOverTime.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var rateOverDistance: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.rateOverDistance.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var hasBurst: Bool { let o = _accessor.offset(VTOFFSET.burst.v); return o == 0 ? false : true }
   internal var burstCount: Int32 { let o = _accessor.offset(VTOFFSET.burst.v); return o == 0 ? 0 : _accessor.vector(count: o) }
   internal func burst(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialParticleBurst? { let o = _accessor.offset(VTOFFSET.burst.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialParticleBurst.self, offset: _accessor.vector(at: o) + index * 20) }
   internal var burstAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialParticleBurst>? { return _accessor.getBufferPointer(at: VTOFFSET.burst.v) }
   internal func mutableBurst(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialParticleBurst_Mutable? { let o = _accessor.offset(VTOFFSET.burst.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleBurst_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 20) }
-  internal static func startPolySpatialParticleEmission(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal static func startPolySpatialParticleEmission(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
   internal static func add(rateOverTime: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: rateOverTime, at: VTOFFSET.rateOverTime.p) }
+  internal static func add(rateOverDistance: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: rateOverDistance, at: VTOFFSET.rateOverDistance.p) }
   internal static func addVectorOf(burst: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: burst, at: VTOFFSET.burst.p) }
   internal static func startVectorOfBurst(_ size: Int, in builder: inout FlatBufferBuilder) {
     builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialParticleBurst>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialParticleBurst>.alignment)
@@ -13205,10 +13409,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleEmission: FlatBuf
   internal static func createPolySpatialParticleEmission(
     _ fbb: inout FlatBufferBuilder,
     rateOverTimeOffset rateOverTime: Offset = Offset(),
+    rateOverDistanceOffset rateOverDistance: Offset = Offset(),
     burstVectorOffset burst: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleEmission.startPolySpatialParticleEmission(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleEmission.add(rateOverTime: rateOverTime, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleEmission.add(rateOverDistance: rateOverDistance, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleEmission.addVectorOf(burst: burst, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleEmission.endPolySpatialParticleEmission(&fbb, start: __start)
   }
@@ -13216,6 +13422,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleEmission: FlatBuf
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.rateOverTime.p, fieldName: "rateOverTime", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.rateOverDistance.p, fieldName: "rateOverDistance", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     try _v.visit(field: VTOFFSET.burst.p, fieldName: "burst", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialParticleBurst, Unity_PolySpatial_Internals_PolySpatialParticleBurst>>.self)
     _v.finish()
   }
@@ -13384,6 +13591,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifet
     case offsetVelocity = 8
     case radial = 10
     case space = 12
+    case speedModifier = 14
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -13393,12 +13601,14 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifet
   internal var offsetVelocity: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3! { let o = _accessor.offset(VTOFFSET.offsetVelocity.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var radial: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.radial.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var space: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace { let o = _accessor.offset(VTOFFSET.space.v); return o == 0 ? .local : Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .local }
-  internal static func startPolySpatialParticleVelocityOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 5) }
+  internal var speedModifier: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.speedModifier.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal static func startPolySpatialParticleVelocityOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
   internal static func add(linearVelocity: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: linearVelocity, at: VTOFFSET.linearVelocity.p) }
   internal static func add(orbitalVelocity: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: orbitalVelocity, at: VTOFFSET.orbitalVelocity.p) }
   internal static func add(offsetVelocity: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: offsetVelocity, at: VTOFFSET.offsetVelocity.p) }
   internal static func add(radial: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: radial, at: VTOFFSET.radial.p) }
   internal static func add(space: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace, _ fbb: inout FlatBufferBuilder) { fbb.add(element: space.rawValue, def: 0, at: VTOFFSET.space.p) }
+  internal static func add(speedModifier: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: speedModifier, at: VTOFFSET.speedModifier.p) }
   internal static func endPolySpatialParticleVelocityOverLifetime(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4, 6, 8]); return end }
   internal static func createPolySpatialParticleVelocityOverLifetime(
     _ fbb: inout FlatBufferBuilder,
@@ -13406,7 +13616,8 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifet
     orbitalVelocityOffset orbitalVelocity: Offset,
     offsetVelocityOffset offsetVelocity: Offset,
     radialOffset radial: Offset = Offset(),
-    space: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace = .local
+    space: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace = .local,
+    speedModifierOffset speedModifier: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.startPolySpatialParticleVelocityOverLifetime(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.add(linearVelocity: linearVelocity, &fbb)
@@ -13414,6 +13625,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifet
     Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.add(offsetVelocity: offsetVelocity, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.add(radial: radial, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.add(space: space, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.add(speedModifier: speedModifier, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifetime.endPolySpatialParticleVelocityOverLifetime(&fbb, start: __start)
   }
 
@@ -13424,6 +13636,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleVelocityOverLifet
     try _v.visit(field: VTOFFSET.offsetVelocity.p, fieldName: "offsetVelocity", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
     try _v.visit(field: VTOFFSET.radial.p, fieldName: "radial", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     try _v.visit(field: VTOFFSET.space.p, fieldName: "space", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleSimulationSpace.self)
+    try _v.visit(field: VTOFFSET.speedModifier.p, fieldName: "speedModifier", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     _v.finish()
   }
 }
@@ -13445,8 +13658,6 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
     case drag = 12
     case dragBasedOnVelocity = 14
     case dragBasedOnSize = 16
-    case pad0 = 18
-    case pad1 = 20
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -13458,9 +13669,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
   internal var drag: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.drag.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var dragBasedOnVelocity: Bool { let o = _accessor.offset(VTOFFSET.dragBasedOnVelocity.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
   internal var dragBasedOnSize: Bool { let o = _accessor.offset(VTOFFSET.dragBasedOnSize.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal var pad0: Bool { let o = _accessor.offset(VTOFFSET.pad0.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal var pad1: Bool { let o = _accessor.offset(VTOFFSET.pad1.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
-  internal static func startPolySpatialParticleLimitVelocityOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 9) }
+  internal static func startPolySpatialParticleLimitVelocityOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 7) }
   internal static func add(separateAxes: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: separateAxes, def: false,
    at: VTOFFSET.separateAxes.p) }
   internal static func add(speed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: speed, at: VTOFFSET.speed.p) }
@@ -13471,10 +13680,6 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
    at: VTOFFSET.dragBasedOnVelocity.p) }
   internal static func add(dragBasedOnSize: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: dragBasedOnSize, def: false,
    at: VTOFFSET.dragBasedOnSize.p) }
-  internal static func add(pad0: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: pad0, def: false,
-   at: VTOFFSET.pad0.p) }
-  internal static func add(pad1: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: pad1, def: false,
-   at: VTOFFSET.pad1.p) }
   internal static func endPolySpatialParticleLimitVelocityOverLifetime(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialParticleLimitVelocityOverLifetime(
     _ fbb: inout FlatBufferBuilder,
@@ -13484,9 +13689,7 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
     dampen: Float32 = 0.0,
     dragOffset drag: Offset = Offset(),
     dragBasedOnVelocity: Bool = false,
-    dragBasedOnSize: Bool = false,
-    pad0: Bool = false,
-    pad1: Bool = false
+    dragBasedOnSize: Bool = false
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.startPolySpatialParticleLimitVelocityOverLifetime(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(separateAxes: separateAxes, &fbb)
@@ -13496,8 +13699,6 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
     Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(drag: drag, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(dragBasedOnVelocity: dragBasedOnVelocity, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(dragBasedOnSize: dragBasedOnSize, &fbb)
-    Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(pad0: pad0, &fbb)
-    Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.add(pad1: pad1, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOverLifetime.endPolySpatialParticleLimitVelocityOverLifetime(&fbb, start: __start)
   }
 
@@ -13510,8 +13711,6 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleLimitVelocityOver
     try _v.visit(field: VTOFFSET.drag.p, fieldName: "drag", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     try _v.visit(field: VTOFFSET.dragBasedOnVelocity.p, fieldName: "dragBasedOnVelocity", required: false, type: Bool.self)
     try _v.visit(field: VTOFFSET.dragBasedOnSize.p, fieldName: "dragBasedOnSize", required: false, type: Bool.self)
-    try _v.visit(field: VTOFFSET.pad0.p, fieldName: "pad0", required: false, type: Bool.self)
-    try _v.visit(field: VTOFFSET.pad1.p, fieldName: "pad1", required: false, type: Bool.self)
     _v.finish()
   }
 }
@@ -13527,26 +13726,32 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocity: 
 
   private enum VTOFFSET: VOffset {
     case curve = 4
+    case mode = 6
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
   internal var curve: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve! { let o = _accessor.offset(VTOFFSET.curve.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
-  internal static func startPolySpatialParticleInheritVelocity(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 1) }
+  internal var mode: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode { let o = _accessor.offset(VTOFFSET.mode.v); return o == 0 ? .initial : Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .initial }
+  internal static func startPolySpatialParticleInheritVelocity(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
   internal static func add(curve: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: curve, at: VTOFFSET.curve.p) }
+  internal static func add(mode: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: mode.rawValue, def: 0, at: VTOFFSET.mode.p) }
   internal static func endPolySpatialParticleInheritVelocity(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
   internal static func createPolySpatialParticleInheritVelocity(
     _ fbb: inout FlatBufferBuilder,
-    curveOffset curve: Offset
+    curveOffset curve: Offset,
+    mode: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode = .initial
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocity.startPolySpatialParticleInheritVelocity(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocity.add(curve: curve, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocity.add(mode: mode, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocity.endPolySpatialParticleInheritVelocity(&fbb, start: __start)
   }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.curve.p, fieldName: "curve", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.mode.p, fieldName: "mode", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleInheritVelocityMode.self)
     _v.finish()
   }
 }
@@ -13562,26 +13767,40 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime
 
   private enum VTOFFSET: VOffset {
     case force = 4
+    case worldSpace = 6
+    case randomize = 8
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
   internal var force: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3! { let o = _accessor.offset(VTOFFSET.force.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
-  internal static func startPolySpatialParticleForceOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 1) }
+  internal var worldSpace: Bool { let o = _accessor.offset(VTOFFSET.worldSpace.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var randomize: Bool { let o = _accessor.offset(VTOFFSET.randomize.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal static func startPolySpatialParticleForceOverLifetime(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
   internal static func add(force: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: force, at: VTOFFSET.force.p) }
+  internal static func add(worldSpace: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: worldSpace, def: false,
+   at: VTOFFSET.worldSpace.p) }
+  internal static func add(randomize: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: randomize, def: false,
+   at: VTOFFSET.randomize.p) }
   internal static func endPolySpatialParticleForceOverLifetime(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
   internal static func createPolySpatialParticleForceOverLifetime(
     _ fbb: inout FlatBufferBuilder,
-    forceOffset force: Offset
+    forceOffset force: Offset,
+    worldSpace: Bool = false,
+    randomize: Bool = false
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime.startPolySpatialParticleForceOverLifetime(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime.add(force: force, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime.add(worldSpace: worldSpace, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime.add(randomize: randomize, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleForceOverLifetime.endPolySpatialParticleForceOverLifetime(&fbb, start: __start)
   }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
     try _v.visit(field: VTOFFSET.force.p, fieldName: "force", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
+    try _v.visit(field: VTOFFSET.worldSpace.p, fieldName: "worldSpace", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.randomize.p, fieldName: "randomize", required: false, type: Bool.self)
     _v.finish()
   }
 }
@@ -13720,36 +13939,105 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleNoise: FlatBuffer
     case strength = 4
     case positionAmount = 6
     case scrollSpeed = 8
+    case separateAxes = 10
+    case frequency = 12
+    case damping = 14
+    case octaves = 16
+    case octaveMultiplier = 18
+    case octaveScale = 20
+    case remap = 22
+    case remapCurve = 24
+    case quality = 26
+    case rotationAmount = 28
+    case scaleAmount = 30
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
 
-  internal var strength: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.strength.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var strength: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3? { let o = _accessor.offset(VTOFFSET.strength.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var positionAmount: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.positionAmount.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
   internal var scrollSpeed: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.scrollSpeed.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
-  internal static func startPolySpatialParticleNoise(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  internal var separateAxes: Bool { let o = _accessor.offset(VTOFFSET.separateAxes.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var frequency: Float32 { let o = _accessor.offset(VTOFFSET.frequency.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var damping: Bool { let o = _accessor.offset(VTOFFSET.damping.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var octaves: Int32 { let o = _accessor.offset(VTOFFSET.octaves.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var octaveMultiplier: Float32 { let o = _accessor.offset(VTOFFSET.octaveMultiplier.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var octaveScale: Float32 { let o = _accessor.offset(VTOFFSET.octaveScale.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var remap: Bool { let o = _accessor.offset(VTOFFSET.remap.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var remapCurve: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3! { let o = _accessor.offset(VTOFFSET.remapCurve.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var quality: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality { let o = _accessor.offset(VTOFFSET.quality.v); return o == 0 ? .low : Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .low }
+  internal var rotationAmount: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.rotationAmount.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var scaleAmount: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve? { let o = _accessor.offset(VTOFFSET.scaleAmount.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal static func startPolySpatialParticleNoise(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 14) }
   internal static func add(strength: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: strength, at: VTOFFSET.strength.p) }
   internal static func add(positionAmount: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: positionAmount, at: VTOFFSET.positionAmount.p) }
   internal static func add(scrollSpeed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: scrollSpeed, at: VTOFFSET.scrollSpeed.p) }
-  internal static func endPolySpatialParticleNoise(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
+  internal static func add(separateAxes: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: separateAxes, def: false,
+   at: VTOFFSET.separateAxes.p) }
+  internal static func add(frequency: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: frequency, def: 0.0, at: VTOFFSET.frequency.p) }
+  internal static func add(damping: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: damping, def: false,
+   at: VTOFFSET.damping.p) }
+  internal static func add(octaves: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: octaves, def: 0, at: VTOFFSET.octaves.p) }
+  internal static func add(octaveMultiplier: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: octaveMultiplier, def: 0.0, at: VTOFFSET.octaveMultiplier.p) }
+  internal static func add(octaveScale: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: octaveScale, def: 0.0, at: VTOFFSET.octaveScale.p) }
+  internal static func add(remap: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: remap, def: false,
+   at: VTOFFSET.remap.p) }
+  internal static func add(remapCurve: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: remapCurve, at: VTOFFSET.remapCurve.p) }
+  internal static func add(quality: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality, _ fbb: inout FlatBufferBuilder) { fbb.add(element: quality.rawValue, def: 0, at: VTOFFSET.quality.p) }
+  internal static func add(rotationAmount: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: rotationAmount, at: VTOFFSET.rotationAmount.p) }
+  internal static func add(scaleAmount: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: scaleAmount, at: VTOFFSET.scaleAmount.p) }
+  internal static func endPolySpatialParticleNoise(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [24]); return end }
   internal static func createPolySpatialParticleNoise(
     _ fbb: inout FlatBufferBuilder,
     strengthOffset strength: Offset = Offset(),
     positionAmountOffset positionAmount: Offset = Offset(),
-    scrollSpeedOffset scrollSpeed: Offset = Offset()
+    scrollSpeedOffset scrollSpeed: Offset = Offset(),
+    separateAxes: Bool = false,
+    frequency: Float32 = 0.0,
+    damping: Bool = false,
+    octaves: Int32 = 0,
+    octaveMultiplier: Float32 = 0.0,
+    octaveScale: Float32 = 0.0,
+    remap: Bool = false,
+    remapCurveOffset remapCurve: Offset,
+    quality: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality = .low,
+    rotationAmountOffset rotationAmount: Offset = Offset(),
+    scaleAmountOffset scaleAmount: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleNoise.startPolySpatialParticleNoise(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(strength: strength, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(positionAmount: positionAmount, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(scrollSpeed: scrollSpeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(separateAxes: separateAxes, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(frequency: frequency, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(damping: damping, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(octaves: octaves, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(octaveMultiplier: octaveMultiplier, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(octaveScale: octaveScale, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(remap: remap, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(remapCurve: remapCurve, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(quality: quality, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(rotationAmount: rotationAmount, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleNoise.add(scaleAmount: scaleAmount, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleNoise.endPolySpatialParticleNoise(&fbb, start: __start)
   }
 
   internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
     var _v = try verifier.visitTable(at: position)
-    try _v.visit(field: VTOFFSET.strength.p, fieldName: "strength", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.strength.p, fieldName: "strength", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
     try _v.visit(field: VTOFFSET.positionAmount.p, fieldName: "positionAmount", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     try _v.visit(field: VTOFFSET.scrollSpeed.p, fieldName: "scrollSpeed", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.separateAxes.p, fieldName: "separateAxes", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.frequency.p, fieldName: "frequency", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.damping.p, fieldName: "damping", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.octaves.p, fieldName: "octaves", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.octaveMultiplier.p, fieldName: "octaveMultiplier", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.octaveScale.p, fieldName: "octaveScale", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.remap.p, fieldName: "remap", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.remapCurve.p, fieldName: "remapCurve", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
+    try _v.visit(field: VTOFFSET.quality.p, fieldName: "quality", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleNoiseTextureQuality.self)
+    try _v.visit(field: VTOFFSET.rotationAmount.p, fieldName: "rotationAmount", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.scaleAmount.p, fieldName: "scaleAmount", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
     _v.finish()
   }
 }
@@ -13821,6 +14109,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
     case speedRangeMax = 18
     case fps = 20
     case cycles = 22
+    case uvChannelMask = 24
+    case textureWidth = 26
+    case textureHeight = 28
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -13835,7 +14126,10 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
   internal var speedRangeMax: Float32 { let o = _accessor.offset(VTOFFSET.speedRangeMax.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
   internal var fps: Float32 { let o = _accessor.offset(VTOFFSET.fps.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
   internal var cycles: Float32 { let o = _accessor.offset(VTOFFSET.cycles.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
-  internal static func startPolySpatialParticleTextureSheetAnimation(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 10) }
+  internal var uvChannelMask: UInt32 { let o = _accessor.offset(VTOFFSET.uvChannelMask.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt32.self, at: o) }
+  internal var textureWidth: Int32 { let o = _accessor.offset(VTOFFSET.textureWidth.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var textureHeight: Int32 { let o = _accessor.offset(VTOFFSET.textureHeight.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal static func startPolySpatialParticleTextureSheetAnimation(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 13) }
   internal static func add(tilesX: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: tilesX, def: 0, at: VTOFFSET.tilesX.p) }
   internal static func add(tilesY: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: tilesY, def: 0, at: VTOFFSET.tilesY.p) }
   internal static func add(animation: Unity_PolySpatial_Internals_PolySpatialParticleAnimationType, _ fbb: inout FlatBufferBuilder) { fbb.add(element: animation.rawValue, def: 0, at: VTOFFSET.animation.p) }
@@ -13846,6 +14140,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
   internal static func add(speedRangeMax: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: speedRangeMax, def: 0.0, at: VTOFFSET.speedRangeMax.p) }
   internal static func add(fps: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: fps, def: 0.0, at: VTOFFSET.fps.p) }
   internal static func add(cycles: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: cycles, def: 0.0, at: VTOFFSET.cycles.p) }
+  internal static func add(uvChannelMask: UInt32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: uvChannelMask, def: 0, at: VTOFFSET.uvChannelMask.p) }
+  internal static func add(textureWidth: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: textureWidth, def: 0, at: VTOFFSET.textureWidth.p) }
+  internal static func add(textureHeight: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: textureHeight, def: 0, at: VTOFFSET.textureHeight.p) }
   internal static func endPolySpatialParticleTextureSheetAnimation(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialParticleTextureSheetAnimation(
     _ fbb: inout FlatBufferBuilder,
@@ -13858,7 +14155,10 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
     speedRangeMin: Float32 = 0.0,
     speedRangeMax: Float32 = 0.0,
     fps: Float32 = 0.0,
-    cycles: Float32 = 0.0
+    cycles: Float32 = 0.0,
+    uvChannelMask: UInt32 = 0,
+    textureWidth: Int32 = 0,
+    textureHeight: Int32 = 0
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.startPolySpatialParticleTextureSheetAnimation(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(tilesX: tilesX, &fbb)
@@ -13871,6 +14171,9 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
     Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(speedRangeMax: speedRangeMax, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(fps: fps, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(cycles: cycles, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(uvChannelMask: uvChannelMask, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(textureWidth: textureWidth, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.add(textureHeight: textureHeight, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnimation.endPolySpatialParticleTextureSheetAnimation(&fbb, start: __start)
   }
 
@@ -13886,6 +14189,191 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleTextureSheetAnima
     try _v.visit(field: VTOFFSET.speedRangeMax.p, fieldName: "speedRangeMax", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.fps.p, fieldName: "fps", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.cycles.p, fieldName: "cycles", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.uvChannelMask.p, fieldName: "uvChannelMask", required: false, type: UInt32.self)
+    try _v.visit(field: VTOFFSET.textureWidth.p, fieldName: "textureWidth", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.textureHeight.p, fieldName: "textureHeight", required: false, type: Int32.self)
+    _v.finish()
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case separateAxes = 4
+    case curve = 6
+    case range = 8
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var separateAxes: Bool { let o = _accessor.offset(VTOFFSET.separateAxes.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var curve: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3! { let o = _accessor.offset(VTOFFSET.curve.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var range: UnityEngine_Vector2? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector2.self, at: o) }
+  internal var mutableRange: UnityEngine_Vector2_Mutable? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : UnityEngine_Vector2_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal static func startPolySpatialParticleRotationBySpeed(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  internal static func add(separateAxes: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: separateAxes, def: false,
+   at: VTOFFSET.separateAxes.p) }
+  internal static func add(curve: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: curve, at: VTOFFSET.curve.p) }
+  internal static func add(range: UnityEngine_Vector2?, _ fbb: inout FlatBufferBuilder) { guard let range = range else { return }; fbb.create(struct: range, position: VTOFFSET.range.p) }
+  internal static func endPolySpatialParticleRotationBySpeed(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [6]); return end }
+  internal static func createPolySpatialParticleRotationBySpeed(
+    _ fbb: inout FlatBufferBuilder,
+    separateAxes: Bool = false,
+    curveOffset curve: Offset,
+    range: UnityEngine_Vector2? = nil
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed.startPolySpatialParticleRotationBySpeed(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed.add(separateAxes: separateAxes, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed.add(curve: curve, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed.add(range: range, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed.endPolySpatialParticleRotationBySpeed(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.separateAxes.p, fieldName: "separateAxes", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.curve.p, fieldName: "curve", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
+    try _v.visit(field: VTOFFSET.range.p, fieldName: "range", required: false, type: UnityEngine_Vector2.self)
+    _v.finish()
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case gradient = 4
+    case range = 6
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var gradient: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient? { let o = _accessor.offset(VTOFFSET.gradient.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var range: UnityEngine_Vector2? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector2.self, at: o) }
+  internal var mutableRange: UnityEngine_Vector2_Mutable? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : UnityEngine_Vector2_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal static func startPolySpatialParticleColorBySpeed(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal static func add(gradient: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: gradient, at: VTOFFSET.gradient.p) }
+  internal static func add(range: UnityEngine_Vector2?, _ fbb: inout FlatBufferBuilder) { guard let range = range else { return }; fbb.create(struct: range, position: VTOFFSET.range.p) }
+  internal static func endPolySpatialParticleColorBySpeed(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
+  internal static func createPolySpatialParticleColorBySpeed(
+    _ fbb: inout FlatBufferBuilder,
+    gradientOffset gradient: Offset = Offset(),
+    range: UnityEngine_Vector2? = nil
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed.startPolySpatialParticleColorBySpeed(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed.add(gradient: gradient, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed.add(range: range, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed.endPolySpatialParticleColorBySpeed(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.gradient.p, fieldName: "gradient", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient>.self)
+    try _v.visit(field: VTOFFSET.range.p, fieldName: "range", required: false, type: UnityEngine_Vector2.self)
+    _v.finish()
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case separateAxes = 4
+    case curve = 6
+    case range = 8
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var separateAxes: Bool { let o = _accessor.offset(VTOFFSET.separateAxes.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var curve: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3! { let o = _accessor.offset(VTOFFSET.curve.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var range: UnityEngine_Vector2? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector2.self, at: o) }
+  internal var mutableRange: UnityEngine_Vector2_Mutable? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : UnityEngine_Vector2_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal static func startPolySpatialParticleSizeBySpeed(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 3) }
+  internal static func add(separateAxes: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: separateAxes, def: false,
+   at: VTOFFSET.separateAxes.p) }
+  internal static func add(curve: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: curve, at: VTOFFSET.curve.p) }
+  internal static func add(range: UnityEngine_Vector2?, _ fbb: inout FlatBufferBuilder) { guard let range = range else { return }; fbb.create(struct: range, position: VTOFFSET.range.p) }
+  internal static func endPolySpatialParticleSizeBySpeed(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [6]); return end }
+  internal static func createPolySpatialParticleSizeBySpeed(
+    _ fbb: inout FlatBufferBuilder,
+    separateAxes: Bool = false,
+    curveOffset curve: Offset,
+    range: UnityEngine_Vector2? = nil
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed.startPolySpatialParticleSizeBySpeed(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed.add(separateAxes: separateAxes, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed.add(curve: curve, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed.add(range: range, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed.endPolySpatialParticleSizeBySpeed(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.separateAxes.p, fieldName: "separateAxes", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.curve.p, fieldName: "curve", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurveVector3>.self)
+    try _v.visit(field: VTOFFSET.range.p, fieldName: "range", required: false, type: UnityEngine_Vector2.self)
+    _v.finish()
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case curve = 4
+    case range = 6
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var curve: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve! { let o = _accessor.offset(VTOFFSET.curve.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var range: UnityEngine_Vector2? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector2.self, at: o) }
+  internal var mutableRange: UnityEngine_Vector2_Mutable? { let o = _accessor.offset(VTOFFSET.range.v); return o == 0 ? nil : UnityEngine_Vector2_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal static func startPolySpatialParticleLifetimeByEmitterSpeed(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 2) }
+  internal static func add(curve: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: curve, at: VTOFFSET.curve.p) }
+  internal static func add(range: UnityEngine_Vector2?, _ fbb: inout FlatBufferBuilder) { guard let range = range else { return }; fbb.create(struct: range, position: VTOFFSET.range.p) }
+  internal static func endPolySpatialParticleLifetimeByEmitterSpeed(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [4]); return end }
+  internal static func createPolySpatialParticleLifetimeByEmitterSpeed(
+    _ fbb: inout FlatBufferBuilder,
+    curveOffset curve: Offset,
+    range: UnityEngine_Vector2? = nil
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed.startPolySpatialParticleLifetimeByEmitterSpeed(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed.add(curve: curve, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed.add(range: range, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed.endPolySpatialParticleLifetimeByEmitterSpeed(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.curve.p, fieldName: "curve", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.range.p, fieldName: "range", required: false, type: UnityEngine_Vector2.self)
     _v.finish()
   }
 }
@@ -13906,6 +14394,19 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleRendererPropertie
     case velocityScale = 10
     case renderingLayerMask = 12
     case shadowCastingMode = 14
+    case normalDirection = 16
+    case sortingFudge = 18
+    case minParticleSize = 20
+    case maxParticleSize = 22
+    case renderAlignment = 24
+    case flip = 26
+    case allowRoll = 28
+    case pivot = 30
+    case customVertexStreams = 32
+    case customTrailVertexStreams = 34
+    case castShadows = 36
+    case receiveShadows = 38
+    case shadowBias = 40
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -13917,13 +14418,46 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleRendererPropertie
   internal var renderingLayerMask: UInt32 { let o = _accessor.offset(VTOFFSET.renderingLayerMask.v); return o == 0 ? 0 : _accessor.readBuffer(of: UInt32.self, at: o) }
   ///  The manner in which the entity casts shadows (or doesn't, as the case may be).
   internal var shadowCastingMode: Unity_PolySpatial_Internals_PolySpatialShadowCastingMode { let o = _accessor.offset(VTOFFSET.shadowCastingMode.v); return o == 0 ? .off : Unity_PolySpatial_Internals_PolySpatialShadowCastingMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .off }
-  internal static func startPolySpatialParticleRendererProperties(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 6) }
+  internal var normalDirection: Float32 { let o = _accessor.offset(VTOFFSET.normalDirection.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var sortingFudge: Float32 { let o = _accessor.offset(VTOFFSET.sortingFudge.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var minParticleSize: Float32 { let o = _accessor.offset(VTOFFSET.minParticleSize.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var maxParticleSize: Float32 { let o = _accessor.offset(VTOFFSET.maxParticleSize.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var renderAlignment: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment { let o = _accessor.offset(VTOFFSET.renderAlignment.v); return o == 0 ? .view : Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .view }
+  internal var flip: UnityEngine_Vector3? { let o = _accessor.offset(VTOFFSET.flip.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector3.self, at: o) }
+  internal var mutableFlip: UnityEngine_Vector3_Mutable? { let o = _accessor.offset(VTOFFSET.flip.v); return o == 0 ? nil : UnityEngine_Vector3_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal var allowRoll: Bool { let o = _accessor.offset(VTOFFSET.allowRoll.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var pivot: UnityEngine_Vector3? { let o = _accessor.offset(VTOFFSET.pivot.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector3.self, at: o) }
+  internal var mutablePivot: UnityEngine_Vector3_Mutable? { let o = _accessor.offset(VTOFFSET.pivot.v); return o == 0 ? nil : UnityEngine_Vector3_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal var customVertexStreams: Bool { let o = _accessor.offset(VTOFFSET.customVertexStreams.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var customTrailVertexStreams: Bool { let o = _accessor.offset(VTOFFSET.customTrailVertexStreams.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var castShadows: Bool { let o = _accessor.offset(VTOFFSET.castShadows.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var receiveShadows: Bool { let o = _accessor.offset(VTOFFSET.receiveShadows.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var shadowBias: Float32 { let o = _accessor.offset(VTOFFSET.shadowBias.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal static func startPolySpatialParticleRendererProperties(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 19) }
   internal static func add(sortMode: Unity_PolySpatial_Internals_PolySpatialParticleSortMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sortMode.rawValue, def: 0, at: VTOFFSET.sortMode.p) }
   internal static func add(renderMode: Unity_PolySpatial_Internals_PolySpatialParticleRenderMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: renderMode.rawValue, def: 0, at: VTOFFSET.renderMode.p) }
   internal static func add(lengthScale: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: lengthScale, def: 0.0, at: VTOFFSET.lengthScale.p) }
   internal static func add(velocityScale: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: velocityScale, def: 0.0, at: VTOFFSET.velocityScale.p) }
   internal static func add(renderingLayerMask: UInt32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: renderingLayerMask, def: 0, at: VTOFFSET.renderingLayerMask.p) }
   internal static func add(shadowCastingMode: Unity_PolySpatial_Internals_PolySpatialShadowCastingMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: shadowCastingMode.rawValue, def: 0, at: VTOFFSET.shadowCastingMode.p) }
+  internal static func add(normalDirection: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: normalDirection, def: 0.0, at: VTOFFSET.normalDirection.p) }
+  internal static func add(sortingFudge: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sortingFudge, def: 0.0, at: VTOFFSET.sortingFudge.p) }
+  internal static func add(minParticleSize: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: minParticleSize, def: 0.0, at: VTOFFSET.minParticleSize.p) }
+  internal static func add(maxParticleSize: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: maxParticleSize, def: 0.0, at: VTOFFSET.maxParticleSize.p) }
+  internal static func add(renderAlignment: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment, _ fbb: inout FlatBufferBuilder) { fbb.add(element: renderAlignment.rawValue, def: 0, at: VTOFFSET.renderAlignment.p) }
+  internal static func add(flip: UnityEngine_Vector3?, _ fbb: inout FlatBufferBuilder) { guard let flip = flip else { return }; fbb.create(struct: flip, position: VTOFFSET.flip.p) }
+  internal static func add(allowRoll: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: allowRoll, def: false,
+   at: VTOFFSET.allowRoll.p) }
+  internal static func add(pivot: UnityEngine_Vector3?, _ fbb: inout FlatBufferBuilder) { guard let pivot = pivot else { return }; fbb.create(struct: pivot, position: VTOFFSET.pivot.p) }
+  internal static func add(customVertexStreams: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: customVertexStreams, def: false,
+   at: VTOFFSET.customVertexStreams.p) }
+  internal static func add(customTrailVertexStreams: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: customTrailVertexStreams, def: false,
+   at: VTOFFSET.customTrailVertexStreams.p) }
+  internal static func add(castShadows: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: castShadows, def: false,
+   at: VTOFFSET.castShadows.p) }
+  internal static func add(receiveShadows: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: receiveShadows, def: false,
+   at: VTOFFSET.receiveShadows.p) }
+  internal static func add(shadowBias: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: shadowBias, def: 0.0, at: VTOFFSET.shadowBias.p) }
   internal static func endPolySpatialParticleRendererProperties(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialParticleRendererProperties(
     _ fbb: inout FlatBufferBuilder,
@@ -13932,7 +14466,20 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleRendererPropertie
     lengthScale: Float32 = 0.0,
     velocityScale: Float32 = 0.0,
     renderingLayerMask: UInt32 = 0,
-    shadowCastingMode: Unity_PolySpatial_Internals_PolySpatialShadowCastingMode = .off
+    shadowCastingMode: Unity_PolySpatial_Internals_PolySpatialShadowCastingMode = .off,
+    normalDirection: Float32 = 0.0,
+    sortingFudge: Float32 = 0.0,
+    minParticleSize: Float32 = 0.0,
+    maxParticleSize: Float32 = 0.0,
+    renderAlignment: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment = .view,
+    flip: UnityEngine_Vector3? = nil,
+    allowRoll: Bool = false,
+    pivot: UnityEngine_Vector3? = nil,
+    customVertexStreams: Bool = false,
+    customTrailVertexStreams: Bool = false,
+    castShadows: Bool = false,
+    receiveShadows: Bool = false,
+    shadowBias: Float32 = 0.0
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.startPolySpatialParticleRendererProperties(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(sortMode: sortMode, &fbb)
@@ -13941,6 +14488,19 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleRendererPropertie
     Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(velocityScale: velocityScale, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(renderingLayerMask: renderingLayerMask, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(shadowCastingMode: shadowCastingMode, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(normalDirection: normalDirection, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(sortingFudge: sortingFudge, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(minParticleSize: minParticleSize, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(maxParticleSize: maxParticleSize, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(renderAlignment: renderAlignment, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(flip: flip, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(allowRoll: allowRoll, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(pivot: pivot, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(customVertexStreams: customVertexStreams, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(customTrailVertexStreams: customTrailVertexStreams, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(castShadows: castShadows, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(receiveShadows: receiveShadows, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.add(shadowBias: shadowBias, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleRendererProperties.endPolySpatialParticleRendererProperties(&fbb, start: __start)
   }
 
@@ -13952,6 +14512,165 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleRendererPropertie
     try _v.visit(field: VTOFFSET.velocityScale.p, fieldName: "velocityScale", required: false, type: Float32.self)
     try _v.visit(field: VTOFFSET.renderingLayerMask.p, fieldName: "renderingLayerMask", required: false, type: UInt32.self)
     try _v.visit(field: VTOFFSET.shadowCastingMode.p, fieldName: "shadowCastingMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialShadowCastingMode.self)
+    try _v.visit(field: VTOFFSET.normalDirection.p, fieldName: "normalDirection", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.sortingFudge.p, fieldName: "sortingFudge", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.minParticleSize.p, fieldName: "minParticleSize", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.maxParticleSize.p, fieldName: "maxParticleSize", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.renderAlignment.p, fieldName: "renderAlignment", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleRendererAlignment.self)
+    try _v.visit(field: VTOFFSET.flip.p, fieldName: "flip", required: false, type: UnityEngine_Vector3.self)
+    try _v.visit(field: VTOFFSET.allowRoll.p, fieldName: "allowRoll", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.pivot.p, fieldName: "pivot", required: false, type: UnityEngine_Vector3.self)
+    try _v.visit(field: VTOFFSET.customVertexStreams.p, fieldName: "customVertexStreams", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.customTrailVertexStreams.p, fieldName: "customTrailVertexStreams", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.castShadows.p, fieldName: "castShadows", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.receiveShadows.p, fieldName: "receiveShadows", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.shadowBias.p, fieldName: "shadowBias", required: false, type: Float32.self)
+    _v.finish()
+  }
+}
+
+internal struct Unity_PolySpatial_Internals_PolySpatialParticleTrail: FlatBufferObject, Verifiable {
+
+  static func validateVersion() { FlatBuffersVersion_23_3_3() }
+  internal var __buffer: ByteBuffer! { return _accessor.bb }
+  private var _accessor: Table
+
+  private init(_ t: Table) { _accessor = t }
+  internal init(_ bb: ByteBuffer, o: Int32) { _accessor = Table(bb: bb, position: o) }
+
+  private enum VTOFFSET: VOffset {
+    case ratio = 4
+    case lifetime = 6
+    case colorOverLifetime = 8
+    case colorOverTrail = 10
+    case minVertexDistance = 12
+    case worldSpace = 14
+    case dieWithParticles = 16
+    case sizeAffectsWidth = 18
+    case sizeAffectsLifetime = 20
+    case inheritParticleColor = 22
+    case widthOverTrail = 24
+    case textureScale = 26
+    case textureMode = 28
+    case generateLightingData = 30
+    case ribbonCount = 32
+    case splitSubemitterRibbons = 34
+    case attachRibbonsToTransform = 36
+    case mode = 38
+    var v: Int32 { Int32(self.rawValue) }
+    var p: VOffset { self.rawValue }
+  }
+
+  internal var ratio: Float32 { let o = _accessor.offset(VTOFFSET.ratio.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var lifetime: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve! { let o = _accessor.offset(VTOFFSET.lifetime.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var colorOverLifetime: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient! { let o = _accessor.offset(VTOFFSET.colorOverLifetime.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var colorOverTrail: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient! { let o = _accessor.offset(VTOFFSET.colorOverTrail.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var minVertexDistance: Float32 { let o = _accessor.offset(VTOFFSET.minVertexDistance.v); return o == 0 ? 0.0 : _accessor.readBuffer(of: Float32.self, at: o) }
+  internal var worldSpace: Bool { let o = _accessor.offset(VTOFFSET.worldSpace.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var dieWithParticles: Bool { let o = _accessor.offset(VTOFFSET.dieWithParticles.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var sizeAffectsWidth: Bool { let o = _accessor.offset(VTOFFSET.sizeAffectsWidth.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var sizeAffectsLifetime: Bool { let o = _accessor.offset(VTOFFSET.sizeAffectsLifetime.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var inheritParticleColor: Bool { let o = _accessor.offset(VTOFFSET.inheritParticleColor.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var widthOverTrail: Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve! { let o = _accessor.offset(VTOFFSET.widthOverTrail.v); return Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var textureScale: UnityEngine_Vector2? { let o = _accessor.offset(VTOFFSET.textureScale.v); return o == 0 ? nil : _accessor.readBuffer(of: UnityEngine_Vector2.self, at: o) }
+  internal var mutableTextureScale: UnityEngine_Vector2_Mutable? { let o = _accessor.offset(VTOFFSET.textureScale.v); return o == 0 ? nil : UnityEngine_Vector2_Mutable(_accessor.bb, o: o + _accessor.postion) }
+  internal var textureMode: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode { let o = _accessor.offset(VTOFFSET.textureMode.v); return o == 0 ? .stretch : Unity_PolySpatial_Internals_PolySpatialParticleTextureMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .stretch }
+  internal var generateLightingData: Bool { let o = _accessor.offset(VTOFFSET.generateLightingData.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var ribbonCount: Int32 { let o = _accessor.offset(VTOFFSET.ribbonCount.v); return o == 0 ? 0 : _accessor.readBuffer(of: Int32.self, at: o) }
+  internal var splitSubemitterRibbons: Bool { let o = _accessor.offset(VTOFFSET.splitSubemitterRibbons.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var attachRibbonsToTransform: Bool { let o = _accessor.offset(VTOFFSET.attachRibbonsToTransform.v); return o == 0 ? false : 0 != _accessor.readBuffer(of: Byte.self, at: o) }
+  internal var mode: Unity_PolySpatial_Internals_PolySpatialTrailMode { let o = _accessor.offset(VTOFFSET.mode.v); return o == 0 ? .perParticle : Unity_PolySpatial_Internals_PolySpatialTrailMode(rawValue: _accessor.readBuffer(of: Int32.self, at: o)) ?? .perParticle }
+  internal static func startPolySpatialParticleTrail(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 18) }
+  internal static func add(ratio: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: ratio, def: 0.0, at: VTOFFSET.ratio.p) }
+  internal static func add(lifetime: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lifetime, at: VTOFFSET.lifetime.p) }
+  internal static func add(colorOverLifetime: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: colorOverLifetime, at: VTOFFSET.colorOverLifetime.p) }
+  internal static func add(colorOverTrail: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: colorOverTrail, at: VTOFFSET.colorOverTrail.p) }
+  internal static func add(minVertexDistance: Float32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: minVertexDistance, def: 0.0, at: VTOFFSET.minVertexDistance.p) }
+  internal static func add(worldSpace: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: worldSpace, def: false,
+   at: VTOFFSET.worldSpace.p) }
+  internal static func add(dieWithParticles: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: dieWithParticles, def: false,
+   at: VTOFFSET.dieWithParticles.p) }
+  internal static func add(sizeAffectsWidth: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sizeAffectsWidth, def: false,
+   at: VTOFFSET.sizeAffectsWidth.p) }
+  internal static func add(sizeAffectsLifetime: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: sizeAffectsLifetime, def: false,
+   at: VTOFFSET.sizeAffectsLifetime.p) }
+  internal static func add(inheritParticleColor: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: inheritParticleColor, def: false,
+   at: VTOFFSET.inheritParticleColor.p) }
+  internal static func add(widthOverTrail: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: widthOverTrail, at: VTOFFSET.widthOverTrail.p) }
+  internal static func add(textureScale: UnityEngine_Vector2?, _ fbb: inout FlatBufferBuilder) { guard let textureScale = textureScale else { return }; fbb.create(struct: textureScale, position: VTOFFSET.textureScale.p) }
+  internal static func add(textureMode: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: textureMode.rawValue, def: 0, at: VTOFFSET.textureMode.p) }
+  internal static func add(generateLightingData: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: generateLightingData, def: false,
+   at: VTOFFSET.generateLightingData.p) }
+  internal static func add(ribbonCount: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: ribbonCount, def: 0, at: VTOFFSET.ribbonCount.p) }
+  internal static func add(splitSubemitterRibbons: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: splitSubemitterRibbons, def: false,
+   at: VTOFFSET.splitSubemitterRibbons.p) }
+  internal static func add(attachRibbonsToTransform: Bool, _ fbb: inout FlatBufferBuilder) { fbb.add(element: attachRibbonsToTransform, def: false,
+   at: VTOFFSET.attachRibbonsToTransform.p) }
+  internal static func add(mode: Unity_PolySpatial_Internals_PolySpatialTrailMode, _ fbb: inout FlatBufferBuilder) { fbb.add(element: mode.rawValue, def: 0, at: VTOFFSET.mode.p) }
+  internal static func endPolySpatialParticleTrail(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); fbb.require(table: end, fields: [6, 8, 10, 24]); return end }
+  internal static func createPolySpatialParticleTrail(
+    _ fbb: inout FlatBufferBuilder,
+    ratio: Float32 = 0.0,
+    lifetimeOffset lifetime: Offset,
+    colorOverLifetimeOffset colorOverLifetime: Offset,
+    colorOverTrailOffset colorOverTrail: Offset,
+    minVertexDistance: Float32 = 0.0,
+    worldSpace: Bool = false,
+    dieWithParticles: Bool = false,
+    sizeAffectsWidth: Bool = false,
+    sizeAffectsLifetime: Bool = false,
+    inheritParticleColor: Bool = false,
+    widthOverTrailOffset widthOverTrail: Offset,
+    textureScale: UnityEngine_Vector2? = nil,
+    textureMode: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode = .stretch,
+    generateLightingData: Bool = false,
+    ribbonCount: Int32 = 0,
+    splitSubemitterRibbons: Bool = false,
+    attachRibbonsToTransform: Bool = false,
+    mode: Unity_PolySpatial_Internals_PolySpatialTrailMode = .perParticle
+  ) -> Offset {
+    let __start = Unity_PolySpatial_Internals_PolySpatialParticleTrail.startPolySpatialParticleTrail(&fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(ratio: ratio, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(lifetime: lifetime, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(colorOverLifetime: colorOverLifetime, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(colorOverTrail: colorOverTrail, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(minVertexDistance: minVertexDistance, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(worldSpace: worldSpace, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(dieWithParticles: dieWithParticles, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(sizeAffectsWidth: sizeAffectsWidth, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(sizeAffectsLifetime: sizeAffectsLifetime, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(inheritParticleColor: inheritParticleColor, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(widthOverTrail: widthOverTrail, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(textureScale: textureScale, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(textureMode: textureMode, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(generateLightingData: generateLightingData, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(ribbonCount: ribbonCount, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(splitSubemitterRibbons: splitSubemitterRibbons, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(attachRibbonsToTransform: attachRibbonsToTransform, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleTrail.add(mode: mode, &fbb)
+    return Unity_PolySpatial_Internals_PolySpatialParticleTrail.endPolySpatialParticleTrail(&fbb, start: __start)
+  }
+
+  internal static func verify<T>(_ verifier: inout Verifier, at position: Int, of type: T.Type) throws where T: Verifiable {
+    var _v = try verifier.visitTable(at: position)
+    try _v.visit(field: VTOFFSET.ratio.p, fieldName: "ratio", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.lifetime.p, fieldName: "lifetime", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.colorOverLifetime.p, fieldName: "colorOverLifetime", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient>.self)
+    try _v.visit(field: VTOFFSET.colorOverTrail.p, fieldName: "colorOverTrail", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxGradient>.self)
+    try _v.visit(field: VTOFFSET.minVertexDistance.p, fieldName: "minVertexDistance", required: false, type: Float32.self)
+    try _v.visit(field: VTOFFSET.worldSpace.p, fieldName: "worldSpace", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.dieWithParticles.p, fieldName: "dieWithParticles", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.sizeAffectsWidth.p, fieldName: "sizeAffectsWidth", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.sizeAffectsLifetime.p, fieldName: "sizeAffectsLifetime", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.inheritParticleColor.p, fieldName: "inheritParticleColor", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.widthOverTrail.p, fieldName: "widthOverTrail", required: true, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleMinMaxCurve>.self)
+    try _v.visit(field: VTOFFSET.textureScale.p, fieldName: "textureScale", required: false, type: UnityEngine_Vector2.self)
+    try _v.visit(field: VTOFFSET.textureMode.p, fieldName: "textureMode", required: false, type: Unity_PolySpatial_Internals_PolySpatialParticleTextureMode.self)
+    try _v.visit(field: VTOFFSET.generateLightingData.p, fieldName: "generateLightingData", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.ribbonCount.p, fieldName: "ribbonCount", required: false, type: Int32.self)
+    try _v.visit(field: VTOFFSET.splitSubemitterRibbons.p, fieldName: "splitSubemitterRibbons", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.attachRibbonsToTransform.p, fieldName: "attachRibbonsToTransform", required: false, type: Bool.self)
+    try _v.visit(field: VTOFFSET.mode.p, fieldName: "mode", required: false, type: Unity_PolySpatial_Internals_PolySpatialTrailMode.self)
     _v.finish()
   }
 }
@@ -13992,6 +14711,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
     case curveKeyBuffer = 50
     case gradientColorKeyBuffer = 52
     case gradientAlphaKeyBuffer = 54
+    case sizeBySpeed = 56
+    case colorBySpeed = 58
+    case rotationBySpeed = 60
+    case lifetimeBySpeed = 62
+    case trail = 64
     var v: Int32 { Int32(self.rawValue) }
     var p: VOffset { self.rawValue }
   }
@@ -14039,7 +14763,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
   internal func gradientAlphaKeyBuffer(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey? { let o = _accessor.offset(VTOFFSET.gradientAlphaKeyBuffer.v); return o == 0 ? nil : _accessor.directRead(of: Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey.self, offset: _accessor.vector(at: o) + index * 8) }
   internal var gradientAlphaKeyBufferAsBuffer: UnsafeBufferPointer<Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey>? { return _accessor.getBufferPointer(at: VTOFFSET.gradientAlphaKeyBuffer.v) }
   internal func mutableGradientAlphaKeyBuffer(at index: Int32) -> Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey_Mutable? { let o = _accessor.offset(VTOFFSET.gradientAlphaKeyBuffer.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey_Mutable(_accessor.bb, o: _accessor.vector(at: o) + index * 8) }
-  internal static func startPolySpatialParticleSystemData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 26) }
+  internal var sizeBySpeed: Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed? { let o = _accessor.offset(VTOFFSET.sizeBySpeed.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var colorBySpeed: Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed? { let o = _accessor.offset(VTOFFSET.colorBySpeed.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var rotationBySpeed: Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed? { let o = _accessor.offset(VTOFFSET.rotationBySpeed.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var lifetimeBySpeed: Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed? { let o = _accessor.offset(VTOFFSET.lifetimeBySpeed.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal var trail: Unity_PolySpatial_Internals_PolySpatialParticleTrail? { let o = _accessor.offset(VTOFFSET.trail.v); return o == 0 ? nil : Unity_PolySpatial_Internals_PolySpatialParticleTrail(_accessor.bb, o: _accessor.indirect(o + _accessor.postion)) }
+  internal static func startPolySpatialParticleSystemData(_ fbb: inout FlatBufferBuilder) -> UOffset { fbb.startTable(with: 31) }
   internal static func add(particleVertexCount: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: particleVertexCount, def: 0, at: VTOFFSET.particleVertexCount.p) }
   internal static func add(approximateUpperBoundExtent: UnityEngine_Vector3?, _ fbb: inout FlatBufferBuilder) { guard let approximateUpperBoundExtent = approximateUpperBoundExtent else { return }; fbb.create(struct: approximateUpperBoundExtent, position: VTOFFSET.approximateUpperBoundExtent.p) }
   internal static func add(trailVertexCount: Int32, _ fbb: inout FlatBufferBuilder) { fbb.add(element: trailVertexCount, def: 0, at: VTOFFSET.trailVertexCount.p) }
@@ -14079,6 +14808,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
   internal static func startVectorOfGradientAlphaKeyBuffer(_ size: Int, in builder: inout FlatBufferBuilder) {
     builder.startVector(size * MemoryLayout<Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey>.size, elementSize: MemoryLayout<Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey>.alignment)
   }
+  internal static func add(sizeBySpeed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: sizeBySpeed, at: VTOFFSET.sizeBySpeed.p) }
+  internal static func add(colorBySpeed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: colorBySpeed, at: VTOFFSET.colorBySpeed.p) }
+  internal static func add(rotationBySpeed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: rotationBySpeed, at: VTOFFSET.rotationBySpeed.p) }
+  internal static func add(lifetimeBySpeed: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: lifetimeBySpeed, at: VTOFFSET.lifetimeBySpeed.p) }
+  internal static func add(trail: Offset, _ fbb: inout FlatBufferBuilder) { fbb.add(offset: trail, at: VTOFFSET.trail.p) }
   internal static func endPolySpatialParticleSystemData(_ fbb: inout FlatBufferBuilder, start: UOffset) -> Offset { let end = Offset(offset: fbb.endTable(at: start)); return end }
   internal static func createPolySpatialParticleSystemData(
     _ fbb: inout FlatBufferBuilder,
@@ -14107,7 +14841,12 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
     rendererPropertiesOffset rendererProperties: Offset = Offset(),
     curveKeyBufferVectorOffset curveKeyBuffer: Offset = Offset(),
     gradientColorKeyBufferVectorOffset gradientColorKeyBuffer: Offset = Offset(),
-    gradientAlphaKeyBufferVectorOffset gradientAlphaKeyBuffer: Offset = Offset()
+    gradientAlphaKeyBufferVectorOffset gradientAlphaKeyBuffer: Offset = Offset(),
+    sizeBySpeedOffset sizeBySpeed: Offset = Offset(),
+    colorBySpeedOffset colorBySpeed: Offset = Offset(),
+    rotationBySpeedOffset rotationBySpeed: Offset = Offset(),
+    lifetimeBySpeedOffset lifetimeBySpeed: Offset = Offset(),
+    trailOffset trail: Offset = Offset()
   ) -> Offset {
     let __start = Unity_PolySpatial_Internals_PolySpatialParticleSystemData.startPolySpatialParticleSystemData(&fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(particleVertexCount: particleVertexCount, &fbb)
@@ -14136,6 +14875,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
     Unity_PolySpatial_Internals_PolySpatialParticleSystemData.addVectorOf(curveKeyBuffer: curveKeyBuffer, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleSystemData.addVectorOf(gradientColorKeyBuffer: gradientColorKeyBuffer, &fbb)
     Unity_PolySpatial_Internals_PolySpatialParticleSystemData.addVectorOf(gradientAlphaKeyBuffer: gradientAlphaKeyBuffer, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(sizeBySpeed: sizeBySpeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(colorBySpeed: colorBySpeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(rotationBySpeed: rotationBySpeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(lifetimeBySpeed: lifetimeBySpeed, &fbb)
+    Unity_PolySpatial_Internals_PolySpatialParticleSystemData.add(trail: trail, &fbb)
     return Unity_PolySpatial_Internals_PolySpatialParticleSystemData.endPolySpatialParticleSystemData(&fbb, start: __start)
   }
 
@@ -14167,6 +14911,11 @@ internal struct Unity_PolySpatial_Internals_PolySpatialParticleSystemData: FlatB
     try _v.visit(field: VTOFFSET.curveKeyBuffer.p, fieldName: "curveKeyBuffer", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialKeyframe, Unity_PolySpatial_Internals_PolySpatialKeyframe>>.self)
     try _v.visit(field: VTOFFSET.gradientColorKeyBuffer.p, fieldName: "gradientColorKeyBuffer", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialParticleGradientColorKey, Unity_PolySpatial_Internals_PolySpatialParticleGradientColorKey>>.self)
     try _v.visit(field: VTOFFSET.gradientAlphaKeyBuffer.p, fieldName: "gradientAlphaKeyBuffer", required: false, type: ForwardOffset<Vector<Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey, Unity_PolySpatial_Internals_PolySpatialParticleGradientAlphaKey>>.self)
+    try _v.visit(field: VTOFFSET.sizeBySpeed.p, fieldName: "sizeBySpeed", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleSizeBySpeed>.self)
+    try _v.visit(field: VTOFFSET.colorBySpeed.p, fieldName: "colorBySpeed", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleColorBySpeed>.self)
+    try _v.visit(field: VTOFFSET.rotationBySpeed.p, fieldName: "rotationBySpeed", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleRotationBySpeed>.self)
+    try _v.visit(field: VTOFFSET.lifetimeBySpeed.p, fieldName: "lifetimeBySpeed", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleLifetimeByEmitterSpeed>.self)
+    try _v.visit(field: VTOFFSET.trail.p, fieldName: "trail", required: false, type: ForwardOffset<Unity_PolySpatial_Internals_PolySpatialParticleTrail>.self)
     _v.finish()
   }
 }

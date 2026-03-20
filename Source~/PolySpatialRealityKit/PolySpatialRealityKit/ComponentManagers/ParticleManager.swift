@@ -275,7 +275,7 @@ class ParticleManager {
         }
 
         if let noiseModule = particleSystem.noise {
-            emitter.noiseStrength = noiseModule.strength!.getValueAndVariation(curveKeyBuffer).value
+            emitter.noiseStrength = noiseModule.strength!.x!.getValueAndVariation(curveKeyBuffer).value
             emitter.noiseScale = noiseModule.positionAmount!.getValueAndVariation(curveKeyBuffer).value
             emitter.noiseAnimationSpeed = noiseModule.scrollSpeed!.getValueAndVariation(curveKeyBuffer).value
         }
@@ -335,7 +335,8 @@ class ParticleManager {
         if let rendererModule = particleSystem.rendererProperties {
             emitter.billboardMode = rendererModule.renderMode.rk()
             emitter.sortOrder = rendererModule.sortMode.rk()
-            emitter.stretchFactor = rendererModule.lengthScale
+            // rendererModule.lengthScale was previously unpopulated from the simulation. Not that it is, mapping it directly onto this produces incorrect visuals, so set it to the fixed value of 0.0 in which it was before rendererModule.lengthScale was populated.
+            emitter.stretchFactor = 0.0
 
             if let renderData = particleSystem.renderData {
                if let material = PolySpatialRealityKit.instance.GetVfXMaterialForID(renderData.materialIds(at: 0)!) {

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [3.1.4] - 2026-03-20
+
+Version incremented to synchronize with other PolySpatial and visionOS package versions.
+
 ## [3.1.1] - 2026-03-06
 
 ### Added

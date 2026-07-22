@@ -1,4 +1,4 @@
-#if (UNITY_VISIONOS ||  POLYSPATIAL_INTERNAL) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
+#if UNITY_VISIONOS && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
 using System.Runtime;
 using System.ComponentModel;
 using System;
@@ -83,13 +83,6 @@ namespace Unity.PolySpatial.Internals.Editor
             if (!ShouldProcessWithRuntime(report, out var _))
                 return;
 
-#if POLYSPATIAL_INTERNAL && UNITY_EDITOR_OSX
-            if (!File.Exists("Packages/com.unity.xr.visionos/Runtime/Plugins/visionos/Device/arm64/libUnityVisionOS.a"))
-            {
-                Debug.LogWarning($"visionOS XR provider library not built; building.");
-                RealityKitPluginBuilder.BuildVisionOSXRPlugin();
-            }
-#endif
 
             m_InjectedScenePaths.Clear();
             m_swiftAppSupportPaths.Clear();

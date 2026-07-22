@@ -16,7 +16,7 @@ To open the Recording & Playback window, go to **Windows &gt; PolySpatial &gt; R
 
 ### Recording
 Press the `Record` button to enter Play mode and start recording. Perform interactions and supply input normally, then exit play mode, or press the `Stop Recording` button to stop recording. A new file will be added to the recordings list.
-Recordings are saved in `Library/PolySpatialRecordings` and should be playable on any machine using the same version of the PolySpatial package.
+Recordings are saved in `Library/PolySpatialRecordings`. Playback is version-sensitive: each recording is stamped with the PolySpatial protocol version and the Unity Editor version (Major.Minor) that produced it, and it plays back only on a build with a matching protocol version and the same or a newer Editor (an older recording plays on a newer Editor, but not the reverse). A recording that is incompatible is rejected when playback starts.
 
 #### Recording Framerate
 Enter a positive `Recording Framerate` value, and enable `Limit Framerate While Recording` to limit recording framerate to this value. Otherwise, recording framerate is set to unlimited.

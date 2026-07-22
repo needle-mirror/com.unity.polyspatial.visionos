@@ -4,7 +4,6 @@ extension PolySpatialRealityKit {
 
     func createOrUpdateEnvironmentLightingConfiguration(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ environmentLightingConfigurationInfo: UnsafeMutablePointer<PolySpatialEnvironmentLightingConfigurationData>?) {
         let entity = GetEntity(id)
         let info = environmentLightingConfigurationInfo!.pointee

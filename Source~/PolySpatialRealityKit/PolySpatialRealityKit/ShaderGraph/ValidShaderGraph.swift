@@ -17,6 +17,7 @@ class ValidShaderGraph: CachedShaderGraph {
     let matrixValueCreators: [(simd_float4x4) -> MaterialParameters.Value]
     let textureHandles: [MaterialParameters.Handle]
     let keywordHandles: [MaterialParameters.Handle]
+    let keywordsOverridable: [Bool]
     let parameterNames: Set<String>
     let textureSizeHandles: [MaterialParameters.Handle?]
     let textureTransformHandles: [MaterialParameters.Handle?]
@@ -101,6 +102,7 @@ class ValidShaderGraph: CachedShaderGraph {
         }
         self.textureHandles = materialProperties.textureProperties.map(ShaderGraphMaterial.parameterHandle)
         self.keywordHandles = materialProperties.keywords.map(ShaderGraphMaterial.parameterHandle)
+        self.keywordsOverridable = materialProperties.keywordsOverridable
         let parameterNames = Set(material.parameterNames) // Store as local to allow use in closure.
         self.parameterNames = parameterNames
 

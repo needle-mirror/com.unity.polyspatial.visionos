@@ -9,15 +9,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [3.1.5] - 2026-04-20
+## [3.2.1] - 2026-07-22
 
-Version incremented to synchronize with other PolySpatial and visionOS package versions.
+### Added
+- PackedIdentifier can now be marshaled as unityEntityId and as unityInstanceId. unityEntityId's type matches that of post Unity 6.4's object id type, UInt64.
 
-## [3.1.4] - 2026-03-20
+## [3.2.0] - 2026-07-15
 
-Version incremented to synchronize with other PolySpatial and visionOS package versions.
+### Added
+- Added audio streaming when connecting to visionOS Play To Device. Any AudioSources in scene will be streamed to the remote Play To Device app. This behavior can be enabled or disabled via PolySpatial's Project Settings.
 
-## [3.1.1] - 2026-03-06
+### Fixed
+- Fixed issue with local shader keyword states overriding global ones (when animating materials, for example).
+
+## [3.1.0] - 2026-02-20
 
 ### Added
 - Added support for optimized Skinned Mesh Renderers (Skinned Mesh Renderers with Optimize Game Objects ticked true). This feature requires a change in editor version 6000.5.0a3 and above.

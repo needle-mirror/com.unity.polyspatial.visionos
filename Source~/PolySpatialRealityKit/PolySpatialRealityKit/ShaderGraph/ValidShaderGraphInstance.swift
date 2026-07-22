@@ -7,6 +7,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
     var material: ShaderGraphMaterial
     var setParams: Set<MaterialParameters.Handle> = []
     var textureParams: Dictionary<MaterialParameters.Handle, PolySpatialRealityKit.TextureParam> = [:]
+    var locallyEnabledOverridableKeywordParams: Set<MaterialParameters.Handle> = []
 
     // The value of shaderGlobalCurrentUpdate when global properties were last applied to this instance.
     // This is used to determine when instances must be updated (if this value is not equal to the current
@@ -146,9 +147,20 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
                 propertyArrayCountIndex += 1
             }
         }
+        locallyEnabledOverridableKeywordParams.removeAll(keepingCapacity: true)
         for (index, handle) in shaderGraph.keywordHandles.enumerated() {
             let keywordValue = materialDef.keywordValues[index]
-            try? material.setParameter(handle: handle, value: .bool(keywordValue))
+            if shaderGraph.keywordsOverridable[index] {
+                // For overridable keywords, update the local state and then the material parameter.
+                if keywordValue {
+                    locallyEnabledOverridableKeywordParams.insert(handle)
+                }
+                updateOverridableKeywordParam(handle)
+            } else {
+                // For non-overridable keywords, set immediately and prevent the global from overwriting.
+                try? material.setParameter(handle: handle, value: .bool(keywordValue))
+                setParams.insert(handle)
+            }
         }
 
         // Set globals, register the updated material. and push the update to all entities that reference it.
@@ -179,6 +191,8 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
             if shaderGlobalProperty.lastUpdate > lastGlobalUpdate && !setParams.contains(shaderGlobalProperty.handle) {
                 if let textureParam = shaderGlobalProperty.textureParam {
                     setTextureParam(shaderGlobalProperty.handle, textureParam)
+                } else if case .bool(_) = shaderGlobalProperty.value {
+                    updateOverridableKeywordParam(shaderGlobalProperty.handle)
                 } else {
                     try? material.setParameter(
                         handle: shaderGlobalProperty.handle, value: shaderGlobalProperty.value)
@@ -205,5 +219,14 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
         if let sizeHandle = param.sizeHandle {
             try? material.setParameter(handle: sizeHandle, value: .simd3Float(asset.size))
         }
+    }
+
+    func updateOverridableKeywordParam(_ handle: MaterialParameters.Handle) {
+        // "If a GlobalKeyword with the same name exists and is enabled, Unity uses the state of the GlobalKeyword.
+        // Otherwise, Unity uses the state of the LocalKeyword."
+        // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/Rendering.LocalKeyword-isOverridable.html
+        let locallyEnabled = locallyEnabledOverridableKeywordParams.contains(handle)
+        let globallyEnabled = ShaderManager.instance.globallyEnabledKeywordParams.contains(handle)
+        try? material.setParameter(handle: handle, value: .bool(locallyEnabled || globallyEnabled))
     }
 }

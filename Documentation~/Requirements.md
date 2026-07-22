@@ -5,7 +5,9 @@ uid: psl-vos-requirements
 
 ## Unity Version Support
 
-The visionOS and PolySpatial 2.x packages are compatible with Unity 6 (6000.22f1 or newer) for Apple Silicon
+The visionOS and PolySpatial 3.x packages are compatible with Unity 6.3 (6000.3.0f1 or newer) for Apple Silicon
+
+For Unity 6.0, 6.1, and 6.2 support (Unity 6000.0.22f1 through 6000.2.xxxx), please refer instead to the 2.x packages.
 
 For Unity 2022.3 support, please refer instead to the 1.x packages (2022.3.18f1 or newer). Unity visionOS Support is not compatible with earlier LTS versions of Unity.
 

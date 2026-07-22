@@ -1,4 +1,4 @@
-#if (UNITY_VISIONOS ||  POLYSPATIAL_INTERNAL) && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
+#if UNITY_VISIONOS && (UNITY_EDITOR_OSX || UNITY_EDITOR_WIN)
 using NUnit.Framework;
 using Unity.PolySpatial.Internals.Editor;
 using System.IO;

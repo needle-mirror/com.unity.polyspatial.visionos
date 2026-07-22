@@ -221,7 +221,6 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             {
                 connectionCandidate.IsSelected = evt.newValue;
 
-#if !POLYSPATIAL_INTERNAL
                 if (connectionCandidate.IsSelected)
                 {
                     foreach (var candidate in connectionCandidates)
@@ -230,7 +229,6 @@ namespace UnityEditor.PolySpatial.PlayToDevice
                             candidate.IsSelected = false;
                     }
                 }
-#endif
 
                 EditorApplication.delayCall += playToDeviceWindow.Refresh;
             });

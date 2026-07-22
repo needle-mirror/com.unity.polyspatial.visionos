@@ -91,15 +91,6 @@ extension PolySpatialRealityKit {
         SendLogMessage(.exception, msg)
     }
 
-    static func TrackingDisabledOrDestroyedOrInactive(_ trackingFlags: Int32) -> Bool {
-        return 0 != ((UInt32)(trackingFlags) & (PolySpatialTrackingFlags.destroyed.rawValue |
-                                                PolySpatialTrackingFlags.disabled.rawValue | PolySpatialTrackingFlags.inactive.rawValue))
-    }
-
-    static func TrackingDisabledOrDestroyed(_ trackingFlags: Int32) -> Bool {
-        return 0 != ((UInt32)(trackingFlags) & (PolySpatialTrackingFlags.destroyed.rawValue | PolySpatialTrackingFlags.disabled.rawValue))
-    }
-
     func SendLogMessage(_ logLevel: PolySpatialLogLevel, _ msg: String) {
         msg.utf8CString.withUnsafeBytes { SendHostCommand(.logMessage, logLevel.rawValue, $0) }
     }

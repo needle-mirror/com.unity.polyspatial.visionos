@@ -332,9 +332,6 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             }
 
             var supportedTarget = EditorUserBuildSettings.activeBuildTarget == BuildTarget.VisionOS;
-#if POLYSPATIAL_INTERNAL
-            supportedTarget = true;
-#endif
             if (!supportedTarget)
             {
                 errorMessage = String.Format(k_BuildNotVisionOSMessage, EditorUserBuildSettings.activeBuildTarget);

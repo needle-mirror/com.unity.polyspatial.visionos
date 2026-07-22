@@ -5,7 +5,6 @@ extension PolySpatialRealityKit {
 
     func createOrUpdateAlignmentMarker(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ alignmentMarkerInfo: UnsafeMutablePointer<PolySpatialAlignmentMarkerData>?) {
         let entity = GetEntity(id)
         let info = alignmentMarkerInfo!.pointee

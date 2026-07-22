@@ -1,4 +1,4 @@
-#if (UNITY_VISIONOS ||  POLYSPATIAL_INTERNAL) && UNITY_EDITOR_OSX
+#if UNITY_VISIONOS && UNITY_EDITOR_OSX
 using System;
 using System.IO;
 using UnityEditor;
@@ -63,9 +63,6 @@ namespace Unity.PolySpatial.Internals.Editor
         /// <summary>
         /// Run an external build to create an visionOS PolySpatial Plugin.
         /// </summary>
-#if POLYSPATIAL_INTERNAL
-        [MenuItem("Tools/Build PolySpatial visionOS Plugin", false, 100)]
-#endif
         public static void BuildVisionOSPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
@@ -74,9 +71,6 @@ namespace Unity.PolySpatial.Internals.Editor
             DoPluginBuild("visionos");
         }
 
-#if POLYSPATIAL_INTERNAL
-        [MenuItem("Tools/Build visionOS XR Plugin", false, 100)]
-#endif
         public static void BuildVisionOSXRPlugin()
         {
             if (BuildUtils.IsPackageImmutable())
@@ -97,9 +91,7 @@ namespace Unity.PolySpatial.Internals.Editor
 
                 if (shouldBuildPlugin)
                 {
-#if !POLYSPATIAL_INTERNAL
                     Debug.LogWarning("Building PolySpatial plugin without POLYSPATIAL_INTERNAL because source is available");
-#endif
 
                     if (report.summary.platform == BuildTarget.VisionOS)
                     {

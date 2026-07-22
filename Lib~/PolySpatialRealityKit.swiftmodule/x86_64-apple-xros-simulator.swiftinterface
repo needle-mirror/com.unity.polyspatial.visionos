@@ -228,6 +228,9 @@ public struct PackedIdentifier : Swift.CustomStringConvertible {
   public var unityInstanceId: Swift.Int32 {
     get
   }
+  public var unityEntityId: Swift.UInt64 {
+    get
+  }
   public var id0: Swift.UInt64 {
     get
   }

@@ -23,6 +23,8 @@ class ShaderManager {
     var shaderGlobalTextureSizeProperties: [ShaderGlobalProperty] = []
     var shaderGlobalKeywordProperties: [ShaderGlobalProperty] = []
 
+    var globallyEnabledKeywordParams: Set<MaterialParameters.Handle> = []
+
     // The current value of the update counter, which is used to detect changes in global properties in order to
     // determine when to apply them to materials.  The counter is incremented twice per frame: once immediately after
     // setting the global property values received from the simulation (in order to distinguish between those values
@@ -70,7 +72,7 @@ class ShaderManager {
 
     static let kHasVertexColorsParam = "polySpatial_HasVertexColors"
     static let kHasVertexColorsHandle = ShaderGraphMaterial.parameterHandle(name: kHasVertexColorsParam)
-    
+
     static let kColorParam = "_Color"
     static let kColorHandle = ShaderGraphMaterial.parameterHandle(name: kColorParam)
     static let kHoverColorParam = "_HoverColor"
@@ -205,8 +207,15 @@ class ShaderManager {
             property.setTexture(shaderGlobalPropertyValues.textureProperties(at: Int32(index))!.id,
                 shaderGlobalTextureSizeProperties[index])
         }
+        globallyEnabledKeywordParams.removeAll(keepingCapacity: true)
         for (index, property) in shaderGlobalKeywordProperties.enumerated() {
-            property.setBool(shaderGlobalPropertyValues.keywordValues(at: Int32(index)))
+            let keywordValue = shaderGlobalPropertyValues.keywordValues(at: Int32(index))
+            property.setBool(keywordValue)
+
+            // Store the value so that instances can combine local and global state.
+            if keywordValue {
+                globallyEnabledKeywordParams.insert(property.handle)
+            }
         }
 
         // Increment the update counter so that global updates performed by trackers (e.g., the volume camera tracker,

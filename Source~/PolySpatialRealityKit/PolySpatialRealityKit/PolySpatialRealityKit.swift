@@ -58,7 +58,6 @@ typealias PolySpatialIDListHeader = Unity_PolySpatial_Internals_PolySpatialIDLis
 typealias PolySpatialComponentID = Unity_PolySpatial_Internals_PolySpatialComponentID
 typealias PolySpatialAssetID = Unity_PolySpatial_Internals_PolySpatialAssetID
 typealias PolySpatialAssetCommandMetadata = Unity_PolySpatial_Internals_PolySpatialAssetCommandMetadata
-typealias PolySpatialTrackingFlags = Unity_PolySpatial_Internals_PolySpatialTrackingFlags
 typealias PolySpatialCullMode = Unity_PolySpatial_Internals_PolySpatialCullMode
 typealias PolySpatialCameraData = Unity_PolySpatial_Internals_PolySpatialCameraData
 typealias PolySpatialVolumeCameraData = Unity_PolySpatial_Internals_PolySpatialVolumeCameraData_v1
@@ -694,21 +693,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         pose?.pointee = .init()
     }
 
-    func AddEntities(_ ids: UnsafePolySpatialInstanceIDBufferPointer) {
-        PolySpatialAssert(ids.count > 0, "AddEntities with empty ids")
-
-        let viewSubgraph = getOrCreateViewSubgraph(ids.viewSubgraphIndex)
-
-        let hostId = ids.hostId
-        let viewSubgraphIndex = ids.viewSubgraphIndex
-
-        for iid in ids.values {
-            let id = PolySpatialInstanceID(id: iid, hostId: hostId, viewSubgraphIndex: viewSubgraphIndex)
-            PolySpatialAssert(viewSubgraph.entities[iid] == nil, "AddEntity for \(id) but it already exists!")
-            viewSubgraph.entities[iid] = .init(id)
-        }
-    }
-
     func deleteEntities(_ ids: UnsafePolySpatialInstanceIDBufferPointer) {
         PolySpatialAssert(ids.count > 0, "DeleteEntities with empty ids")
 
@@ -737,7 +721,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         }
     }
 
-    func SetEntityState(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ gameObjectData: UnsafeMutablePointer<PolySpatialGameObjectData>?) {
+    func SetEntityState(_ id: PolySpatialInstanceID, _ gameObjectData: UnsafeMutablePointer<PolySpatialGameObjectData>?) {
         if let objectData = gameObjectData?.pointee {
             let entity = GetEntity(id)
             let enabled = objectData.active
@@ -907,7 +891,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
 
     func createOrUpdateCamera(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ cameraData: UnsafeMutablePointer<PolySpatialCameraData>?)
     {
         let data = cameraData!.pointee
@@ -940,7 +923,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     @MainActor
     func createOrUpdateVolumeCamera(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ volumeCameraData: UnsafeMutablePointer<PolySpatialVolumeCameraData>?)
     {
         let viewSubgraph = getViewSubgraph(id.viewSubgraphIndex)
@@ -1168,7 +1150,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         entity.components.remove(DirectionalLightComponent.Shadow.self)
     }
 
-    func createOrUpdateLight(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ lightInfo: UnsafeMutablePointer<PolySpatialLightData>?) {
+    func createOrUpdateLight(_ id: PolySpatialInstanceID, _ lightInfo: UnsafeMutablePointer<PolySpatialLightData>?) {
 
         let entity = GetEntity(id)
 
@@ -1226,7 +1208,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         removeLightComponents(entity)
     }
 
-    func createOrUpdateUIGraphic(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ graphicInfo: UnsafeMutablePointer<PolySpatialUIGraphicData>?) {
+    func createOrUpdateUIGraphic(_ id: PolySpatialInstanceID, _ graphicInfo: UnsafeMutablePointer<PolySpatialUIGraphicData>?) {
         let info = graphicInfo!.pointee
         let entity = GetEntity(id)
         entity.raycastTarget = info.raycastTarget
@@ -1236,7 +1218,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         entity.raycastTarget = false
     }
 
-    func createOrUpdateHoverEffect(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ hoverEffectInfo: UnsafeMutablePointer<PolySpatialHoverEffectData>?) {
+    func createOrUpdateHoverEffect(_ id: PolySpatialInstanceID, _ hoverEffectInfo: UnsafeMutablePointer<PolySpatialHoverEffectData>?) {
         let entity = GetEntity(id)
         let info = hoverEffectInfo!.pointee
         switch info.type
@@ -1264,7 +1246,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         entity.updateBackingEntityComponents(HoverEffectComponent.self)
     }
 
-    func createOrUpdateBillboard(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ billboardInfo: UnsafeMutablePointer<PolySpatialBillboardData>?) {
+    func createOrUpdateBillboard(_ id: PolySpatialInstanceID, _ billboardInfo: UnsafeMutablePointer<PolySpatialBillboardData>?) {
         let entity = GetEntity(id)
         entity.components.remove(BillboardComponent.self)
 
@@ -1281,7 +1263,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         entity.components.remove(BillboardComponent.self)
     }
 
-    func createOrUpdateGroundingShadow(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ groundingShadowInfo: UnsafeMutablePointer<EmptyData>?) {
+    func createOrUpdateGroundingShadow(_ id: PolySpatialInstanceID, _ groundingShadowInfo: UnsafeMutablePointer<EmptyData>?) {
         let entity = GetEntity(id)
         if !entity.components.has(GroundingShadowComponent.self) {
             entity.components.set(GroundingShadowComponent(castsShadow: true))
@@ -1294,7 +1276,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
         entity.updateBackingEntityComponents(GroundingShadowComponent.self)
     }
 
-    func createOrUpdateCollider(_ id: PolySpatialInstanceID, _ trackingFlags: Int32, _ colliderInfo: UnsafeMutablePointer<PolySpatialColliderData>?) {
+    func createOrUpdateCollider(_ id: PolySpatialInstanceID, _ colliderInfo: UnsafeMutablePointer<PolySpatialColliderData>?) {
         GetEntity(id).createOrUpdateCollisionShape(colliderInfo!.pointee)
     }
 
@@ -1383,7 +1365,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             PolySpatialAssert(entrySize != 0 && dataSize >= 0, "CORRUPT CHANGE LIST: got entrySize of \(entrySize), dataSize of \(dataSize). totalSize: \(totalSize), remaining: \(remaining)")
             let entityDataPtr = UnsafeMutableRawPointer(sizePtr + 2).bindMemory(to: PolySpatialChangeListEntityData.self, capacity: 1)
             let entityData = entityDataPtr.pointee
-            if dataSize > 0 && !PolySpatialRealityKit.TrackingDisabledOrDestroyedOrInactive(entityData.trackingFlags) {
+            if dataSize > 0 {
                 let engineDataPtr = UnsafeMutableRawPointer(entityDataPtr + 1).bindMemory(to: UInt8.self, capacity: dataSize)
                 var buf = ByteBuffer(assumingMemoryBound: engineDataPtr, capacity: Int(dataSize))
                 var engineData: T = getRoot(byteBuffer: &buf)
@@ -1402,7 +1384,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
     // Each element in the buffer is the same size.
     func HandleChangeListArg<T>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?,
                                 _ argSizes: UnsafeMutablePointer<UInt32>?,
-                                entryCallback: (PolySpatialInstanceID, Int32, UnsafeMutablePointer<T>?) -> Void) {
+                                entryCallback: (PolySpatialInstanceID, UnsafeMutablePointer<T>?) -> Void) {
         var dataPtrBuf: UnsafeMutableBufferPointer<UInt8>?
         ExtractArgs(argCount, args, argSizes, &dataPtrBuf)
         let totalSize = Int32(argSizes![0])
@@ -1420,7 +1402,7 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             let entityData = entityDataPtr.pointee
             let engineDataPtr = UnsafeMutableRawPointer(entityDataPtr + 1).bindMemory(to: T.self, capacity: 1)
 
-            entryCallback(entityData.instanceId, entityData.trackingFlags, engineDataPtr)
+            entryCallback(entityData.instanceId, engineDataPtr)
 
             remaining -= stride
             dataPtr = dataPtr! + Int(stride)
@@ -1737,21 +1719,21 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             break
         case .createOrUpdateFontMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialUnlitMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdateFontMaterialAsset(assetIdPtr!.pointee, materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdateFontMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createOrUpdateUnlitMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialUnlitMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdateUnlitMaterialAsset(assetIdPtr!.pointee, materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdateUnlitMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createOrUpdatePbrmaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialPBRMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdatePBRMaterialAsset(assetIdPtr!.pointee, materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdatePBRMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createOrUpdateShaderMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
@@ -1762,21 +1744,21 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             break
         case .createOrUpdateOcclusionMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialOcclusionMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdateOcclusionMaterialAsset(assetIdPtr!.pointee, materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdateOcclusionMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createOrUpdateUnlitParticleMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialUnlitParticleMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdateUnlitParticleMaterialAsset(assetIdPtr!.pointee, _materialPtr: materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdateUnlitParticleMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createOrUpdateLitParticleMaterialAsset:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
-            var materialPtr: UnsafeMutablePointer<PolySpatialLitParticleMaterial>?
-            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &materialPtr)
-            CreateOrUpdateLitParticleMaterialAsset(assetIdPtr!.pointee, _materialPtr: materialPtr)
+            var data: ByteBuffer?
+            ExtractArgs(argCount, args, argSizes, &assetIdPtr, &data)
+            CreateOrUpdateLitParticleMaterialAsset(assetIdPtr!.pointee, &data!)
             break
         case .createShaderPropertyMap:
             var assetIdPtr: UnsafeMutablePointer<PolySpatialAssetID>?
@@ -1836,11 +1818,6 @@ class PolySpatialRealityKit: PolySpatialNativeAPIProtocol {
             var deltaBuffer: UnsafeMutableBufferPointer<UInt8>?
             ExtractArgs(argCount, args, argSizes, &idArrayData, &deltaFlags, &deltaBuffer)
             setEntityTransformDeltas(.init(idArrayData!), .init(deltaFlags!), .init(deltaBuffer!))
-            break
-        case .addEntities:
-            var idArrayData: UnsafeRawBufferPointer?
-            ExtractArgs(argCount, args, argSizes, &idArrayData)
-            AddEntities(.init(idArrayData!))
             break
         case .deleteEntities:
             var idBufferData: UnsafeRawBufferPointer?

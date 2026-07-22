@@ -57,7 +57,13 @@ public struct PackedIdentifier: CustomStringConvertible {
         "\(_id0):\(_id1)"
     }
 
+    // For use with InstanceId in versions of Unity prior to Unity 6.4
     public var unityInstanceId: Int32 {
+        .init(truncatingIfNeeded: _id0)
+    }
+    
+    // For use with EntityId in versions of Unity post 6.4
+    public var unityEntityId: UInt64 {
         .init(truncatingIfNeeded: _id0)
     }
 

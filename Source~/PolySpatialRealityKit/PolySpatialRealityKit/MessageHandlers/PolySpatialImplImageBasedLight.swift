@@ -5,7 +5,6 @@ extension PolySpatialRealityKit {
 
     func createOrUpdateImageBasedLight(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ imageBasedLightInfo: UnsafeMutablePointer<PolySpatialImageBasedLightData>?) {
         let entity = GetEntity(id)
         let info = imageBasedLightInfo!.pointee
@@ -24,7 +23,6 @@ extension PolySpatialRealityKit {
 
     func createOrUpdateImageBasedLightReceiver(
         _ id: PolySpatialInstanceID,
-        _ trackingFlags: Int32,
         _ imageBasedLightReceiverInfo: UnsafeMutablePointer<PolySpatialImageBasedLightReceiverData>?) {
         let entity = GetEntity(id)
         let info = imageBasedLightReceiverInfo!.pointee

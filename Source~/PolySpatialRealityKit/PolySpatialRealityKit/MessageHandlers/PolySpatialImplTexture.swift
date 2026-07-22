@@ -68,6 +68,19 @@ extension PolySpatialRealityKit {
     }
 
     func CreateOrUpdateTextureAsset(_ id: PolySpatialAssetID, _ texdata: PolySpatialTextureData, _ pixelData: UnsafeMutableRawBufferPointer?) -> Bool {
+        // LXR-5904: The optional dirtyRegions vector describes the changed sub-regions of the texture.
+        // When absent (or empty), the entire texture is considered dirty. Partial-apply is not yet
+        // implemented on this receiver, so for now we always fall back to the whole-texture path below.
+        if texdata.hasDirtyRegions && texdata.dirtyRegionsCount > 0 {
+            // Partial-apply lands in the stacked PR (#4617). Here pixelData carries only the changed-region
+            // bytes, so falling through to the whole-texture path (CFDataCreate / Metal mip mappings using the
+            // full dataSize/dataOffset) would read out of bounds. Drop rather than crash — senders only emit
+            // partial payloads to hosts advertising the texturePartialUpdates capability (also #4617), so this
+            // is defensive and unreachable in this PR.
+            assertionFailure("PolySpatial: dirty-region texture update received but partial-apply is not implemented on the RealityKit host (see LXR-5904 / #4617)")
+            return false
+        }
+
         // We can only handle "fallback" textures: textures with no mipmaps
         // (because we will generate them) in one of two basic formats.
         if texdata.fallbackMode != .none_ {
@@ -78,7 +91,7 @@ extension PolySpatialRealityKit {
                 }
             }
             var semantic: TextureResource.Semantic
-            switch UnityGraphicsFormat(rawValue: Int32(texdata.unityGraphicsFormat)) {
+            switch UnityGraphicsFormat(rawValue: texdata.unityGraphicsFormat.rawValue) {
                 case kFormatB8G8R8A8_SRGB:
                     semantic = .color
 
@@ -130,6 +143,7 @@ extension PolySpatialRealityKit {
                 case .textureCube: try! .cube(slices: createSlices(), options: options)
                 case .texture2Darray: try! .texture2DArray(slices: createSlices(), options: options)
                 case .texture3D: try! .texture3D(slices: createSlices(), options: options)
+                case .textureCubeArray: fatalError("Cube array textures not supported")
             }
 
             let sampler = CreateTextureSampler(texdata.filterMode, texdata.wrapModeU, texdata.wrapModeV)
@@ -140,7 +154,7 @@ extension PolySpatialRealityKit {
             return true
         }
 
-        let graphicsFormat = UnityGraphicsFormat.init(rawValue: Int32(texdata.unityGraphicsFormat))
+        let graphicsFormat = UnityGraphicsFormat.init(rawValue: texdata.unityGraphicsFormat.rawValue)
         let (metalFormat, conversionFormat) = PolySpatialRealityKit.unityToMetalFormat(graphicsFormat)
 
         if conversionFormat != graphicsFormat {
@@ -196,6 +210,7 @@ extension PolySpatialRealityKit {
                         .mip(unsafeBuffer: mbuf, offset: Int(mip.dataOffset), size: Int(mip.dataSize),
                             bytesPerRow: Int(mip.bytesPerRow), bytesPerImage: Int(mip.bytesPerImage))
                     }))
+                case .textureCubeArray: fatalError("Cube array textures not supported")
             }
 
             let sampler = CreateTextureSampler(texdata.filterMode, texdata.wrapModeU, texdata.wrapModeV)

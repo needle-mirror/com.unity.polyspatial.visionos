@@ -44,6 +44,7 @@ extension PolySpatialRealityKit {
         var textureProperties: [String]
         var texturePropertyTransformsEnabled: [Bool]
         var keywords: [String]
+        var keywordsOverridable: [Bool]
         var faceCulling: MaterialParameterTypes.FaceCulling
         var readsDepth: Bool
         var writesDepth: Bool
@@ -60,6 +61,7 @@ extension PolySpatialRealityKit {
             _ textureProperties: [String],
             _ texturePropertyTransformsEnabled: [Bool],
             _ keywords: [String],
+            _ keywordsOverridable: [Bool],
             _ faceCulling: MaterialParameterTypes.FaceCulling,
             _ readsDepth: Bool,
             _ writesDepth: Bool,
@@ -75,6 +77,7 @@ extension PolySpatialRealityKit {
             self.textureProperties = textureProperties
             self.texturePropertyTransformsEnabled = texturePropertyTransformsEnabled
             self.keywords = keywords
+            self.keywordsOverridable = keywordsOverridable
             self.faceCulling = faceCulling
             self.readsDepth = readsDepth
             self.writesDepth = writesDepth
@@ -365,8 +368,9 @@ extension PolySpatialRealityKit {
         return tex.isValid ? GetTextureAssetForId(tex) : nil
     }
 
-    func toTextureParameter(_ tex: PolySpatialTexture) -> MaterialParameters.Texture? {
-        toTextureParameter(tex.textureId.id)
+    func toTextureParameter(_ tex: PolySpatialTexture?) -> MaterialParameters.Texture? {
+        guard let tex else { return nil }
+        return toTextureParameter(tex.textureId.id)
     }
 
     func toTextureParameter(_ tex: PolySpatialAssetID) -> MaterialParameters.Texture? {
@@ -374,10 +378,6 @@ extension PolySpatialRealityKit {
             return nil
         }
         return GetTextureAssetForId(tex).texture
-    }
-
-    func toRealityKitOpacityThreshold(_ opacityThreshold: PolySpatialOpacityThreshold) -> Float? {
-        return opacityThreshold.isEnabled ? opacityThreshold.value : nil
     }
 
     func CreateUninitializedMaterialAsset(_ id: PolySpatialAssetID) -> MaterialAsset {
@@ -436,12 +436,12 @@ extension PolySpatialRealityKit {
         }
     }
 
-    func CreateOrUpdateFontMaterialAsset(_ id: PolySpatialAssetID, _ materialPtr: UnsafePointer<PolySpatialUnlitMaterial>?) {
-        CreateOrUpdateUnlitMaterialAsset(id, materialPtr)
+    func CreateOrUpdateFontMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
+        CreateOrUpdateUnlitMaterialAsset(id, &data)
     }
 
-    func CreateOrUpdateUnlitMaterialAsset(_ id: PolySpatialAssetID, _ materialPtr: UnsafePointer<PolySpatialUnlitMaterial>?) {
-        let material = materialPtr!.pointee
+    func CreateOrUpdateUnlitMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
+        let material: PolySpatialUnlitMaterial = getRoot(byteBuffer: &data)
         var unlitMaterial = getOrCreateUnlitMaterial(id, material.blendingMode)
 
         unlitMaterial.color = .init(tint: material.baseColorMap.color.rk(), texture: toTextureParameter(material.baseColorMap.textureId.id))
@@ -450,7 +450,7 @@ extension PolySpatialRealityKit {
         } else {
             unlitMaterial.blending = .opaque
         }
-        unlitMaterial.opacityThreshold = toRealityKitOpacityThreshold(material.opacityThreshold)
+        unlitMaterial.opacityThreshold = material.opacityThreshold
 
         unlitMaterial.faceCulling = material.cullMode.rk()
 
@@ -495,12 +495,12 @@ extension PolySpatialRealityKit {
         UpdateMaterialDefinition(UnlitMaterialAsset(id, unlitMaterial, colorTextureID: material.baseColorMap.textureId.id))
     }
 
-    func CreateOrUpdateOcclusionMaterialAsset(_ id: PolySpatialAssetID, _ materialPtr: UnsafePointer<PolySpatialOcclusionMaterial>?) {
+    func CreateOrUpdateOcclusionMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
         UpdateMaterialDefinition(OcclusionMaterialAsset(id, .init()))
     }
 
-    func CreateOrUpdatePBRMaterialAsset(_ id: PolySpatialAssetID, _ materialPtr: UnsafePointer<PolySpatialPBRMaterial>?) {
-        let materialDef = materialPtr!.pointee
+    func CreateOrUpdatePBRMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
+        let materialDef: PolySpatialPBRMaterial = getRoot(byteBuffer: &data)
         var pbrmaterial = getOrCreatePhysicallyBasedMaterial(id, materialDef.blendingMode)
 
         let cullMode = materialDef.cullMode.rk()
@@ -622,22 +622,22 @@ extension PolySpatialRealityKit {
             metallicTextureID: materialDef.metallicMap.textureId.id,
             specularTextureID: materialDef.specularMap.textureId.id,
             roughnessTextureID: materialDef.roughnessMap.textureId.id,
-            normalTextureID: materialDef.normalMap.textureId.id,
-            ambientOcclusionTextureID: materialDef.ambientOcclusionMap.textureId.id,
+            normalTextureID: materialDef.normalMap?.textureId.id ?? PolySpatialAssetID.invalidAssetId,
+            ambientOcclusionTextureID: materialDef.ambientOcclusionMap?.textureId.id ?? PolySpatialAssetID.invalidAssetId,
             clearcoatTextureID: materialDef.clearcoatMap.textureId.id,
             clearcoatRoughnessTextureID: materialDef.clearcoatRoughnessMap.textureId.id))
     }
 
     func setOpacityThreshold(_ material: inout PhysicallyBasedMaterial, _ materialData: PolySpatialPBRMaterial) {
-        let opacityThreshold = toRealityKitOpacityThreshold(materialData.opacityThreshold)
+        let opacityThreshold = materialData.opacityThreshold
         if material.opacityThreshold != opacityThreshold {
             material.opacityThreshold = opacityThreshold
         }
     }
 
-    internal func CreateOrUpdateUnlitParticleMaterialAsset(_ id: PolySpatialAssetID, _materialPtr: UnsafePointer<PolySpatialUnlitParticleMaterial>?) {
+    internal func CreateOrUpdateUnlitParticleMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
         if (PolySpatialRealityKit.instance.particleRenderingMode == .replicateProperties) {
-            let material = _materialPtr!.pointee
+            let material: PolySpatialUnlitParticleMaterial = getRoot(byteBuffer: &data)
             let vfxMaterial = VfXMaterial(
                 texture: toTextureAsset(material.baseColorMap.textureId.id),
                 blendMode: material.blendingMode,
@@ -654,9 +654,9 @@ extension PolySpatialRealityKit {
         }
     }
 
-    internal func CreateOrUpdateLitParticleMaterialAsset(_ id: PolySpatialAssetID, _materialPtr: UnsafePointer<PolySpatialLitParticleMaterial>?) {
+    internal func CreateOrUpdateLitParticleMaterialAsset(_ id: PolySpatialAssetID, _ data: inout ByteBuffer) {
         if (PolySpatialRealityKit.instance.particleRenderingMode == .replicateProperties) {
-            let material = _materialPtr!.pointee
+            let material: PolySpatialLitParticleMaterial = getRoot(byteBuffer: &data)
             let vfxMaterial = VfXMaterial(
                 texture: toTextureAsset(material.baseColorMap.textureId.id),
                 blendMode: material.blendingMode,
@@ -755,6 +755,11 @@ extension PolySpatialRealityKit {
             keywords[Int(i)] = polyspatialPropertyMap.keywords(at: i)!
         }
 
+        var keywordsOverridable = [Bool](repeating: false, count: Int(polyspatialPropertyMap.keywordsOverridableCount))
+        for i in 0..<polyspatialPropertyMap.keywordsOverridableCount {
+            keywordsOverridable[Int(i)] = polyspatialPropertyMap.keywordsOverridable(at: i)
+        }
+
         var readsDepth = true
         if polyspatialPropertyMap.zTestMode == .always {
             readsDepth = false
@@ -772,6 +777,7 @@ extension PolySpatialRealityKit {
             textureProperties,
             texturePropertyTransformsEnabled,
             keywords,
+            keywordsOverridable,
             polyspatialPropertyMap.cullMode.rk(),
             readsDepth,
             polyspatialPropertyMap.zWriteControl != .forceDisabled,

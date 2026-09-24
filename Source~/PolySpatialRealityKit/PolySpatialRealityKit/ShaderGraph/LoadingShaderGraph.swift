@@ -16,10 +16,11 @@ class LoadingShaderGraph: CachedShaderGraph {
 
         materialPropertyId = materialDef.shaderPropertyMapId
 
-        // ByteBuffer.init(contiguousBytes:,count:) creates an owned copy.
+        // Cached until the shader graph finishes loading, so it must own its bytes.
         let dataCount = Int(data.size)
-        let dataCopy = ByteBuffer(
-            contiguousBytes: UnsafeMutableRawBufferPointer(start: data.memory, count: dataCount), count: dataCount)
+        let dataCopy = data.withUnsafeBytes { bytes in
+            ByteBuffer(copyingMemoryBound: bytes.baseAddress!, capacity: dataCount)
+        }
         let currentInstance = ShaderManager.instance.shaderGraphInstances[id]
         if let loadingInstance = currentInstance as? LoadingShaderGraphInstance,
                 loadingInstance.shaderGraph === self {

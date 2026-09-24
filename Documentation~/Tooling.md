@@ -24,5 +24,7 @@ Enter a positive `Recording Framerate` value, and enable `Limit Framerate While 
 ### Playback
 To replay a recording, select it from the recordings list, and press the `Play` button. New input won't be processed, but the input encoded in the original recording will replay.
 
+Legacy joystick axes are encoded on the wire by raw `(joystick, axis)` index, not by name. Playback assumes `ProjectSettings/InputManager.asset` still defines JoystickAxis entries at the same slots as when the recording was made. If entries were added, removed, or moved between record and playback, joystick values will apply to whatever axis name the current InputManager maps to those slots.
+
 ### Usages
 Among other things, theses files can be submitted to Unity support allowing us to debug many project-specific issues without needing a full zip of your project.

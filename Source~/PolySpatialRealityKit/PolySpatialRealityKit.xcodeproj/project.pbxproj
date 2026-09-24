@@ -11,6 +11,7 @@
 		350172632B62B743007B73E4 /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 350172612B62B743007B73E4 /* ColorExtensions.swift */; };
 		3538B4702C12316900729328 /* LineRendererManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3538B46D2C12316900729328 /* LineRendererManager.swift */; };
 		35882B132BA3505B00AB1531 /* MeshResourceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35882B102BA3505A00AB1531 /* MeshResourceExtensions.swift */; };
+		4489A3496F1CE8168EA8FC22 /* Int+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F127ED6CE09355FCF9F8541D /* Int+extension.swift */; };
 		6522D7662B96895600F93218 /* ShaderGlobalProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7632B96895600F93218 /* ShaderGlobalProperty.swift */; };
 		6522D76A2B96898300F93218 /* CachedShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D7672B96898300F93218 /* CachedShaderGraph.swift */; };
 		6522D76E2B9689A000F93218 /* LoadingShaderGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6522D76B2B9689A000F93218 /* LoadingShaderGraph.swift */; };
@@ -25,6 +26,8 @@
 		6555049A2B6DBFEA00E7126E /* ParticleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655504972B6DBFEA00E7126E /* ParticleManager.swift */; };
 		682697ED2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 682697EA2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift */; };
 		68D728532999CBEB009A19D3 /* PolySpatialImplParticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D728502999CBEB009A19D3 /* PolySpatialImplParticle.swift */; };
+		70C92819C6A4295BF4F747A3 /* FlatbufferVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB71FC5BB1A78361B378A701 /* FlatbufferVector.swift */; };
+		7D06D23DB368A03C08946D45 /* _InternalByteBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BA6D6B013B158E7F2BCE811 /* _InternalByteBuffer.swift */; };
 		8BAA488A29F1F661000F979C /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486D29F1F615000F979C /* Root.swift */; };
 		8BAA488B29F1F661000F979C /* Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486329F1F615000F979C /* Offset.swift */; };
 		8BAA488C29F1F661000F979C /* FlatBufferBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */; };
@@ -35,7 +38,6 @@
 		8BAA489129F1F661000F979C /* FlatbuffersErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */; };
 		8BAA489229F1F661000F979C /* NativeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487129F1F615000F979C /* NativeObject.swift */; };
 		8BAA489329F1F661000F979C /* FlatBufferObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA487329F1F615000F979C /* FlatBufferObject.swift */; };
-		8BAA489429F1F661000F979C /* Int+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486529F1F615000F979C /* Int+extension.swift */; };
 		8BAA489529F1F661000F979C /* TableVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486C29F1F615000F979C /* TableVerifier.swift */; };
 		8BAA489629F1F661000F979C /* Verifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486929F1F615000F979C /* Verifier.swift */; };
 		8BAA489729F1F661000F979C /* VeriferOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BAA486E29F1F615000F979C /* VeriferOptions.swift */; };
@@ -51,7 +53,12 @@
 		938298BB2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938298BA2C2E38F1009CA13B /* PolySpatialImplEnvironmentLighting.swift */; };
 		938CB60C2B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938CB6082B12F863008F1FBE /* PolySpatialImplImageBasedLight.swift */; };
 		93BBCC1F2B8D5759003E1AB9 /* StaticBatchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BBCC1C2B8D5759003E1AB9 /* StaticBatchManager.swift */; };
+		ADA7D6C35DF6D2F7C4FCE05D /* padding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F9D3567A6EC69AA3D36B765 /* padding.swift */; };
+		B00DDD1DE7E0C2EC09D84F6F /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8713767AA81E3196B3CC582B /* libCommon.a */; };
 		BC498A042B0C56BE00A9A7DE /* PolySpatialImplText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC498A002B0C56BE00A9A7DE /* PolySpatialImplText.swift */; };
+		C8755E4660263A2C9C78B763 /* FlatbuffersVectorInitializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E741A87AD45C4408C194F /* FlatbuffersVectorInitializable.swift */; };
+		CDBA200C5A19E1AA6BD4FD7D /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8713767AA81E3196B3CC582B /* libCommon.a */; };
+		E2C9EA74425743C60C98AD2E /* UnionFlatbufferVector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F76BD87B82D761AB633E622 /* UnionFlatbufferVector.swift */; };
 		E72FFD782A85763300B5A77F /* PolySpatialSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FFD752A85763300B5A77F /* PolySpatialSceneDelegate.swift */; };
 		E72FFD7C2A85767F00B5A77F /* PolySpatialWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FFD792A85767E00B5A77F /* PolySpatialWindow.swift */; };
 		E795B72F2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E795B72C2A7B0043002D48EE /* PolySpatialContentViewWrapper.swift */; };
@@ -82,9 +89,24 @@
 		E855B9AA2981C63300777639 /* XROSPolySpatialContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A72981C63300777639 /* XROSPolySpatialContentView.swift */; };
 		E855B9AB2981C63300777639 /* PolySpatialVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = E855B9A82981C63300777639 /* PolySpatialVolume.swift */; };
 		E868C12D2983118000F4BE5E /* libFlatBuffers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E868C1102983114D00F4BE5E /* libFlatBuffers.a */; };
+		F74C3EB9BC12B57DBCC38146 /* Scalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4A32A14E9C4C1FBA77382A /* Scalar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		798C181100F200086B81E47E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E75D032D28BE933400D1E768 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F3F58CCB33E42D419A032CA;
+			remoteInfo = Common;
+		};
+		8425CC09CCCF0A1AE4FCD8CA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E75D032D28BE933400D1E768 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F3F58CCB33E42D419A032CA;
+			remoteInfo = Common;
+		};
 		E75B86902A573037008218A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E75D032D28BE933400D1E768 /* Project object */;
@@ -95,6 +117,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2F9D3567A6EC69AA3D36B765 /* padding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = padding.swift; sourceTree = "<group>"; };
 		337414282BD8042C005608F2 /* PolySpatialConsoleLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialConsoleLog.swift; sourceTree = "<group>"; };
 		350172612B62B743007B73E4 /* ColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
 		3538B46D2C12316900729328 /* LineRendererManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineRendererManager.swift; sourceTree = "<group>"; };
@@ -114,10 +137,13 @@
 		655504972B6DBFEA00E7126E /* ParticleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticleManager.swift; sourceTree = "<group>"; };
 		682697EA2A13F074007AC673 /* PolySpatialImplVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplVideoPlayer.swift; sourceTree = "<group>"; };
 		68D728502999CBEB009A19D3 /* PolySpatialImplParticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplParticle.swift; sourceTree = "<group>"; };
+		6BA6D6B013B158E7F2BCE811 /* _InternalByteBuffer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = _InternalByteBuffer.swift; sourceTree = "<group>"; };
+		6F4A32A14E9C4C1FBA77382A /* Scalar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Scalar.swift; sourceTree = "<group>"; };
+		6F76BD87B82D761AB633E622 /* UnionFlatbufferVector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnionFlatbufferVector.swift; sourceTree = "<group>"; };
+		8713767AA81E3196B3CC582B /* libCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BAA486229F1F615000F979C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		8BAA486329F1F615000F979C /* Offset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Offset.swift; sourceTree = "<group>"; };
 		8BAA486429F1F615000F979C /* Mutable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mutable.swift; sourceTree = "<group>"; };
-		8BAA486529F1F615000F979C /* Int+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Int+extension.swift"; sourceTree = "<group>"; };
 		8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatBufferBuilder.swift; sourceTree = "<group>"; };
 		8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlatbuffersErrors.swift; sourceTree = "<group>"; };
 		8BAA486829F1F615000F979C /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -149,6 +175,8 @@
 		BCB693FE28D4D90E00925774 /* PolySpatialDebugHierarchyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialDebugHierarchyView.swift; sourceTree = "<group>"; };
 		BCF7A9CF2926D4470019D33C /* PolySpatialImplSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialImplSprite.swift; sourceTree = "<group>"; };
 		BCFC97A328D5117100FE3A71 /* PolySpatialStatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolySpatialStatisticsView.swift; sourceTree = "<group>"; };
+		DB1E741A87AD45C4408C194F /* FlatbuffersVectorInitializable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlatbuffersVectorInitializable.swift; sourceTree = "<group>"; };
+		DB71FC5BB1A78361B378A701 /* FlatbufferVector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FlatbufferVector.swift; sourceTree = "<group>"; };
 		DE24545920F587F2EAF2ACEB /* PolySpatialImplTexture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplTexture.swift; sourceTree = "<group>"; };
 		DE2455CDD658B73BA7C43597 /* PolySpatialEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialEntity.swift; sourceTree = "<group>"; };
 		DE2456DCA2A49EE471094A67 /* PolySpatialImplMaterial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialImplMaterial.swift; sourceTree = "<group>"; };
@@ -176,14 +204,23 @@
 		E855B9A72981C63300777639 /* XROSPolySpatialContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XROSPolySpatialContentView.swift; sourceTree = "<group>"; };
 		E855B9A82981C63300777639 /* PolySpatialVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolySpatialVolume.swift; sourceTree = "<group>"; };
 		E868C1102983114D00F4BE5E /* libFlatBuffers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFlatBuffers.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F127ED6CE09355FCF9F8541D /* Int+extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Int+extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		08F3A15F3666F2BF9FED007E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E7B720D12981A52B00655168 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				E868C12D2983118000F4BE5E /* libFlatBuffers.a in Frameworks */,
+				CDBA200C5A19E1AA6BD4FD7D /* libCommon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +228,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B00DDD1DE7E0C2EC09D84F6F /* libCommon.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,13 +274,23 @@
 			path = ComponentManagers;
 			sourceTree = "<group>";
 		};
+		8A8AF5AFC1E90B58447E86A2 /* Vectors */ = {
+			isa = PBXGroup;
+			children = (
+				DB71FC5BB1A78361B378A701 /* FlatbufferVector.swift */,
+				DB1E741A87AD45C4408C194F /* FlatbuffersVectorInitializable.swift */,
+				6F76BD87B82D761AB633E622 /* UnionFlatbufferVector.swift */,
+			);
+			name = Vectors;
+			path = Vectors;
+			sourceTree = "<group>";
+		};
 		8BAA486129F1F615000F979C /* FlatBuffers */ = {
 			isa = PBXGroup;
 			children = (
 				8BAA486229F1F615000F979C /* Constants.swift */,
 				8BAA486329F1F615000F979C /* Offset.swift */,
 				8BAA486429F1F615000F979C /* Mutable.swift */,
-				8BAA486529F1F615000F979C /* Int+extension.swift */,
 				8BAA486629F1F615000F979C /* FlatBufferBuilder.swift */,
 				8BAA486729F1F615000F979C /* FlatbuffersErrors.swift */,
 				8BAA486829F1F615000F979C /* Message.swift */,
@@ -259,6 +307,8 @@
 				8BAA487329F1F615000F979C /* FlatBufferObject.swift */,
 				8BAA487429F1F615000F979C /* Enum.swift */,
 				8BAA487529F1F615000F979C /* Struct.swift */,
+				6BA6D6B013B158E7F2BCE811 /* _InternalByteBuffer.swift */,
+				8A8AF5AFC1E90B58447E86A2 /* Vectors */,
 			);
 			name = FlatBuffers;
 			path = "../../../com.unity.ext.flatsharp/Source~/flatbuffers/swift/Sources/FlatBuffers";
@@ -270,6 +320,17 @@
 				E83F2058299C134900A7D913 /* flatbuffers */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		AD494A79475F81DA2B7B69D1 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				F127ED6CE09355FCF9F8541D /* Int+extension.swift */,
+				6F4A32A14E9C4C1FBA77382A /* Scalar.swift */,
+				2F9D3567A6EC69AA3D36B765 /* padding.swift */,
+			);
+			name = Common;
+			path = "../../../com.unity.ext.flatsharp/Source~/flatbuffers/swift/Sources/Common";
 			sourceTree = "<group>";
 		};
 		BC8BB85328DB5D6900587535 /* MessageHandlers */ = {
@@ -318,6 +379,7 @@
 				E75D035828BE937A00D1E768 /* Frameworks */,
 				ABEE3E932922DCBA00858FB4 /* Packages */,
 				E75D033728BE933500D1E768 /* Products */,
+				AD494A79475F81DA2B7B69D1 /* Common */,
 			);
 			sourceTree = "<group>";
 		};
@@ -326,6 +388,7 @@
 			children = (
 				E7B720DE2981A52B00655168 /* libPolySpatial_xros.a */,
 				E868C1102983114D00F4BE5E /* libFlatBuffers.a */,
+				8713767AA81E3196B3CC582B /* libCommon.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -391,7 +454,34 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		13556F5C8320B8509C9ECF9D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		2F3F58CCB33E42D419A032CA /* Common */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E128AC1862C0AA53D5AF34E /* Build configuration list for PBXNativeTarget "Common" */;
+			buildPhases = (
+				13556F5C8320B8509C9ECF9D /* Headers */,
+				FBB30E9B1A16423F2B32D158 /* Sources */,
+				08F3A15F3666F2BF9FED007E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Common;
+			productName = Common;
+			productReference = 8713767AA81E3196B3CC582B /* libCommon.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		E7B720B72981A52B00655168 /* PolySpatial-visionOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E7B720D92981A52B00655168 /* Build configuration list for PBXNativeTarget "PolySpatial-visionOS" */;
@@ -404,10 +494,9 @@
 			);
 			dependencies = (
 				E75B86912A573037008218A7 /* PBXTargetDependency */,
+				7B6872D98EA30F317A662C4D /* PBXTargetDependency */,
 			);
 			name = "PolySpatial-visionOS";
-			packageProductDependencies = (
-			);
 			productName = "PolySpatial-iOS";
 			productReference = E7B720DE2981A52B00655168 /* libPolySpatial_xros.a */;
 			productType = "com.apple.product-type.library.static";
@@ -422,6 +511,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A36ACF09476646C580041767 /* PBXTargetDependency */,
 			);
 			name = FlatBuffers;
 			productName = FlatBuffers;
@@ -457,6 +547,7 @@
 			targets = (
 				E7B720B72981A52B00655168 /* PolySpatial-visionOS */,
 				E868C10F2983114D00F4BE5E /* FlatBuffers */,
+				2F3F58CCB33E42D419A032CA /* Common */,
 			);
 		};
 /* End PBXProject section */
@@ -567,13 +658,38 @@
 				8BAA488A29F1F661000F979C /* Root.swift in Sources */,
 				8BAA488F29F1F661000F979C /* Constants.swift in Sources */,
 				8BAA489D29F1F661000F979C /* Enum.swift in Sources */,
-				8BAA489429F1F661000F979C /* Int+extension.swift in Sources */,
+				7D06D23DB368A03C08946D45 /* _InternalByteBuffer.swift in Sources */,
+				70C92819C6A4295BF4F747A3 /* FlatbufferVector.swift in Sources */,
+				C8755E4660263A2C9C78B763 /* FlatbuffersVectorInitializable.swift in Sources */,
+				E2C9EA74425743C60C98AD2E /* UnionFlatbufferVector.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FBB30E9B1A16423F2B32D158 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4489A3496F1CE8168EA8FC22 /* Int+extension.swift in Sources */,
+				F74C3EB9BC12B57DBCC38146 /* Scalar.swift in Sources */,
+				ADA7D6C35DF6D2F7C4FCE05D /* padding.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7B6872D98EA30F317A662C4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Common;
+			target = 2F3F58CCB33E42D419A032CA /* Common */;
+			targetProxy = 798C181100F200086B81E47E /* PBXContainerItemProxy */;
+		};
+		A36ACF09476646C580041767 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Common;
+			target = 2F3F58CCB33E42D419A032CA /* Common */;
+			targetProxy = 8425CC09CCCF0A1AE4FCD8CA /* PBXContainerItemProxy */;
+		};
 		E75B86912A573037008218A7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E868C10F2983114D00F4BE5E /* FlatBuffers */;
@@ -582,6 +698,41 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		38E54F88DD59787A46167DB3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Release;
+		};
+		4D1EC85EFE93FC64F0016794 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XROS_DEPLOYMENT_TARGET = 1.0;
+			};
+			name = Debug;
+		};
 		E75D033B28BE933500D1E768 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -805,6 +956,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2E128AC1862C0AA53D5AF34E /* Build configuration list for PBXNativeTarget "Common" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				38E54F88DD59787A46167DB3 /* Release */,
+				4D1EC85EFE93FC64F0016794 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E75D033028BE933400D1E768 /* Build configuration list for PBXProject "PolySpatialRealityKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

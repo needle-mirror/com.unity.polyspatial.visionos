@@ -1,6 +1,8 @@
 import Foundation
 import RealityKit
 import UIKit
+@_implementationOnly
+import FlatBuffers
 
 // CurveKey Aliases
 typealias PolySpatialParticleCurveMode = Unity_PolySpatial_Internals_PolySpatialParticleCurveMode
@@ -92,7 +94,7 @@ extension PolySpatialParticleSpawnOccasion {
 }
 
 extension PolySpatialParticleMinMaxCurve {
-    func getValueAndVariation(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> (value: Float, valueVariation: Float) {
+    func getValueAndVariation(_ keyBuffer: FlatbufferVector<PolySpatialKeyframe>) -> (value: Float, valueVariation: Float) {
         switch self.mode {
             case .constant:
                 return (self.minValue, 0)
@@ -105,11 +107,11 @@ extension PolySpatialParticleMinMaxCurve {
                 // As of now, there is no support for curves in RK, so this is an attempt to at least capture some of the values.
                 // Note that if a curve is a bell curve, this may very well return 0 for both.
                 let firstKeyIndex = Int(self.minCurveStartIndex)
-                let firstVal = keyBuffer![firstKeyIndex].value * self.curveMultiplier
+                let firstVal = keyBuffer[firstKeyIndex].value * self.curveMultiplier
                 
                 // The last value isn't used at present.
                 // let lastKeyIndex = firstKeyIndex + Int(self.minCurveLength - 1)
-                // let lastVal = keyBuffer![lastKeyIndex].value * self.curveMultiplier
+                // let lastVal = keyBuffer[lastKeyIndex].value * self.curveMultiplier
 
                 // Technically there's no value variation, just an initial value and an end value.
                 return (value: firstVal, valueVariation: 0)
@@ -117,14 +119,14 @@ extension PolySpatialParticleMinMaxCurve {
                 let firstKeyIndex = Int(self.minCurveStartIndex)
                 let lastKeyIndex = Int(self.maxCurveStartIndex + self.maxCurveLength - 1)
 
-                let firstVal = keyBuffer![firstKeyIndex].value * self.curveMultiplier
-                let lastVal = keyBuffer![lastKeyIndex].value * self.curveMultiplier
+                let firstVal = keyBuffer[firstKeyIndex].value * self.curveMultiplier
+                let lastVal = keyBuffer[lastKeyIndex].value * self.curveMultiplier
 
                 return (value: firstVal, valueVariation: lastVal - firstVal)
         }
     }
 
-    func getCurveValues(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> (firstVal: Float, lastVal: Float, valueVariation: Float) {
+    func getCurveValues(_ keyBuffer: FlatbufferVector<PolySpatialKeyframe>) -> (firstVal: Float, lastVal: Float, valueVariation: Float) {
         switch self.mode {
             case .constant:
                 return (firstVal: self.minValue,
@@ -142,8 +144,8 @@ extension PolySpatialParticleMinMaxCurve {
                 let firstKeyIndex = Int(self.minCurveStartIndex)
                 let lastKeyIndex = firstKeyIndex + Int(self.minCurveLength - 1)
 
-                let firstVal = keyBuffer![firstKeyIndex].value * self.curveMultiplier
-                let lastVal = keyBuffer![lastKeyIndex].value * self.curveMultiplier
+                let firstVal = keyBuffer[firstKeyIndex].value * self.curveMultiplier
+                let lastVal = keyBuffer[lastKeyIndex].value * self.curveMultiplier
 
                 return (firstVal: firstVal,
                         lastVal: lastVal,
@@ -153,9 +155,9 @@ extension PolySpatialParticleMinMaxCurve {
                 let firstKeyMaxIndex = Int(self.minCurveStartIndex)
                 let lastKeyIndex = Int(self.maxCurveStartIndex + self.maxCurveLength - 1)
 
-                let firstMinVal = keyBuffer![firstKeyMinIndex].value * self.curveMultiplier
-                let firstMaxVal = keyBuffer![firstKeyMaxIndex].value * self.curveMultiplier
-                let lastVal = keyBuffer![lastKeyIndex].value * self.curveMultiplier
+                let firstMinVal = keyBuffer[firstKeyMinIndex].value * self.curveMultiplier
+                let firstMaxVal = keyBuffer[firstKeyMaxIndex].value * self.curveMultiplier
+                let lastVal = keyBuffer[lastKeyIndex].value * self.curveMultiplier
 
                 let midPoint = (firstMinVal + firstMaxVal) / 2
 
@@ -166,7 +168,7 @@ extension PolySpatialParticleMinMaxCurve {
     }
 
     // Determines how quickly the size value changes from beginning to end.
-    func toSizeForce(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) -> Float {
+    func toSizeForce(_ keyBuffer: FlatbufferVector<PolySpatialKeyframe>) -> Float {
         switch self.mode {
             case .constant:
                 // Default values for size mult and size force for a constant unchanging value.
@@ -179,14 +181,14 @@ extension PolySpatialParticleMinMaxCurve {
                 let firstKeyIndex = Int(self.minCurveStartIndex)
 
                 // This is inexact math, but essentially, force determines how quickly particles go from initial value to end value, the higher it is the faster it evolves. Max is roughly around 100, and min is as close to 0 as possible, but not negative. The curve key tangents can be somewhat mapped to that.
-                var rate = keyBuffer![firstKeyIndex].outTangent
+                var rate = keyBuffer[firstKeyIndex].outTangent
                 rate = rate <= 0 ? 1 : (1 / rate)
 
                 return rate
             case .randomBetweenTwoCurves:
                 let minFirstKeyIndex = Int(self.minCurveStartIndex)
 
-                var rate = keyBuffer![minFirstKeyIndex].outTangent
+                var rate = keyBuffer[minFirstKeyIndex].outTangent
                 rate = rate <= 0 ? 1 : (1 / rate)
 
                 return rate
@@ -195,7 +197,7 @@ extension PolySpatialParticleMinMaxCurve {
 }
 
 extension PolySpatialParticleMinMaxCurveVector3 {
-    func rk(_ keyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) ->
+    func rk(_ keyBuffer: FlatbufferVector<PolySpatialKeyframe>) ->
     (value: SIMD3<Float>,
      valueVariation: SIMD3<Float>) {
         let x = self.x!.getValueAndVariation(keyBuffer)
@@ -213,8 +215,8 @@ extension PolySpatialParticleMinMaxCurveVector3 {
 extension PolySpatialParticleMinMaxGradient {
     // Grabs the first and last alpha and color keys from a gradient.
     func GetFirstAndLastValues(
-        _ alphaKeyBuffer: UnsafeBufferPointer<PolySpatialParticleGradientAlphaKey>?,
-        _ colorKeyBuffer: UnsafeBufferPointer<PolySpatialParticleGradientColorKey>?,
+        _ alphaKeyBuffer: FlatbufferVector<PolySpatialParticleGradientAlphaKey>,
+        _ colorKeyBuffer: FlatbufferVector<PolySpatialParticleGradientColorKey>,
         _ gradientInfo: PolySpatialParticleGradient) -> (firstAlpha: PolySpatialParticleGradientAlphaKey,
                                                      lastAlpha: PolySpatialParticleGradientAlphaKey,
                                                      firstColor: PolySpatialParticleGradientColorKey,
@@ -225,10 +227,10 @@ extension PolySpatialParticleMinMaxGradient {
         let firstColorIndex = Int(gradientInfo.colorKeysStartIndex)
         let lastColorIndex = firstColorIndex + Int(gradientInfo.colorKeysLength - 1)
 
-        return (firstAlpha: alphaKeyBuffer![firstAlphaIndex],
-                lastAlpha: alphaKeyBuffer![lastAlphaIndex],
-                firstColor: colorKeyBuffer![firstColorIndex],
-                lastColor: colorKeyBuffer![lastColorIndex])
+        return (firstAlpha: alphaKeyBuffer[firstAlphaIndex],
+                lastAlpha: alphaKeyBuffer[lastAlphaIndex],
+                firstColor: colorKeyBuffer[firstColorIndex],
+                lastColor: colorKeyBuffer[lastColorIndex])
     }
 
     // Applies the alpha key to the color key and returns that color. This may result in unintended visual effects, especially if there are fewer alpha keys than color keys or vice-versa, but this should hold until the new API comes in.
@@ -247,8 +249,8 @@ extension PolySpatialParticleMinMaxGradient {
     static public var colorGradientTypeFadeIn: RealityFoundation.ParticleEmitterComponent.ParticleEmitter.OpacityCurve = .easeFadeIn
     static public var colorGradientTypeBellCurve: RealityFoundation.ParticleEmitterComponent.ParticleEmitter.OpacityCurve = .gradualFadeInOut
 
-    func rk(_ alphaKeyBuffer: UnsafeBufferPointer<PolySpatialParticleGradientAlphaKey>?,
-            _ colorKeyBuffer: UnsafeBufferPointer<PolySpatialParticleGradientColorKey>?,
+    func rk(_ alphaKeyBuffer: FlatbufferVector<PolySpatialParticleGradientAlphaKey>,
+            _ colorKeyBuffer: FlatbufferVector<PolySpatialParticleGradientColorKey>,
             _ emitter: inout ParticleEmitterComponent.ParticleEmitter) ->
                 (color: ParticleEmitterComponent.ParticleEmitter.ParticleColor,
                  colorEvoPower: Float) {

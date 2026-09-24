@@ -87,7 +87,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
                 let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
                 if count > 0 {
                     let propertyValue = ConvertPolySpatialVec4VectorToFloat4(
-                        materialDef.vector4Properties(at: Int32(offset))!)
+                        materialDef.vector4Properties[offset])
                     try? material.setParameter(
                         handle: handle,
                         value: shaderGraph.vectorIsVector2[index] ?
@@ -103,7 +103,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
             for handle in shaderGraph.colorHandles {
                 let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
                 if count > 0 {
-                    let propertyValue = materialDef.colorProperties(at: Int32(offset))!.cgColor()
+                    let propertyValue = materialDef.colorProperties[offset].cgColor()
                     try? material.setParameter(handle: handle, value: .color(propertyValue))
                     setParams.insert(handle)
                     offset += Int(count)
@@ -117,7 +117,7 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
                 let count = materialDef.propertyArrayCounts[propertyArrayCountIndex]
                 if count > 0 {
                     let propertyValue = ConvertPolySpatialMatrix4x4ToFloat4x4(
-                        materialDef.matrix4x4Properties(at: Int32(offset))!)
+                        materialDef.matrix4x4Properties[offset])
                     try? material.setParameter(
                         handle: handle, value: shaderGraph.matrixValueCreators[index](propertyValue))
                     setParams.insert(handle)
@@ -134,11 +134,11 @@ class ValidShaderGraphInstance: ShaderGraphInstance {
                     setTextureParam(
                         handle,
                         PolySpatialRealityKit.TextureParam(
-                            materialDef.textureProperties(at: Int32(offset))!.id, shaderGraph.textureSizeHandles[index]))
+                            materialDef.textureProperties[offset].id, shaderGraph.textureSizeHandles[index]))
 
                     if let transformHandle = shaderGraph.textureTransformHandles[index] {
                         let propertyValue = ConvertPolySpatialVec4VectorToFloat4(
-                            materialDef.textureTransformProperties(at: Int32(offset))!)
+                            materialDef.textureTransformProperties[offset])
                         try? material.setParameter(handle: transformHandle, value: .simd4Float(propertyValue))
                     }
                     setParams.insert(handle)

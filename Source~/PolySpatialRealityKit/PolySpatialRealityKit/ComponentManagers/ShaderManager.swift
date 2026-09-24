@@ -127,32 +127,32 @@ class ShaderManager {
     }
 
     internal func SetShaderGlobalPropertyMap(_ shaderGlobalPropertyMap: PolySpatialShaderGlobalPropertyMap) {
-        shaderGlobalFloatProperties = (0..<shaderGlobalPropertyMap.floatPropertiesCount).map {
-            .init(shaderGlobalPropertyMap.floatProperties(at: $0)!, .float(0.0))
+        shaderGlobalFloatProperties = (0..<shaderGlobalPropertyMap.floatProperties.count).map {
+            .init(shaderGlobalPropertyMap.floatProperties[$0]!, .float(0.0))
         }
-        shaderGlobalIntegerProperties = (0..<shaderGlobalPropertyMap.integerPropertiesCount).map {
-            .init(shaderGlobalPropertyMap.integerProperties(at: $0)!, .int(0))
+        shaderGlobalIntegerProperties = (0..<shaderGlobalPropertyMap.integerProperties.count).map {
+            .init(shaderGlobalPropertyMap.integerProperties[$0]!, .int(0))
         }
-        shaderGlobalVectorProperties = (0..<shaderGlobalPropertyMap.vectorPropertiesCount).map {
-            .init(shaderGlobalPropertyMap.vectorProperties(at: $0)!, .simd4Float(.zero))
+        shaderGlobalVectorProperties = (0..<shaderGlobalPropertyMap.vectorProperties.count).map {
+            .init(shaderGlobalPropertyMap.vectorProperties[$0]!, .simd4Float(.zero))
         }
-        shaderGlobalColorProperties = (0..<shaderGlobalPropertyMap.colorPropertiesCount).map {
-            .init(shaderGlobalPropertyMap.colorProperties(at: $0)!, .color(UIColor.black))
+        shaderGlobalColorProperties = (0..<shaderGlobalPropertyMap.colorProperties.count).map {
+            .init(shaderGlobalPropertyMap.colorProperties[$0]!, .color(UIColor.black))
         }
-        shaderGlobalMatrixProperties = (0..<shaderGlobalPropertyMap.matrixPropertiesCount).map {
-            .init(shaderGlobalPropertyMap.matrixProperties(at: $0)!, .float4x4(.init()))
+        shaderGlobalMatrixProperties = (0..<shaderGlobalPropertyMap.matrixProperties.count).map {
+            .init(shaderGlobalPropertyMap.matrixProperties[$0]!, .float4x4(.init()))
         }
-        shaderGlobalTextureProperties = (0..<shaderGlobalPropertyMap.texturePropertiesCount).map {
-            .init(shaderGlobalPropertyMap.textureProperties(at: $0)!, .textureResource(
+        shaderGlobalTextureProperties = (0..<shaderGlobalPropertyMap.textureProperties.count).map {
+            .init(shaderGlobalPropertyMap.textureProperties[$0]!, .textureResource(
                 PolySpatialRealityKit.instance.GetTextureAssetForId(
                     PolySpatialAssetID.invalidAssetId).texture.resource))
         }
-        shaderGlobalTextureSizeProperties = (0..<shaderGlobalPropertyMap.texturePropertiesCount).map {
+        shaderGlobalTextureSizeProperties = (0..<shaderGlobalPropertyMap.textureProperties.count).map {
             .init(ShaderManager.getTextureSizePropertyName(
-                shaderGlobalPropertyMap.textureProperties(at: $0)!), .simd3Float(.zero))
+                shaderGlobalPropertyMap.textureProperties[$0]!), .simd3Float(.zero))
         }
-        shaderGlobalKeywordProperties = (0..<shaderGlobalPropertyMap.keywordsCount).map {
-            .init(shaderGlobalPropertyMap.keywords(at: $0)!, .bool(false))
+        shaderGlobalKeywordProperties = (0..<shaderGlobalPropertyMap.keywords.count).map {
+            .init(shaderGlobalPropertyMap.keywords[$0]!, .bool(false))
         }
         shaderGlobalProperties = shaderGlobalFloatProperties + shaderGlobalIntegerProperties +
             shaderGlobalVectorProperties + shaderGlobalColorProperties + shaderGlobalMatrixProperties +
@@ -169,47 +169,57 @@ class ShaderManager {
 
     internal func SetShaderGlobalPropertyValues(_ shaderGlobalPropertyValues: PolySpatialShaderGlobalPropertyValues) {
         do {
-            var offset = Int32(0)
+            let counts = shaderGlobalPropertyValues.floatPropertyArrayCounts
+            let values = shaderGlobalPropertyValues.floatProperties
+            var offset = 0
             for (index, property) in shaderGlobalFloatProperties.enumerated() {
-                let count = shaderGlobalPropertyValues.floatPropertyArrayCounts[index]
-                property.setFloat(shaderGlobalPropertyValues.floatProperties(at: offset))
-                offset += count
+                property.setFloat(values[offset])
+                offset += Int(counts[index])
             }
-            assert(offset == shaderGlobalPropertyValues.floatPropertiesCount)
-        }
-        for (index, property) in shaderGlobalIntegerProperties.enumerated() {
-            property.setInteger(shaderGlobalPropertyValues.integerProperties(at: Int32(index)))
+            assert(offset == values.count)
         }
         do {
-            var offset = Int32(0)
+            let values = shaderGlobalPropertyValues.integerProperties
+            for (index, property) in shaderGlobalIntegerProperties.enumerated() {
+                property.setInteger(values[index])
+            }
+        }
+        do {
+            let counts = shaderGlobalPropertyValues.vectorPropertyArrayCounts
+            let values = shaderGlobalPropertyValues.vectorProperties
+            var offset = 0
             for (index, property) in shaderGlobalVectorProperties.enumerated() {
-                let count = shaderGlobalPropertyValues.vectorPropertyArrayCounts[index]
-                property.setVector4(ConvertPolySpatialVec4VectorToFloat4(
-                    shaderGlobalPropertyValues.vectorProperties(at: offset)!))
-                offset += count
+                property.setVector4(ConvertPolySpatialVec4VectorToFloat4(values[offset]))
+                offset += Int(counts[index])
             }
-            assert(offset == shaderGlobalPropertyValues.vectorPropertiesCount)
-        }
-        for (index, property) in shaderGlobalColorProperties.enumerated() {
-            property.setColor(shaderGlobalPropertyValues.colorProperties(at: Int32(index))!.cgColor())
+            assert(offset == values.count)
         }
         do {
-            var offset = Int32(0)
-            for (index, property) in shaderGlobalMatrixProperties.enumerated() {
-                let count = shaderGlobalPropertyValues.matrixPropertyArrayCounts[index]
-                property.setMatrix(ConvertPolySpatialMatrix4x4ToFloat4x4(
-                    shaderGlobalPropertyValues.matrixProperties(at: offset)!))
-                offset += count
+            let values = shaderGlobalPropertyValues.colorProperties
+            for (index, property) in shaderGlobalColorProperties.enumerated() {
+                property.setColor(values[index].cgColor())
             }
-            assert(offset == shaderGlobalPropertyValues.matrixPropertiesCount)
         }
-        for (index, property) in shaderGlobalTextureProperties.enumerated() {
-            property.setTexture(shaderGlobalPropertyValues.textureProperties(at: Int32(index))!.id,
-                shaderGlobalTextureSizeProperties[index])
+        do {
+            let counts = shaderGlobalPropertyValues.matrixPropertyArrayCounts
+            let values = shaderGlobalPropertyValues.matrixProperties
+            var offset = 0
+            for (index, property) in shaderGlobalMatrixProperties.enumerated() {
+                property.setMatrix(ConvertPolySpatialMatrix4x4ToFloat4x4(values[offset]))
+                offset += Int(counts[index])
+            }
+            assert(offset == values.count)
+        }
+        do {
+            let values = shaderGlobalPropertyValues.textureProperties
+            for (index, property) in shaderGlobalTextureProperties.enumerated() {
+                property.setTexture(values[index].id, shaderGlobalTextureSizeProperties[index])
+            }
         }
         globallyEnabledKeywordParams.removeAll(keepingCapacity: true)
+        let keywordValues = shaderGlobalPropertyValues.keywordValues
         for (index, property) in shaderGlobalKeywordProperties.enumerated() {
-            let keywordValue = shaderGlobalPropertyValues.keywordValues(at: Int32(index))
+            let keywordValue = keywordValues[index]
             property.setBool(keywordValue)
 
             // Store the value so that instances can combine local and global state.

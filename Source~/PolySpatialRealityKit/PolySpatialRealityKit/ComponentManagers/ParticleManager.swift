@@ -1,5 +1,7 @@
 import Foundation
 import RealityKit
+@_implementationOnly
+import FlatBuffers
 
 @MainActor
 class ParticleManager {
@@ -57,19 +59,19 @@ class ParticleManager {
         // Instantiate a Vfx mesh backed by mesh & material(s)
         guard let renderData = particleSystem.renderData,
                 let meshId = renderData.meshId,
-                let materialIds = renderData.materialIdsAsBuffer else {
+                !renderData.materialIds.isEmpty else {
             PolySpatialRealityKit.instance.LogError("Set Particle Emitter Component without having renderData, meshId or materialIds.")
             return
         }
 
         if meshId != PolySpatialAssetID.invalidAssetId {
             let backingEntity = getOrCreateParticleBackingEntity(entity)
-            backingEntity.setRenderMeshAndMaterials(meshId, Array(materialIds), renderData.shadowCastingMode != .off)
+            backingEntity.setRenderMeshAndMaterials(meshId, Array(renderData.materialIds), renderData.shadowCastingMode != .off)
         }
         if let trailRenderer = particleSystem.trailRenderData {
             let backingEntity = getOrCreateTrailBackingEntity(entity)
             backingEntity.setRenderMeshAndMaterials(
-                trailRenderer.meshId!, Array(trailRenderer.materialIdsAsBuffer!), renderData.shadowCastingMode != .off)
+                trailRenderer.meshId!, Array(trailRenderer.materialIds), renderData.shadowCastingMode != .off)
         } else {
             // Remove trail entity if no trail data as it was removed
             removeTrailBackingEntity(entity)
@@ -84,7 +86,7 @@ class ParticleManager {
         }
 
         guard let renderData = particleSystem.renderData,
-                let materialIds = renderData.materialIdsAsBuffer else {
+                !renderData.materialIds.isEmpty else {
             PolySpatialRealityKit.instance.LogError("Set Particle Emitter Component without having renderData, meshId or materialIds.")
             return
         }
@@ -93,7 +95,7 @@ class ParticleManager {
         if let particleMesh = MeshResource.getOrCreateMeshToSupportSize(vertexCount: particleSystem.particleVertexCount) {
             let renderInfo = PolySpatialComponents.RenderInfo()
             renderInfo.meshSource = .resource(particleMesh)
-            renderInfo.materialIds = .init(materialIds)
+            renderInfo.materialIds = .init(renderData.materialIds)
             renderInfo.castShadows = renderData.shadowCastingMode != .off
             renderInfo.boundsMargin = max(max(boundsExtent.x, boundsExtent.y), boundsExtent.z)
             getOrCreateParticleBackingEntity(entity).setRenderInfo(renderInfo)
@@ -179,9 +181,9 @@ class ParticleManager {
                 break
         }
 
-        let curveKeyBuffer = particleSystem.curveKeyBufferAsBuffer
-        let gradientAlphaKeyBuffer = particleSystem.gradientAlphaKeyBufferAsBuffer
-        let gradientColorKeyBuffer = particleSystem.gradientColorKeyBufferAsBuffer
+        let curveKeyBuffer = particleSystem.curveKeyBuffer
+        let gradientAlphaKeyBuffer = particleSystem.gradientAlphaKeyBuffer
+        let gradientColorKeyBuffer = particleSystem.gradientColorKeyBuffer
 
         let mainModule = particleSystem.main!
         let lifeSpan = mainModule.startLifetime.getValueAndVariation(curveKeyBuffer)
@@ -284,12 +286,12 @@ class ParticleManager {
         removeSubEmitterDatum(entity.unityId)
 
         component.spawnedEmitter = nil
-        if particleSystem.subEmittersCount > 0 {
-            if particleSystem.subEmittersCount > 1 {
+        if particleSystem.subEmitters.count > 0 {
+            if particleSystem.subEmitters.count > 1 {
                 PolySpatialRealityKit.LogWarning(
                     "Only one subemitter for particle system \(entity.unityId) is supported in RK right now.")
             }
-            var subEmitterDatum = particleSystem.subEmitters(at: 0)!
+            var subEmitterDatum = particleSystem.subEmitters[0]
             if subEmitterDatum.id.isValid {
                 // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
                 subEmitterDatum = .init(
@@ -339,7 +341,8 @@ class ParticleManager {
             emitter.stretchFactor = 0.0
 
             if let renderData = particleSystem.renderData {
-               if let material = PolySpatialRealityKit.instance.GetVfXMaterialForID(renderData.materialIds(at: 0)!) {
+               if let materialId = renderData.materialIds.first,
+                  let material = PolySpatialRealityKit.instance.GetVfXMaterialForID(materialId) {
                     // The particle material list is needed to side-step the issue of figuring out how to extract textures from each of the different possible RK material types. For particles, all we really need is the texture and some other pertinent info like blend mode.
 
                    // TODO (LXR-3590): We should be updating the emitter image when the texture asset changes.
@@ -369,7 +372,7 @@ class ParticleManager {
 
                 } else {
                     PolySpatialRealityKit.instance.LogWarning(
-                        "No material found for \(entity.unityId) and for material id \(renderData.materialIds(at: 0) ?? PolySpatialAssetID()).")
+                        "No material found for \(entity.unityId) and for material id \(renderData.materialIds.first ?? PolySpatialAssetID()).")
                 }
                 particleEntity.setCastShadows(renderData.shadowCastingMode != .off)
             }
@@ -507,7 +510,7 @@ class ParticleManager {
         _ source: PolySpatialParticleSystemData,
         _ component: inout ParticleEmitterComponent,
         _ emitter: inout ParticleEmitterComponent.ParticleEmitter,
-        _ curveKeyBuffer: UnsafeBufferPointer<PolySpatialKeyframe>?) {
+        _ curveKeyBuffer: FlatbufferVector<PolySpatialKeyframe>) {
         // !! Handle shape module first before handling speed and velocityOverLifetime if it is available - the initial emitter direction is closely linked with the emitter shape !!
 
         // Set a default shape if user never specifies emitter shape module.

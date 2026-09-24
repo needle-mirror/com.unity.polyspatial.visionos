@@ -715,50 +715,15 @@ extension PolySpatialRealityKit {
     func CreateShaderPropertyMapAsset(_ id: PolySpatialAssetID, _ data: UnsafePointer<PolySpatialShaderPropertyMapData>?) {
         let polyspatialPropertyMap = data!.pointee
 
-        var floatProperties = [String](repeating: "", count: Int(polyspatialPropertyMap.floatPropertiesCount))
-        for i in 0..<polyspatialPropertyMap.floatPropertiesCount {
-            floatProperties[Int(i)] = polyspatialPropertyMap.floatProperties(at: i)!
-        }
-
-        var intProperties = [String](repeating: "", count: Int(polyspatialPropertyMap.intPropertiesCount))
-        for i in 0..<polyspatialPropertyMap.intPropertiesCount {
-            intProperties[Int(i)] = polyspatialPropertyMap.intProperties(at: i)!
-        }
-
-        var vector4Properties = [String](repeating: "", count: Int(polyspatialPropertyMap.vector4PropertiesCount))
-        for i in 0..<polyspatialPropertyMap.vector4PropertiesCount {
-            vector4Properties[Int(i)] = polyspatialPropertyMap.vector4Properties(at: i)!
-        }
-
-        var colorProperties = [String](repeating: "", count: Int(polyspatialPropertyMap.colorPropertiesCount))
-        for i in 0..<polyspatialPropertyMap.colorPropertiesCount {
-            colorProperties[Int(i)] = polyspatialPropertyMap.colorProperties(at: i)!
-        }
-
-        var matrix4x4Properties = [String](repeating: "", count: Int(polyspatialPropertyMap.matrix4x4PropertiesCount))
-        for i in 0..<polyspatialPropertyMap.matrix4x4PropertiesCount {
-            matrix4x4Properties[Int(i)] = polyspatialPropertyMap.matrix4x4Properties(at: i)!
-        }
-
-        var textureProperties = [String](repeating: "", count: Int(polyspatialPropertyMap.texturePropertiesCount))
-        for i in 0..<polyspatialPropertyMap.texturePropertiesCount {
-            textureProperties[Int(i)] = polyspatialPropertyMap.textureProperties(at: i)!
-        }
-
-        var texturePropertyTransformsEnabled = [Bool](repeating: false, count: Int(polyspatialPropertyMap.texturePropertyTransformsEnabledCount))
-        for i in 0..<polyspatialPropertyMap.texturePropertyTransformsEnabledCount {
-            texturePropertyTransformsEnabled[Int(i)] = polyspatialPropertyMap.texturePropertyTransformsEnabled(at: i)
-        }
-
-        var keywords = [String](repeating: "", count: Int(polyspatialPropertyMap.keywordsCount))
-        for i in 0..<polyspatialPropertyMap.keywordsCount {
-            keywords[Int(i)] = polyspatialPropertyMap.keywords(at: i)!
-        }
-
-        var keywordsOverridable = [Bool](repeating: false, count: Int(polyspatialPropertyMap.keywordsOverridableCount))
-        for i in 0..<polyspatialPropertyMap.keywordsOverridableCount {
-            keywordsOverridable[Int(i)] = polyspatialPropertyMap.keywordsOverridable(at: i)
-        }
+        let floatProperties = polyspatialPropertyMap.floatProperties.map { $0! }
+        let intProperties = polyspatialPropertyMap.intProperties.map { $0! }
+        let vector4Properties = polyspatialPropertyMap.vector4Properties.map { $0! }
+        let colorProperties = polyspatialPropertyMap.colorProperties.map { $0! }
+        let matrix4x4Properties = polyspatialPropertyMap.matrix4x4Properties.map { $0! }
+        let textureProperties = polyspatialPropertyMap.textureProperties.map { $0! }
+        let texturePropertyTransformsEnabled = Array(polyspatialPropertyMap.texturePropertyTransformsEnabled)
+        let keywords = polyspatialPropertyMap.keywords.map { $0! }
+        let keywordsOverridable = Array(polyspatialPropertyMap.keywordsOverridable)
 
         var readsDepth = true
         if polyspatialPropertyMap.zTestMode == .always {

@@ -17,7 +17,7 @@ extension PolySpatialRealityKit {
         _ sortingGroupInfo: UnsafeMutablePointer<PolySpatialSortingGroupData>?) {
         let info = sortingGroupInfo!.pointee
 
-        if (info.hasMembers) {
+        if (!info.members.isEmpty) {
             // Always create new sort group - sort groups cannot be modified.
             if (customSortGroup[id] != nil) {
                 CleanUpSortingGroups(id)
@@ -25,7 +25,7 @@ extension PolySpatialRealityKit {
 
             let sortGroup: ModelSortGroup = .init(depthPass: info.depthPass.rk())
 
-            for member in info.membersAsBuffer! {
+            for member in info.members {
                 // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
                 let remappedMember = PolySpatialInstanceID(id: member.renderer.id, hostId: id.hostId, viewSubgraphIndex: id.viewSubgraphIndex)
                 guard let rendererEntity = TryGetEntity(remappedMember) else {

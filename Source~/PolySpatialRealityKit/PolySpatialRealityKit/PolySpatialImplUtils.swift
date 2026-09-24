@@ -56,7 +56,7 @@ extension PolySpatialRealityKit {
 
     func LogErrorWithMarkup(_ msg: String,
                             _ markupTypes: [Unity_PolySpatial_Internals_LogMarkupType],
-                            _ markupValues: [Int64],
+                            _ markupValues: [PolySpatialEntityID],
                             _ abort: Bool? = nil)
     {
         assert(markupTypes.count >= 1, "If there is no markup use LogError instead.")
@@ -66,7 +66,7 @@ extension PolySpatialRealityKit {
 
         let builderMsg = builder.create(string:msg)
         let vectorTypes = builder.createVector(markupTypes)
-        let vectorValues = builder.createVector(markupValues)
+        let vectorValues = builder.createVector(markupValues.map { Int64(bitPattern: $0.value) })
 
         let logWithMarkupOffset = PolySpatialLogWithMarkup.startLogWithMarkup(&builder)
         PolySpatialLogWithMarkup.add(log:builderMsg,  &builder)
@@ -104,7 +104,7 @@ extension PolySpatialRealityKit {
     }
 
     func SendHostCommand(_ command: PolySpatialHostCommand, _ a1: ByteBuffer) {
-        a1.underlyingBytes.withUnsafeBytes {
+        a1.withUnsafeBytes {
             var args: [UnsafeRawPointer?] = [$0.baseAddress!]
             var argSizes: [UInt32] = [UInt32(a1.size)]
             simHostAPI.SendHostCommand(command.rawValue, 1, &args, &argSizes)
@@ -318,7 +318,7 @@ extension PolySpatialRealityKit {
         a2 = .init(start: args![1]?.bindMemory(to: T2.self, capacity: 1), count: Int(argSizes![1]) / MemoryLayout<T2>.size)
         a3 = .init(start: args![2]?.bindMemory(to: T3.self, capacity: 1), count: Int(argSizes![2]) / MemoryLayout<T3>.size)
     }
-    
+
     func ExtractArgs<T2, T3>(_ argCount: Int32, _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?, _ argSizes: UnsafeMutablePointer<UInt32>?,
                                          _ a1: inout UnsafeRawBufferPointer?, _ a2: inout UnsafeMutableBufferPointer<T2>?,
                                          _ a3: inout UnsafeMutableBufferPointer<T3>?) {
@@ -419,5 +419,14 @@ extension PolySpatialRealityKit {
 extension ByteBuffer {
     init(for buf: UnsafeMutableBufferPointer<UInt8>?) {
         self = ByteBuffer(assumingMemoryBound: buf!.baseAddress!, capacity: buf!.count)
+    }
+}
+
+extension UnsafeRawBufferPointer {
+    // Typed view over the raw slice a generated withUnsafePointerTo* accessor yields. Size it from the
+    // element count the accessor passes alongside the pointer, never from the raw buffer's own count:
+    // nothing in this path bounds-checks, so a wrong count is a silent out-of-bounds read.
+    func bound<T>(to type: T.Type, count: Int) -> UnsafeBufferPointer<T> {
+        .init(start: baseAddress!.bindMemory(to: type, capacity: count), count: count)
     }
 }

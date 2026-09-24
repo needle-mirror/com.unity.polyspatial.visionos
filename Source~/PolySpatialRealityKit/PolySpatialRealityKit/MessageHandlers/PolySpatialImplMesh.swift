@@ -817,26 +817,29 @@ extension PolySpatialRealityKit {
         let unityMesh = mesh!.pointee
         let parts = GenerateParts(id, mesh, ModifyParts)
         let contents = GenerateContents(id, mesh, parts)
-        let numUVSets = Int(unityMesh.texCoordsCount)
+        let numUVSets = unityMesh.texCoords.count
 
         // If there are no vertices, there are no buffers; let's also assume there are no blend shapes,
         // since we use the presence of blend shapes to determine whether we need to blend
         // (which is pointless without buffers).
         let vertexCount = parts.map { $0.positions.count }.reduce(0, +)
-        let blendShapesCount = (vertexCount == 0) ? 0 : unityMesh.blendShapesCount
+        let blendShapesCount = (vertexCount == 0) ? 0 : unityMesh.blendShapes.count
         let blendShapes: [BlendShape] = (0..<blendShapesCount).map { blendShapeIndex in
-            let unityBlendShape = unityMesh.blendShapes(at: blendShapeIndex)!
-            return .init(unityBlendShape.name!, (0..<unityBlendShape.framesCount).map { frameIndex in
-                let unityFrame = unityBlendShape.frames(at: frameIndex)!
+            let unityBlendShape = unityMesh.blendShapes[blendShapeIndex]
+            return .init(unityBlendShape.name!, (0..<unityBlendShape.frames.count).map { frameIndex in
+                let unityFrame = unityBlendShape.frames[frameIndex]
                 return .init(
                     unityFrame.weight,
-                    unityFrame.deltaVerticesAsBuffer!.map { $0.swapCoordinateSystem() },
-                    unityFrame.deltaNormalsAsBuffer!.map { $0.swapCoordinateSystem() },
-                    unityFrame.deltaTangentsAsBuffer!.map { $0.swapCoordinateSystem() })
+                    unityFrame.withUnsafePointerToDeltaVertices { raw, n in
+                        raw.bound(to: PolySpatialVec3.self, count: n).map { $0.swapCoordinateSystem() } }!,
+                    unityFrame.withUnsafePointerToDeltaNormals { raw, n in
+                        raw.bound(to: PolySpatialVec3.self, count: n).map { $0.swapCoordinateSystem() } }!,
+                    unityFrame.withUnsafePointerToDeltaTangents { raw, n in
+                        raw.bound(to: PolySpatialVec3.self, count: n).map { $0.swapCoordinateSystem() } }!)
             })
         }
         
-        let bindPosesCount = Int(unityMesh.bindPosesCount)
+        let bindPosesCount = unityMesh.bindPoses.count
 
         // TODO (LXR-2993): Figure out why replacing the MeshResource/ModelComponent is causing a performance
         // regression with (at least) bake to mesh particles, since that is the approach that Apple recommended.
@@ -878,7 +881,7 @@ extension PolySpatialRealityKit {
 
         var numUVSets = 0
         var vertexAttributeDescriptors: [PolySpatialVertexAttributeDescriptor] =
-            .init(unityMesh.vertexAttributeDescriptorsAsBuffer!)
+            .init(unityMesh.vertexAttributeDescriptors)
         var vertexLayouts: [LowLevelMesh.Layout] = []
         var sourceStrides: [Int] = []
         var vertexAttributes: [LowLevelMesh.Attribute] = []
@@ -937,7 +940,7 @@ extension PolySpatialRealityKit {
         var parts: [LowLevelMesh.Part] = []
         var computeShaderSubMeshes: [ComputeShaderSubMesh] = []
         var vertexRanges: [Range<Int>] = []
-        for subMesh in unityMesh.subMeshesAsBuffer! {
+        for subMesh in unityMesh.subMeshes {
             indexCapacity = max(indexCapacity, UInt32(subMesh.indexStart + subMesh.indexCount))
             parts.append(LowLevelMesh.Part(
                 indexOffset: Int(subMesh.indexStart) * MemoryLayout<UInt32>.size,
@@ -1217,33 +1220,36 @@ extension PolySpatialRealityKit {
                               _ mesh: UnsafePointer<PolySpatialMesh>?,
                               _ part: inout MeshResource.Part) {
         let unityMesh = mesh!.pointee
-        let vertexCount: Int = Int(unityMesh.verticesCount)
+        let vertexCount: Int = unityMesh.vertices.count
 
         // Optionally set up the start of a skeleton and cache the info. The skinned mesh will be finished later when data pertaining to the transform hierarchy comes in.
-        if unityMesh.boneWeightsCount > 0 {
+        if unityMesh.boneWeights.count > 0 {
             // Handle bone weights/joint influences per bone. A buffer is created to allow for a cast from UInt8 to Int32.
-            let boneWeightsPerVertex = unityMesh.bonesPerVertexAsBuffer
-            let boneWeights = unityMesh.boneWeightsAsBuffer
+            let boneWeightsPerVertex = unityMesh.bonesPerVertex
 
             // Unity supports a variable number of influences per vertex, and provides an array to specify the number of influences for each vertex. Since RK wants a fixed number of influences per vertex, we'll need to pad the bone weights array from Unity with additional 0's to indicate that those influences are unused.
-            let maxInfluencesPerVertex = Int(boneWeightsPerVertex!.max() ?? 0)
+            let maxInfluencesPerVertex = Int(boneWeightsPerVertex.max() ?? 0)
             guard maxInfluencesPerVertex > 0 else {
                 PolySpatialRealityKit.instance.LogException("Max number of bone weights per vertex in a skinned mesh was 0.")
                 return
             }
 
-            var jointBuffer = [MeshJointInfluence](repeating: MeshJointInfluence(jointIndex: 0, weight: 0), count: maxInfluencesPerVertex * vertexCount)
-            var boneWeightsIndex = 0
-            for (index, influencesPerVertex) in boneWeightsPerVertex!.enumerated() {
-                // vertexIndex will give us the index associated with each vertex in the array.
-                // For example, if maxInfluencesPerVertex is 4, this will give us 0...4...8, then influenceIndex will give us the index within each set of 4 influences per vertex. The bone weights index will keep track of the packed bone weights in the unity boneWeights array.
-                let vertexIndex = maxInfluencesPerVertex * index
+            let jointBuffer = unityMesh.withUnsafePointerToBoneWeights { raw, n -> [MeshJointInfluence] in
+                let boneWeights = raw.bound(to: PolySpatialBoneWeight.self, count: n)
+                var jointBuffer = [MeshJointInfluence](repeating: MeshJointInfluence(jointIndex: 0, weight: 0), count: maxInfluencesPerVertex * vertexCount)
+                var boneWeightsIndex = 0
+                for (index, influencesPerVertex) in boneWeightsPerVertex.enumerated() {
+                    // vertexIndex will give us the index associated with each vertex in the array.
+                    // For example, if maxInfluencesPerVertex is 4, this will give us 0...4...8, then influenceIndex will give us the index within each set of 4 influences per vertex. The bone weights index will keep track of the packed bone weights in the unity boneWeights array.
+                    let vertexIndex = maxInfluencesPerVertex * index
 
-                for influenceIndex in 0...influencesPerVertex - 1 {
-                    jointBuffer[vertexIndex + Int(influenceIndex)] = boneWeights![boneWeightsIndex].rk()
-                    boneWeightsIndex += 1
+                    for influenceIndex in 0...influencesPerVertex - 1 {
+                        jointBuffer[vertexIndex + Int(influenceIndex)] = boneWeights[boneWeightsIndex].rk()
+                        boneWeightsIndex += 1
+                    }
                 }
-            }
+                return jointBuffer
+            }!
 
             part.skeletonID = skinnedMeshManager.GenerateSkeletonName(id)
             part.jointInfluences = MeshResource.JointInfluences(influences: MeshBuffer.init(jointBuffer), influencesPerVertex: maxInfluencesPerVertex)
@@ -1254,16 +1260,9 @@ extension PolySpatialRealityKit {
         _ id: PolySpatialAssetID, _ mesh: UnsafePointer<PolySpatialMesh>?, _ asset: MeshAsset) {
         let unityMesh = mesh!.pointee
 
-        if unityMesh.bindPosesCount > 0 {
-            let bindPoseCount = Int(unityMesh.bindPosesCount)
-            let bindPoses = unityMesh.bindPosesAsBuffer
-            var bindPoseBuffer = [simd_float4x4](repeating: matrix_identity_float4x4, count: bindPoseCount)
-
-            for i in 0..<bindPoseCount {
-                bindPoseBuffer[i] = bindPoses![i].swapCoordinateSystem()
-            }
-
-            skinnedMeshManager.CacheSkinnedMeshContents(id, asset, bindPoseBuffer)
+        if unityMesh.bindPoses.count > 0 {
+            skinnedMeshManager.CacheSkinnedMeshContents(
+                id, asset, unityMesh.bindPoses.map { $0.swapCoordinateSystem() })
         }
     }
 
@@ -1274,22 +1273,21 @@ extension PolySpatialRealityKit {
         assert(id.isValid)
         let unityMesh = mesh!.pointee
 
-        let vertexCount: Int = Int(unityMesh.verticesCount)
-        let subMeshesCount: Int = Int(unityMesh.subMeshesCount)
-        let vertices = unityMesh.verticesAsBuffer!
-        let subMeshes = unityMesh.subMeshesAsBuffer ?? .init(start: nil, count: 0)
-        let norms = unityMesh.normalsAsBuffer ?? .init(start: nil, count: 0)
-        let tangents = unityMesh.tangentsAsBuffer ?? .init(start: nil, count: 0)
-        let colors = unityMesh.colorsAsBuffer ?? .init(start: nil, count: 0)
+        let vertexCount: Int = unityMesh.vertices.count
+        let subMeshes = unityMesh.subMeshes
+        let subMeshesCount: Int = subMeshes.count
 
         // PolySpatialVec3 is packed; simd_float3 is padded to 4-float size, so can't memcpy
         // We need to take into account coordinate space anyway
-        let positionBuffer = MeshBuffer<SIMD3<Float>>.init(.init(unsafeUninitializedCapacity: vertexCount) {
-            buffer, initializedCount in for i in 0..<vertexCount {
-                buffer[i] = vertices[i].swapCoordinateSystem()
-            }
-            initializedCount = vertexCount
-        })
+        let positionBuffer = unityMesh.withUnsafePointerToVertices { raw, n -> MeshBuffer<SIMD3<Float>> in
+            let vertices = raw.bound(to: PolySpatialVec3.self, count: n)
+            return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                buffer, initializedCount in for i in 0..<vertexCount {
+                    buffer[i] = vertices[i].swapCoordinateSystem()
+                }
+                initializedCount = vertexCount
+            })
+        }!
 
         func createTexCoord2Buffer<T: SIMD2Convertible>(_ data: UnsafeBufferPointer<T>) -> MeshBuffer<SIMD2<Float>> {
             .init(.init(unsafeUninitializedCapacity: vertexCount) {
@@ -1315,109 +1313,135 @@ extension PolySpatialRealityKit {
         var normalBuffer: MeshBuffer<SIMD3<Float>>?
 
         let supportedTexCoordCount = 2
-        let texCoordCount = min(unityMesh.texCoordsCount, Int32(supportedTexCoordCount))
+        let allTexCoords = unityMesh.texCoords
+        let texCoordCount = min(allTexCoords.count, supportedTexCoordCount)
 
-        var texCoord2Buffers: [MeshBuffer<SIMD2<Float>>?] = .init(repeating: nil, count: Int(texCoordCount))
-        var texCoord3Buffers: [MeshBuffer<SIMD3<Float>>?] = .init(repeating: nil, count: Int(texCoordCount))
-        var texCoord4Buffers: [MeshBuffer<SIMD4<Float>>?] = .init(repeating: nil, count: Int(texCoordCount))
+        var texCoord2Buffers: [MeshBuffer<SIMD2<Float>>?] = .init(repeating: nil, count: texCoordCount)
+        var texCoord3Buffers: [MeshBuffer<SIMD3<Float>>?] = .init(repeating: nil, count: texCoordCount)
+        var texCoord4Buffers: [MeshBuffer<SIMD4<Float>>?] = .init(repeating: nil, count: texCoordCount)
 
         for i in 0..<texCoordCount {
-            let texCoords = unityMesh.texCoords(at: i)
+            let texCoords = allTexCoords[i]
 
-            if texCoords!.hasData2 {
-                texCoord2Buffers[Int(i)] = createTexCoord2Buffer(texCoords!.data2AsBuffer!)
-            } else if texCoords!.hasData3 {
-                let data = texCoords!.data3AsBuffer!
-                if i == 0 {
-                    // UV0 must be float2
-                    texCoord2Buffers[Int(i)] = createTexCoord2Buffer(data)
-                } else {
-                    texCoord3Buffers[Int(i)] = .init(.init(unsafeUninitializedCapacity: vertexCount) {
-                        buffer, initializedCount in for j in 0..<vertexCount {
-                            // RK UVs have different Y origin
-                            buffer[j] = data[j].rkInvertYTexCoord()
-                        }
-                        initializedCount = vertexCount
-                    })
-                }
-            } else if texCoords!.hasData4 {
-                let data = texCoords!.data4AsBuffer!
-                if i == 0 {
-                    // UV0 must be float2
-                    texCoord2Buffers[Int(i)] = createTexCoord2Buffer(data)
-                } else {
-                    texCoord4Buffers[Int(i)] = .init(.init(unsafeUninitializedCapacity: vertexCount) {
-                        buffer, initializedCount in for j in 0..<vertexCount {
-                            // RK UVs have different Y origin
-                            buffer[j] = data[j].rkInvertYTexCoord()
-                        }
-                        initializedCount = vertexCount
-                    })
-                }
+            if i == 0 {
+                // UV0 must be float2, whichever width Unity sent.
+                texCoord2Buffers[i] =
+                    texCoords.withUnsafePointerToData2 {
+                        createTexCoord2Buffer($0.bound(to: PolySpatialVec2.self, count: $1)) } ??
+                    texCoords.withUnsafePointerToData3 {
+                        createTexCoord2Buffer($0.bound(to: PolySpatialVec3.self, count: $1)) } ??
+                    texCoords.withUnsafePointerToData4 {
+                        createTexCoord2Buffer($0.bound(to: PolySpatialVec4.self, count: $1)) }
+                continue
             }
-        }
 
-        if norms.count > 0 {
-            // packed vs unpacked issue, so can't memcpy
-            normalBuffer = MeshBuffer<SIMD3<Float>>.init(.init(unsafeUninitializedCapacity: vertexCount) {
-                buffer, initializedCount in for i in 0..<vertexCount {
-                    buffer[i] = norms[i].swapCoordinateSystem()
-                }
-                initializedCount = vertexCount
-            })
-        } else {
-            // Populate normal buffer with texCoord3 buffer
-            if unityMesh.texCoordsCount >= 4, let texCoords3 = unityMesh.texCoords(at: 3) {
-
-                if texCoords3.hasData2, let targetBuffer = texCoords3.data2AsBuffer {
-                    normalBuffer = createTexCoord3Buffer(targetBuffer)
-                } else if texCoords3.hasData3, let targetBuffer = texCoords3.data3AsBuffer {
-                    normalBuffer = createTexCoord3Buffer(targetBuffer)
-                } else if texCoords3.hasData4, let targetBuffer = texCoords3.data4AsBuffer {
-                    normalBuffer = createTexCoord3Buffer(targetBuffer)
-                }
+            texCoord2Buffers[i] = texCoords.withUnsafePointerToData2 {
+                createTexCoord2Buffer($0.bound(to: PolySpatialVec2.self, count: $1)) }
+            if texCoord2Buffers[i] != nil {
+                continue
             }
-        }
 
-        if tangents.count > 0 {
-            tangentBuffer = .init(.init(unsafeUninitializedCapacity: vertexCount) {
-                buffer, initializedCount in for i in 0..<vertexCount {
-                    buffer[i] = simd_make_float3(tangents[i].swapCoordinateSystem())
-                }
-                initializedCount = vertexCount
-            })
+            texCoord3Buffers[i] = texCoords.withUnsafePointerToData3 { raw, n -> MeshBuffer<SIMD3<Float>> in
+                let data = raw.bound(to: PolySpatialVec3.self, count: n)
+                return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                    buffer, initializedCount in for j in 0..<vertexCount {
+                        // RK UVs have different Y origin
+                        buffer[j] = data[j].rkInvertYTexCoord()
+                    }
+                    initializedCount = vertexCount
+                })
+            }
+            if texCoord3Buffers[i] != nil {
+                continue
+            }
 
-            if let normals = normalBuffer?.elements {
-                bitangentBuffer = .init(.init(unsafeUninitializedCapacity: vertexCount) {
-                    buffer, initializedCount in for i in 0..<vertexCount {
-                        let tangent = tangents[i].swapCoordinateSystem()
-                        buffer[i] = simd_cross(simd_make_float3(tangent), normals[i]) * tangent.w
+            texCoord4Buffers[i] = texCoords.withUnsafePointerToData4 { raw, n -> MeshBuffer<SIMD4<Float>> in
+                let data = raw.bound(to: PolySpatialVec4.self, count: n)
+                return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                    buffer, initializedCount in for j in 0..<vertexCount {
+                        // RK UVs have different Y origin
+                        buffer[j] = data[j].rkInvertYTexCoord()
                     }
                     initializedCount = vertexCount
                 })
             }
         }
-        // Populate bitangent buffer with texCoord2 buffer
-        else if unityMesh.texCoordsCount >= 3, let texCoords2 = unityMesh.texCoords(at: 2) {
-            if texCoords2.hasData2, let targetBuffer = texCoords2.data2AsBuffer {
-                bitangentBuffer = createTexCoord3Buffer(targetBuffer)
-            } else if texCoords2.hasData3, let targetBuffer = texCoords2.data3AsBuffer {
-                bitangentBuffer = createTexCoord3Buffer(targetBuffer)
-            } else if texCoords2.hasData4, let targetBuffer = texCoords2.data4AsBuffer {
-                bitangentBuffer = createTexCoord3Buffer(targetBuffer)
+
+        if unityMesh.normals.count > 0 {
+            // packed vs unpacked issue, so can't memcpy
+            normalBuffer = unityMesh.withUnsafePointerToNormals { raw, n -> MeshBuffer<SIMD3<Float>> in
+                let norms = raw.bound(to: PolySpatialVec3.self, count: n)
+                return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                    buffer, initializedCount in for i in 0..<vertexCount {
+                        buffer[i] = norms[i].swapCoordinateSystem()
+                    }
+                    initializedCount = vertexCount
+                })
             }
+        } else {
+            // Populate normal buffer with texCoord3 buffer
+            if unityMesh.texCoords.count >= 4 {
+                let texCoords3 = unityMesh.texCoords[3]
+
+                normalBuffer =
+                    texCoords3.withUnsafePointerToData2 {
+                        createTexCoord3Buffer($0.bound(to: PolySpatialVec2.self, count: $1)) } ??
+                    texCoords3.withUnsafePointerToData3 {
+                        createTexCoord3Buffer($0.bound(to: PolySpatialVec3.self, count: $1)) } ??
+                    texCoords3.withUnsafePointerToData4 {
+                        createTexCoord3Buffer($0.bound(to: PolySpatialVec4.self, count: $1)) }
+            }
+        }
+
+        if unityMesh.tangents.count > 0 {
+            tangentBuffer = unityMesh.withUnsafePointerToTangents { raw, n -> MeshBuffer<SIMD3<Float>> in
+                let tangents = raw.bound(to: PolySpatialVec4.self, count: n)
+                return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                    buffer, initializedCount in for i in 0..<vertexCount {
+                        buffer[i] = simd_make_float3(tangents[i].swapCoordinateSystem())
+                    }
+                    initializedCount = vertexCount
+                })
+            }
+
+            if let normals = normalBuffer?.elements {
+                bitangentBuffer = unityMesh.withUnsafePointerToTangents { raw, n -> MeshBuffer<SIMD3<Float>> in
+                    let tangents = raw.bound(to: PolySpatialVec4.self, count: n)
+                    return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                        buffer, initializedCount in for i in 0..<vertexCount {
+                            let tangent = tangents[i].swapCoordinateSystem()
+                            buffer[i] = simd_cross(simd_make_float3(tangent), normals[i]) * tangent.w
+                        }
+                        initializedCount = vertexCount
+                    })
+                }
+            }
+        }
+        // Populate bitangent buffer with texCoord2 buffer
+        else if unityMesh.texCoords.count >= 3 {
+            let texCoords2 = unityMesh.texCoords[2]
+            bitangentBuffer =
+                texCoords2.withUnsafePointerToData2 {
+                    createTexCoord3Buffer($0.bound(to: PolySpatialVec2.self, count: $1)) } ??
+                texCoords2.withUnsafePointerToData3 {
+                    createTexCoord3Buffer($0.bound(to: PolySpatialVec3.self, count: $1)) } ??
+                texCoords2.withUnsafePointerToData4 {
+                    createTexCoord3Buffer($0.bound(to: PolySpatialVec4.self, count: $1)) }
         }
 
         // RK seems to require this to be a float array (rather than allowing us to use the 32-bit colors directly).
         // I tried byte arrays and int32 arrays, but always ended up with RK crashing.
         var colorBuffer: MeshBuffer<SIMD4<Float>>?
-        if colors.count > 0 {
-            colorBuffer = .init(.init(unsafeUninitializedCapacity: vertexCount) {
-                buffer, initializedCount in for i in 0..<vertexCount {
-                    buffer[i] = .init(colors[i])
-                }
-                initializedCount = vertexCount
-            })
+        if unityMesh.colors.count > 0 {
+            colorBuffer = unityMesh.withUnsafePointerToColors { raw, n -> MeshBuffer<SIMD4<Float>> in
+                let colors = raw.bound(to: PolySpatialRGBA.self, count: n)
+                return .init(.init(unsafeUninitializedCapacity: vertexCount) {
+                    buffer, initializedCount in for i in 0..<vertexCount {
+                        buffer[i] = .init(colors[i])
+                    }
+                    initializedCount = vertexCount
+                })
+            }
         }
 
         var parts: [MeshResource.Part] = []
@@ -1466,37 +1490,43 @@ extension PolySpatialRealityKit {
             }
 
             if !unityMesh.indices16.isEmpty {
-                let slice = unityMesh.indices16AsBuffer![Int(subMesh.indexStart)..<(Int(subMesh.indexStart + subMesh.indexCount))]
-                let subMeshIndices = UnsafeBufferPointer<ushort>(rebasing: slice)
+                part.triangleIndices = unityMesh.withUnsafePointerToIndices16 { raw, n -> MeshBuffer<UInt32> in
+                    let slice = raw.bound(to: ushort.self, count: n)[
+                        Int(subMesh.indexStart)..<(Int(subMesh.indexStart + subMesh.indexCount))]
+                    let subMeshIndices = UnsafeBufferPointer<ushort>(rebasing: slice)
 
-                part.triangleIndices = MeshBuffer<UInt32>.init(.init(unsafeUninitializedCapacity: subMeshIndices.count) {
-                    buffer, initializedCount in
-                    var index = 0
-                    for _ in 0..<subMeshIndices.count/3 {
-                        // NOTE: swapping CW for CCW
-                        buffer[index + 0] = baseVertexIndex + UInt32(subMeshIndices[index + 0])
-                        buffer[index + 1] = baseVertexIndex + UInt32(subMeshIndices[index + 2])
-                        buffer[index + 2] = baseVertexIndex + UInt32(subMeshIndices[index + 1])
-                        index += 3
-                    }
-                    initializedCount = subMeshIndices.count
-                })
+                    return .init(.init(unsafeUninitializedCapacity: subMeshIndices.count) {
+                        buffer, initializedCount in
+                        var index = 0
+                        for _ in 0..<subMeshIndices.count/3 {
+                            // NOTE: swapping CW for CCW
+                            buffer[index + 0] = baseVertexIndex + UInt32(subMeshIndices[index + 0])
+                            buffer[index + 1] = baseVertexIndex + UInt32(subMeshIndices[index + 2])
+                            buffer[index + 2] = baseVertexIndex + UInt32(subMeshIndices[index + 1])
+                            index += 3
+                        }
+                        initializedCount = subMeshIndices.count
+                    })
+                }
             } else if !unityMesh.indices32.isEmpty {
-                let slice = unityMesh.indices32AsBuffer![Int(subMesh.indexStart)..<(Int(subMesh.indexStart + subMesh.indexCount))]
-                let subMeshIndices = UnsafeBufferPointer<uint>(rebasing: slice)
+                part.triangleIndices = unityMesh.withUnsafePointerToIndices32 { raw, n -> MeshBuffer<UInt32> in
+                    let slice = raw.bound(to: uint.self, count: n)[
+                        Int(subMesh.indexStart)..<(Int(subMesh.indexStart + subMesh.indexCount))]
+                    let subMeshIndices = UnsafeBufferPointer<uint>(rebasing: slice)
 
-                part.triangleIndices = MeshBuffer<UInt32>.init(.init(unsafeUninitializedCapacity: subMeshIndices.count) {
-                    buffer, initializedCount in
-                    var index = 0
-                    for _ in 0..<subMeshIndices.count/3 {
-                        // NOTE: swapping CW for CCW
-                        buffer[index + 0] = baseVertexIndex + UInt32(subMeshIndices[index + 0])
-                        buffer[index + 1] = baseVertexIndex + UInt32(subMeshIndices[index + 2])
-                        buffer[index + 2] = baseVertexIndex + UInt32(subMeshIndices[index + 1])
-                        index += 3
-                    }
-                    initializedCount = subMeshIndices.count
-                })
+                    return .init(.init(unsafeUninitializedCapacity: subMeshIndices.count) {
+                        buffer, initializedCount in
+                        var index = 0
+                        for _ in 0..<subMeshIndices.count/3 {
+                            // NOTE: swapping CW for CCW
+                            buffer[index + 0] = baseVertexIndex + UInt32(subMeshIndices[index + 0])
+                            buffer[index + 1] = baseVertexIndex + UInt32(subMeshIndices[index + 2])
+                            buffer[index + 2] = baseVertexIndex + UInt32(subMeshIndices[index + 1])
+                            index += 3
+                        }
+                        initializedCount = subMeshIndices.count
+                    })
+                }
             }
 
             ModifyPart(id, mesh, &part)

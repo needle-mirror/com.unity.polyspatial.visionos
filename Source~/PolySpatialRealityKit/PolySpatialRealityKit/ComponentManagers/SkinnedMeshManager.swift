@@ -142,7 +142,7 @@ class SkinnedMeshManager {
                                  _ originalEntityName: String,
                                  _ skinnedMeshInstanceId: PolySpatialInstanceID,
                                  _ backingEntity: PolySpatialEntity) -> [PolySpatialInstanceID] {
-        let boneIds = info.skeletonBoneIdsAsBuffer!
+        let boneIds = info.skeletonBoneIds
 
         var skeletonBones = Array(repeating: PolySpatialInstanceID(), count: boneIds.count)
         var boneIndex = 0

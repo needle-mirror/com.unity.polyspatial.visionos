@@ -71,7 +71,7 @@ extension PolySpatialRealityKit {
         // LXR-5904: The optional dirtyRegions vector describes the changed sub-regions of the texture.
         // When absent (or empty), the entire texture is considered dirty. Partial-apply is not yet
         // implemented on this receiver, so for now we always fall back to the whole-texture path below.
-        if texdata.hasDirtyRegions && texdata.dirtyRegionsCount > 0 {
+        if texdata.dirtyRegions.count > 0 {
             // Partial-apply lands in the stacked PR (#4617). Here pixelData carries only the changed-region
             // bytes, so falling through to the whole-texture path (CFDataCreate / Metal mip mappings using the
             // full dataSize/dataOffset) would read out of bounds. Drop rather than crash — senders only emit
@@ -179,14 +179,14 @@ extension PolySpatialRealityKit {
                 case .texture2D, .renderTexture: try .init(
                     dimensions: .dimensions(width: Int(texdata.width), height: Int(texdata.height)),
                     format: .raw(pixelFormat: metalFormat),
-                    contents: .init(mipmapLevels: texdata.mipsAsBuffer!.map { mip in
+                    contents: .init(mipmapLevels: texdata.mips.map { mip in
                         .mip(unsafeBuffer: mbuf, offset: Int(mip.dataOffset), size: Int(mip.dataSize),
                             bytesPerRow: Int(mip.bytesPerRow))
                     }))
                 case .textureCube: try .init(
                     dimensions: .dimensions(faceSize: Int(texdata.width)),
                     format: .raw(pixelFormat: metalFormat),
-                    contents: .init(mipmapLevels: texdata.mipsAsBuffer!.map { mip in
+                    contents: .init(mipmapLevels: texdata.mips.map { mip in
                         .mip(slices: (0..<6).map { slice in
                             .slice(unsafeBuffer: mbuf, offset: Int(mip.dataOffset) + slice * Int(mip.bytesPerImage),
                                 size: Int(mip.bytesPerImage), bytesPerRow: Int(mip.bytesPerRow))
@@ -196,7 +196,7 @@ extension PolySpatialRealityKit {
                     dimensions: .dimensions(
                         width: Int(texdata.width), height: Int(texdata.height), length: Int(texdata.depth)),
                     format: .raw(pixelFormat: metalFormat),
-                    contents: .init(mipmapLevels: texdata.mipsAsBuffer!.map { mip in
+                    contents: .init(mipmapLevels: texdata.mips.map { mip in
                         .mip(slices: (0..<Int(texdata.depth)).map { slice in
                             .slice(unsafeBuffer: mbuf, offset: Int(mip.dataOffset) + slice * Int(mip.bytesPerImage),
                                 size: Int(mip.bytesPerImage), bytesPerRow: Int(mip.bytesPerRow))
@@ -206,7 +206,7 @@ extension PolySpatialRealityKit {
                     dimensions: .dimensions(
                         width: Int(texdata.width), height: Int(texdata.height), depth: Int(texdata.depth)),
                     format: .raw(pixelFormat: metalFormat),
-                    contents: .init(mipmapLevels: texdata.mipsAsBuffer!.map { mip in
+                    contents: .init(mipmapLevels: texdata.mips.map { mip in
                         .mip(unsafeBuffer: mbuf, offset: Int(mip.dataOffset), size: Int(mip.dataSize),
                             bytesPerRow: Int(mip.bytesPerRow), bytesPerImage: Int(mip.bytesPerImage))
                     }))

@@ -504,9 +504,17 @@ class RealityKitStateVerifier {
         descriptor.depth = texture.depth
         descriptor.arrayLength = texture.arrayLength
         descriptor.mipmapLevelCount = texture.mipmapLevelCount
-        descriptor.usage = .unknown
-        let copy = PolySpatialRealityKit.instance.mtlDevice!.makeTexture(descriptor: descriptor)!
-        try! texture.copy(to: copy)
+        // Explicit usage flags required for recent simulators.
+        descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
+        descriptor.storageMode = .shared
+        guard let copy = PolySpatialRealityKit.instance.mtlDevice!.makeTexture(descriptor: descriptor) else {
+            return "\(path) could not allocate a readback texture"
+        }
+        do {
+            try texture.copy(to: copy)
+        } catch {
+            return "\(path) texture copy(to:) failed: \(error)"
+        }
 
         // Get that texture's contents as Data.
         switch texture.textureType {

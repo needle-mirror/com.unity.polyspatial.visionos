@@ -61,7 +61,7 @@ public struct PackedIdentifier: CustomStringConvertible {
     public var unityInstanceId: Int32 {
         .init(truncatingIfNeeded: _id0)
     }
-    
+
     // For use with EntityId in versions of Unity post 6.4
     public var unityEntityId: UInt64 {
         .init(truncatingIfNeeded: _id0)
@@ -100,8 +100,8 @@ extension PolySpatialHostID : Equatable, Hashable, CustomStringConvertible {
 // Extension to add Hashable support to the PolySpatialInstanceID type. This allows it
 // to act as a key
 extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
-    public init(id: Int64, hostId: PolySpatialHostID, viewSubgraphIndex: UInt8) {
-        self.init(id: id, hostId: hostId, viewSubgraphIndex: viewSubgraphIndex, _Padding0: 0, _Padding1: 0)
+    public init(id: PolySpatialEntityID, hostId: PolySpatialHostID, viewSubgraphIndex: UInt8) {
+        self.init(id: Int64(bitPattern: id.value), hostId: hostId, viewSubgraphIndex: viewSubgraphIndex)
     }
 
     public var description: String {
@@ -119,6 +119,9 @@ extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
     }
 
     public var isValid: Bool { return id != 0 }
+
+    // The bare entity id, dropping the host/volume information (mirrors PolySpatialInstanceID.ToEntityID() in C#).
+    public var entityId: PolySpatialEntityID { .init(id) }
 
     public static let none = PolySpatialInstanceID.init(id: 0, hostId: PolySpatialHostID.init(connectionId: 0), viewSubgraphIndex: 0)
 
@@ -161,26 +164,51 @@ struct UnsafePolySpatialIDBufferPointer<T> {
     }
 }
 
-typealias UnsafePolySpatialInstanceIDBufferPointer = UnsafePolySpatialIDBufferPointer<Int64>
-typealias UnsafePolySpatialComponentIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialInstanceComponentIDPair>
+typealias UnsafePolySpatialEntityIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialEntityID>
+typealias UnsafePolySpatialComponentIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialEntityComponentIDPair>
+
+// Extension to add Hashable support to the PolySpatialEntityID type. This allows it to act as a key
+extension PolySpatialEntityID: Equatable, Hashable, CustomStringConvertible {
+    public init(_ id: Int64) {
+        self.init(value: UInt64(bitPattern: id))
+    }
+
+    public var description: String {
+        // Print the signed form, matching how the simulation displays Unity instance ids.
+        .init(describing: Int64(bitPattern: value))
+    }
+
+    public static func == (lhs: PolySpatialEntityID, rhs: PolySpatialEntityID) -> Bool {
+        return lhs.value == rhs.value
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+    }
+
+    public var isValid: Bool { return value != 0 }
+
+    public static let none = PolySpatialEntityID.init(value: 0)
+}
 
 // Extension to add Hashable support to the PolySpatialComponentID type.
 extension PolySpatialComponentID: Equatable, Hashable, CustomStringConvertible {
     public var description: String {
-        .init(describing: id)
+        // Print the signed form, matching how the simulation displays Unity instance ids.
+        .init(describing: Int64(bitPattern: value))
     }
 
     public static func == (lhs: PolySpatialComponentID, rhs: PolySpatialComponentID) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.value == rhs.value
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(value)
     }
 
-    public var isValid: Bool { return id != 0 }
+    public var isValid: Bool { return value != 0 }
 
-    public static let none = PolySpatialComponentID.init(id: 0)
+    public static let none = PolySpatialComponentID.init(value: 0)
 }
 
 extension PolySpatialAssetID: Equatable, Comparable, Hashable, CustomStringConvertible {

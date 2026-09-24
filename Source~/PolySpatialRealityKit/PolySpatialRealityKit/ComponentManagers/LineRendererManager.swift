@@ -16,14 +16,14 @@ class LineRendererManager {
         // Instantiate a Vfx mesh backed by mesh & material(s)
         guard let renderData = lineRenderer.renderData,
                 let meshId = renderData.meshId,
-                let materialIds = renderData.materialIdsAsBuffer,
+                !renderData.materialIds.isEmpty,
                 meshId != PolySpatialAssetID.invalidAssetId else {
             PolySpatialRealityKit.instance.LogError("Set Line Renderer Component without having renderData, valid meshId or materialIds.")
             return
         }
 
         let backingEntity = getOrCreateLineRendererBackingEntity(entity)
-        backingEntity.setRenderMeshAndMaterials(meshId, Array(materialIds))
+        backingEntity.setRenderMeshAndMaterials(meshId, Array(renderData.materialIds))
 
         if !lineRenderer.isWorldSpace {
             let rootEntity = PolySpatialRealityKit.instance.GetRootEntity(entity.unityId)

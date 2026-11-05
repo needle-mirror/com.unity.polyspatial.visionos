@@ -208,10 +208,8 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             m_VersionLabel.text = string.IsNullOrEmpty(connectionCandidate.HostPolySpatialVersion)
                 ? string.Empty
                 : string.Format(k_VersionFormat, connectionCandidate.HostPolySpatialVersion);
-            var magicCookie = connectionCandidate.HostPolySpatialMagicCookie.ToString();
-            magicCookie = !string.IsNullOrEmpty(magicCookie) && magicCookie.Length >= 5
-                ? string.Format(k_MagicCookieFormat, connectionCandidate.HostPolySpatialMagicCookie.ToString().Substring(0, 5))
-                : string.Empty;
+            var magicCookie = PolySpatialMagicCookieUtils.GetDisplayPrefix(connectionCandidate.HostPolySpatialMagicCookie);
+            magicCookie = !string.IsNullOrEmpty(magicCookie) ? string.Format(k_MagicCookieFormat, magicCookie) : string.Empty;
             m_VersionLabel.tooltip = $"{(!string.IsNullOrEmpty(m_VersionLabel.text) ? m_VersionLabel.text + " " : "")}" +
                                      $"{(!string.IsNullOrEmpty(magicCookie) ? magicCookie : "")}";
             m_IPLabel.text = connectionCandidate.IP;

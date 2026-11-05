@@ -2,6 +2,7 @@
     "showScriptRef": false,
     "xref": [
         "com.unity.polyspatial",
+        "com.unity.polyspatial.record",
         "com.unity.xr.visionos",
         "com.unity.polyspatial.xr",
         "com.unity.xr.interaction.toolkit"

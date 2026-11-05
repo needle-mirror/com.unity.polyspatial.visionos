@@ -168,63 +168,132 @@ class ShaderManager {
     }
 
     internal func SetShaderGlobalPropertyValues(_ shaderGlobalPropertyValues: PolySpatialShaderGlobalPropertyValues) {
-        do {
-            let counts = shaderGlobalPropertyValues.floatPropertyArrayCounts
-            let values = shaderGlobalPropertyValues.floatProperties
-            var offset = 0
-            for (index, property) in shaderGlobalFloatProperties.enumerated() {
-                property.setFloat(values[offset])
-                offset += Int(counts[index])
-            }
-            assert(offset == values.count)
+        var floatPropertyArrayCountIndex = 0
+        var floatPropertyIndex = 0
+        func readFloatProperty(_ property: ShaderGlobalProperty) {
+            let arrayCount = shaderGlobalPropertyValues.floatPropertyArrayCounts[floatPropertyArrayCountIndex]
+            floatPropertyArrayCountIndex += 1
+            property.setFloat(shaderGlobalPropertyValues.floatProperties[floatPropertyIndex])
+            floatPropertyIndex += Int(arrayCount)
         }
-        do {
-            let values = shaderGlobalPropertyValues.integerProperties
-            for (index, property) in shaderGlobalIntegerProperties.enumerated() {
-                property.setInteger(values[index])
-            }
+
+        var integerPropertyIndex = 0
+        func readIntegerProperty(_ property: ShaderGlobalProperty) {
+            property.setInteger(shaderGlobalPropertyValues.integerProperties[integerPropertyIndex])
+            integerPropertyIndex += 1
         }
-        do {
-            let counts = shaderGlobalPropertyValues.vectorPropertyArrayCounts
-            let values = shaderGlobalPropertyValues.vectorProperties
-            var offset = 0
-            for (index, property) in shaderGlobalVectorProperties.enumerated() {
-                property.setVector4(ConvertPolySpatialVec4VectorToFloat4(values[offset]))
-                offset += Int(counts[index])
-            }
-            assert(offset == values.count)
+
+        var vectorPropertyArrayCountIndex = 0
+        var vectorPropertyIndex = 0
+        func readVectorProperty(_ property: ShaderGlobalProperty) {
+            let arrayCount = shaderGlobalPropertyValues.vectorPropertyArrayCounts[vectorPropertyArrayCountIndex]
+            vectorPropertyArrayCountIndex += 1
+            property.setVector4(
+                ConvertPolySpatialVec4VectorToFloat4(shaderGlobalPropertyValues.vectorProperties[vectorPropertyIndex]))
+            vectorPropertyIndex += Int(arrayCount)
         }
-        do {
-            let values = shaderGlobalPropertyValues.colorProperties
-            for (index, property) in shaderGlobalColorProperties.enumerated() {
-                property.setColor(values[index].cgColor())
-            }
+
+        var colorPropertyIndex = 0
+        func readColorProperty(_ property: ShaderGlobalProperty) {
+            property.setColor(shaderGlobalPropertyValues.colorProperties[colorPropertyIndex].cgColor())
+            colorPropertyIndex += 1
         }
-        do {
-            let counts = shaderGlobalPropertyValues.matrixPropertyArrayCounts
-            let values = shaderGlobalPropertyValues.matrixProperties
-            var offset = 0
-            for (index, property) in shaderGlobalMatrixProperties.enumerated() {
-                property.setMatrix(ConvertPolySpatialMatrix4x4ToFloat4x4(values[offset]))
-                offset += Int(counts[index])
-            }
-            assert(offset == values.count)
+
+        var matrixPropertyArrayCountIndex = 0
+        var matrixPropertyIndex = 0
+        func readMatrixProperty(_ property: ShaderGlobalProperty) {
+            let arrayCount = shaderGlobalPropertyValues.matrixPropertyArrayCounts[matrixPropertyArrayCountIndex]
+            matrixPropertyArrayCountIndex += 1
+            property.setMatrix(
+                ConvertPolySpatialMatrix4x4ToFloat4x4(shaderGlobalPropertyValues.matrixProperties[matrixPropertyIndex]))
+            matrixPropertyIndex += Int(arrayCount)
         }
-        do {
-            let values = shaderGlobalPropertyValues.textureProperties
-            for (index, property) in shaderGlobalTextureProperties.enumerated() {
-                property.setTexture(values[index].id, shaderGlobalTextureSizeProperties[index])
-            }
+
+        var texturePropertyIndex = 0
+        func readTextureProperty(_ property: ShaderGlobalProperty, _ sizeProperty: ShaderGlobalProperty) {
+            property.setTexture(shaderGlobalPropertyValues.textureProperties[texturePropertyIndex].id, sizeProperty)
+            texturePropertyIndex += 1
         }
-        globallyEnabledKeywordParams.removeAll(keepingCapacity: true)
-        let keywordValues = shaderGlobalPropertyValues.keywordValues
-        for (index, property) in shaderGlobalKeywordProperties.enumerated() {
-            let keywordValue = keywordValues[index]
+
+        var keywordValueIndex = 0
+        func readKeyword(_ property: ShaderGlobalProperty) {
+            let keywordValue = shaderGlobalPropertyValues.keywordValues[keywordValueIndex]
             property.setBool(keywordValue)
+            keywordValueIndex += 1
 
             // Store the value so that instances can combine local and global state.
             if keywordValue {
                 globallyEnabledKeywordParams.insert(property.handle)
+            } else {
+                globallyEnabledKeywordParams.remove(property.handle)
+            }
+        }
+
+        if !shaderGlobalPropertyValues.changedPropertyIndices.isEmpty {
+            for index in shaderGlobalPropertyValues.changedPropertyIndices {
+                // The position of the index tells us its type.
+                var relativeIndex = Int(index)
+                if relativeIndex < shaderGlobalFloatProperties.count {
+                    readFloatProperty(shaderGlobalFloatProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalFloatProperties.count
+
+                if relativeIndex < shaderGlobalIntegerProperties.count {
+                    readIntegerProperty(shaderGlobalIntegerProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalIntegerProperties.count
+
+                if relativeIndex < shaderGlobalVectorProperties.count {
+                    readVectorProperty(shaderGlobalVectorProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalVectorProperties.count
+
+                if relativeIndex < shaderGlobalColorProperties.count {
+                    readColorProperty(shaderGlobalColorProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalColorProperties.count
+
+                if relativeIndex < shaderGlobalMatrixProperties.count {
+                    readMatrixProperty(shaderGlobalMatrixProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalMatrixProperties.count
+
+                if relativeIndex < shaderGlobalTextureProperties.count {
+                    readTextureProperty(
+                        shaderGlobalTextureProperties[relativeIndex], shaderGlobalTextureSizeProperties[relativeIndex])
+                    continue
+                }
+                relativeIndex -= shaderGlobalTextureProperties.count
+
+                readKeyword(shaderGlobalKeywordProperties[relativeIndex])
+            }
+        } else {
+            // Without a list of changed indices, we assume that all values are included.
+            for property in shaderGlobalFloatProperties {
+                readFloatProperty(property)
+            }
+            for property in shaderGlobalIntegerProperties {
+                readIntegerProperty(property)
+            }
+            for property in shaderGlobalVectorProperties {
+                readVectorProperty(property)
+            }
+            for property in shaderGlobalColorProperties {
+                readColorProperty(property)
+            }
+            for property in shaderGlobalMatrixProperties {
+                readMatrixProperty(property)
+            }
+            for (property, sizeProperty) in zip(shaderGlobalTextureProperties, shaderGlobalTextureSizeProperties) {
+                readTextureProperty(property, sizeProperty)
+            }
+            for property in shaderGlobalKeywordProperties {
+                readKeyword(property)
             }
         }
 

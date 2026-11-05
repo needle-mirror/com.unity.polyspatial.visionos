@@ -61,9 +61,7 @@ extension PolySpatialRealityKit {
         }
     }
     
-    func createOrUpdateEntityText(_ id: PolySpatialInstanceID, _ textInfo:  UnsafeMutablePointer<PolySpatialPlatformTextData>?) {
-        let renderEntity = GetEntity(id)
-        
+    func createOrUpdateEntityText(_ renderEntity: PolySpatialEntity, _ textInfo: UnsafeMutablePointer<PolySpatialPlatformTextData>?) {
         let info = textInfo!.pointee
         var textComponent: TextComponent
         

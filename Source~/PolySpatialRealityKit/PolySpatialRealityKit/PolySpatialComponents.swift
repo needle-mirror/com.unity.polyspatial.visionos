@@ -22,13 +22,13 @@ class PolySpatialComponents {
     }
 
     class InstanceRef: Component {
-        public var unityId: PolySpatialInstanceID
+        public var unityId: PolySpatialEntityID
 
         public init() {
-            self.unityId = PolySpatialInstanceID.none
+            self.unityId = PolySpatialEntityID.none
         }
 
-        public init(_ unityId: PolySpatialInstanceID) {
+        public init(_ unityId: PolySpatialEntityID) {
             self.unityId = unityId
         }
     }
@@ -192,7 +192,7 @@ class PolySpatialComponents {
     struct ModelSortGroupInfo: Component {
         public var sortGroupComponentBase: ModelSortGroupComponent?
         public var sortGroupComponentOverride: ModelSortGroupComponent?
-        public var overrideSortGroupEntityId = PolySpatialInstanceID.none
+        public var overrideSortGroupEntity: PolySpatialEntity?
         public var overrideAppliesToDescendants = false
         public var overrideIsAncestor = false
 
@@ -304,7 +304,9 @@ class PolySpatialComponents {
         }
 
         // an entity with this unity video player will have a special video material applied to it.
-        public var id: PolySpatialInstanceID
+        public let videoPlayerEntity: PolySpatialEntity
+        // Set by cleanUpVideoPlayer; the AVPlayer observers and the preroll completion can still fire afterwards.
+        public var disposed = false
         public var state: PolySpatialVideoPlayerState = .isStopped
         public var videoUrl: URL
         public var videoMaterial: VideoMaterial
@@ -315,10 +317,10 @@ class PolySpatialComponents {
         public var prerollState: PrerollState
         public var observerObject: VideoPlayerStatusObserver?
 
-        public init(_ id: PolySpatialInstanceID,
+        public init(_ videoPlayerEntity: PolySpatialEntity,
                     _ url: URL,
                     _ shouldPreroll: Bool) {
-            self.id = id
+            self.videoPlayerEntity = videoPlayerEntity
             self.shouldPreroll = shouldPreroll
             prerollState = .idle
             videoUrl = url
@@ -405,6 +407,10 @@ class PolySpatialComponents {
         }
         
         public func notifyClipState() {
+            if disposed {
+                return
+            }
+
             var clipStatus: PolySpatialVideoAssetStatus = .stalled
             
             switch (self.player.timeControlStatus) {
@@ -421,13 +427,18 @@ class PolySpatialComponents {
                     PolySpatialRealityKit.instance.LogWarning("Unhandled video player clip status \(self.player.timeControlStatus).")
             }
  
-            withUnsafePointer(to: self.id) { id in
+            withUnsafePointer(to: self.videoPlayerEntity.unityId) { id in
                 var clipStatusRawValue = clipStatus.rawValue
-                PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &clipStatusRawValue)
+                PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus,
+                    to: self.videoPlayerEntity.connectionId, id, &clipStatusRawValue)
             }
         }
 
         public func prerollIfNeeded() {
+            if disposed {
+                return
+            }
+
             if (player.rate == 0 &&
                 player.status == .readyToPlay &&
                 self.prerollState == .idle &&
@@ -438,6 +449,10 @@ class PolySpatialComponents {
                 player.preroll(atRate: player.defaultRate,
                                completionHandler:({ (wasSuccess: Bool) -> Void in
                     Task { @MainActor in
+                        if self.disposed {
+                            return
+                        }
+
                         var prerollStatus: PolySpatialVideoAssetStatus = .prerolled
                         self.prerollState = .complete
 
@@ -446,9 +461,10 @@ class PolySpatialComponents {
                             self.prerollState = .idle
                         }
 
-                        withUnsafePointer(to: self.id) { id in
+                        withUnsafePointer(to: self.videoPlayerEntity.unityId) { id in
                             var prerollRawValue = prerollStatus.rawValue
-                            PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus, id, &prerollRawValue)
+                            PolySpatialRealityKit.instance.SendHostCommand(PolySpatialHostCommand.updateVideoAssetStatus,
+                                to: self.videoPlayerEntity.connectionId, id, &prerollRawValue)
                         }
                         
                         // After preroll fail or success, re-affirm current state of AVPlayer.
@@ -501,10 +517,10 @@ class PolySpatialComponents {
     }
 
     struct StaticBatchElementInfo: Component {
-        let rootId: PolySpatialInstanceID
+        let root: Entity
 
-        init(_ rootId: PolySpatialInstanceID) {
-            self.rootId = rootId
+        init(_ root: Entity) {
+            self.root = root
         }
     }
 

@@ -4,9 +4,8 @@ import RealityKit
 extension PolySpatialRealityKit {
 
     func createOrUpdateImageBasedLight(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ imageBasedLightInfo: UnsafeMutablePointer<PolySpatialImageBasedLightData>?) {
-        let entity = GetEntity(id)
         let info = imageBasedLightInfo!.pointee
 
         entity.setImageBasedLightInfo(
@@ -22,16 +21,17 @@ extension PolySpatialRealityKit {
     }
 
     func createOrUpdateImageBasedLightReceiver(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ imageBasedLightReceiverInfo: UnsafeMutablePointer<PolySpatialImageBasedLightReceiverData>?) {
-        let entity = GetEntity(id)
         let info = imageBasedLightReceiverInfo!.pointee
 
-        // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-        let remappedImageBasedLightId = PolySpatialInstanceID(id: info.imageBasedLightId.id, hostId: id.hostId, viewSubgraphIndex: id.viewSubgraphIndex)
+        guard let imageBasedLight = entity.viewSubgraph.entities[info.imageBasedLightId] else {
+            LogError("Image based light \(info.imageBasedLightId) for \(entity) not found")
+            destroyImageBasedLightReceiver(entity)
+            return
+        }
 
-        entity.components.set(ImageBasedLightReceiverComponent(
-            imageBasedLight: GetEntity(remappedImageBasedLightId)))
+        entity.components.set(ImageBasedLightReceiverComponent(imageBasedLight: imageBasedLight))
 
         entity.updateBackingEntityComponents(ImageBasedLightReceiverComponent.self)
     }

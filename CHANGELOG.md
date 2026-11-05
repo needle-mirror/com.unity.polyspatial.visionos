@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
+## [3.4.0] - 2026-11-05
+
+### Changed
+- Recording & Playback documentation now points at the `com.unity.polyspatial.record` package, which the feature moved to.
+
+### Fixed
+- Fixed parts of a UI graphic (such as TextMeshPro text) disappearing at some viewing angles when a `VisionOSSortingGroup` lists both the graphic and an ancestor that has **Apply To Descendants** enabled.
+- Fixed meshes built at runtime rendering empty with GPU Mesh Transfer enabled. The compute copy that fills a `LowLevelMesh` is now encoded on Unity's own command queue, after the upload Unity encodes when the mesh's native buffer pointer is taken, so it can no longer read the buffer before it is filled.
+- Fixed SwiftUI runtime issues when opening or dismissing an immersive space, and stopped a second immersive space being requested while one is still opening. XCTest counts these issues as failures, which failed otherwise passing visionOS player test runs.
+- Fixed UI no longer responding, or the app freezing in Metal mode, after switching a hybrid app from Metal to Bounded and returning from the Home View.
+
 ## [3.3.1] - 2026-09-24
 
 Version incremented to synchronize with other PolySpatial and visionOS package versions.

@@ -13,26 +13,24 @@ extension PolySpatialSortingDepthPass {
 
 extension PolySpatialRealityKit {
     func createOrUpdateSortingGroup(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ sortingGroupInfo: UnsafeMutablePointer<PolySpatialSortingGroupData>?) {
         let info = sortingGroupInfo!.pointee
 
         if (!info.members.isEmpty) {
             // Always create new sort group - sort groups cannot be modified.
-            if (customSortGroup[id] != nil) {
-                CleanUpSortingGroups(id)
+            if (customSortGroup[entity] != nil) {
+                CleanUpSortingGroups(entity)
             }
 
             let sortGroup: ModelSortGroup = .init(depthPass: info.depthPass.rk())
 
             for member in info.members {
-                // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-                let remappedMember = PolySpatialInstanceID(id: member.renderer.id, hostId: id.hostId, viewSubgraphIndex: id.viewSubgraphIndex)
-                guard let rendererEntity = TryGetEntity(remappedMember) else {
+                guard let rendererEntity = entity.viewSubgraph.entities[member.renderer] else {
                     continue
                 }
 
-                setSortingGroupRecursively(id,
+                setSortingGroupRecursively(entity,
                                            rendererEntity,
                                            sortGroup,
                                            member.sortOrder,
@@ -43,18 +41,18 @@ extension PolySpatialRealityKit {
     }
 
     func destroySortingGroup(_ entity : PolySpatialEntity) {
-        CleanUpSortingGroups(entity.unityId)
+        CleanUpSortingGroups(entity)
     }
 
     func setSortingGroupRecursively(
-        _ sortGroupEntityId: PolySpatialInstanceID,
+        _ sortGroupEntity: PolySpatialEntity,
         _ currentEntity: PolySpatialEntity,
         _ sortGroup: ModelSortGroup,
         _ sortOrder: Int32,
         _ shouldRecurse: Bool,
         _ isAncestor: Bool) {
 
-        currentEntity.setRendererSortingGroup(sortGroupEntityId, sortGroup, sortOrder, shouldRecurse, isAncestor)
+        currentEntity.setRendererSortingGroup(sortGroupEntity, sortGroup, sortOrder, shouldRecurse, isAncestor)
 
         if (!shouldRecurse) {
             return
@@ -62,7 +60,11 @@ extension PolySpatialRealityKit {
 
         for child in currentEntity.children {
             let pslEntity = child as! PolySpatialEntity
-            setSortingGroupRecursively(sortGroupEntityId, pslEntity, sortGroup, sortOrder, shouldRecurse, false)
+            // Backing entities mirror their owner's sort group, which may differ when the owner is a separate member.
+            if pslEntity.isBackingEntity {
+                continue
+            }
+            setSortingGroupRecursively(sortGroupEntity, pslEntity, sortGroup, sortOrder, shouldRecurse, false)
         }
     }
 
@@ -80,17 +82,13 @@ extension PolySpatialRealityKit {
         }
     }
 
-    func CleanUpSortingGroups(_ id: PolySpatialInstanceID) {
-        if let cachedMembers = customSortGroup[id] {
+    func CleanUpSortingGroups(_ sortGroupEntity: PolySpatialEntity) {
+        if let cachedMembers = customSortGroup[sortGroupEntity] {
             for member in cachedMembers {
-                guard let memberEntity = TryGetEntity(member) else {
-                    continue
-                }
-
-                memberEntity.clearRendererSortingGroup()
+                member.clearRendererSortingGroup()
             }
         }
 
-        customSortGroup.removeValue(forKey: id)
+        customSortGroup.removeValue(forKey: sortGroupEntity)
     }
 }

@@ -89,7 +89,8 @@ namespace Unity.PolySpatial.Internals
 
             var args = stackalloc void*[] { (void*)&simHostPtr };
             var sizes = stackalloc int[] { sizeof(IntPtr) };
-            s_OldAPIPointers.SendClientCommand(PolySpatialCommand.SetSimulationHostAPI, 1, args, sizes);
+            var header = PolySpatialCommand.SetSimulationHostAPI.ToHeader();
+            s_OldAPIPointers.SendClientCommand(&header, 1, args, sizes);
 
             s_Instance = this;
         }
@@ -97,14 +98,13 @@ namespace Unity.PolySpatial.Internals
         HostCommandCallback hostCallbackDelegate;
 
         [MonoPInvokeCallback(typeof(HostCommandCallback))]
-        private unsafe static void HostCommandCallbackFromRealityKit(PolySpatialHostCommand command, int argCount, void** args, int* argSizes)
+        private unsafe static void HostCommandCallbackFromRealityKit(PolySpatialHostCommandHeader* header, int argCount, void** args, int* argSizes)
         {
             // MonoPInvokeCallback methods will leak exceptions and cause crashes; always use a try/catch in these methods
             try
             {
-                // This makes the assumption that the RealityKitBackend always uses the latest version of HostCommands,
-                // and that any downgrading of HostCommands is handled by downstream C#.
-                s_Instance.NextHostHandler.HandleHostCommand(command, argCount, args, argSizes);
+                // HostCommands from the plugin are always the latest version; downgrading happens downstream.
+                s_Instance.NextHostHandler.HandleHostCommand(*header, argCount, args, argSizes);
             }
             catch (Exception exception)
             {
@@ -115,9 +115,8 @@ namespace Unity.PolySpatial.Internals
         public unsafe void HandleCommand(PolySpatialCommandHeader cmdHeader, int argCount, void** argValues, int* argSizes)
         {
             s_HandleCommandMarker.Begin();
-            // This makes the assumption that the RealityKitBackend always uses the latest versions of Commands, and that
-            // any upgrading of Commands is handled by the upstream C# code, so only the Command enum value is required.
-            s_OldAPIPointers.SendClientCommand(cmdHeader.Command, argCount, argValues, argSizes);
+            // The plugin handles only the latest version of each Command; upgrading happens upstream.
+            s_OldAPIPointers.SendClientCommand(&cmdHeader, argCount, argValues, argSizes);
             s_HandleCommandMarker.End();
         }
 

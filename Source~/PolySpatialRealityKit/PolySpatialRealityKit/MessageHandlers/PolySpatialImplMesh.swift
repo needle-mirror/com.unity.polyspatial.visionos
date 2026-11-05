@@ -586,7 +586,7 @@ extension PolySpatialRealityKit {
             }
 
             let lowLevelMesh = instance.mesh.lowLevelMesh!
-            let commandBuffer = PolySpatialRealityKit.instance.mtlCommandQueue!.makeCommandBuffer()!
+            let commandBuffer = PolySpatialRealityKit.instance.makeNativeCopyCommandBuffer()!
             let commandEncoder = commandBuffer.makeComputeCommandEncoder(dispatchType: .concurrent)!
             let computePipelineState: MTLComputePipelineState
             if jointCount > 0 {
@@ -726,7 +726,7 @@ extension PolySpatialRealityKit {
             let newMesh = try! LowLevelMesh(descriptor: oldLowLevelMesh.descriptor)
             newMesh.parts.replaceAll(oldLowLevelMesh.parts)
 
-            let commandBuffer = PolySpatialRealityKit.instance.mtlCommandQueue!.makeCommandBuffer()!
+            let commandBuffer = PolySpatialRealityKit.instance.makeNativeCopyCommandBuffer()!
             let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()!
 
             // Copy the indices directly.
@@ -975,7 +975,7 @@ extension PolySpatialRealityKit {
         }
         lowLevelMesh.parts.replaceAll(parts)
 
-        let commandBuffer = mtlCommandQueue!.makeCommandBuffer()!
+        let commandBuffer = makeNativeCopyCommandBuffer()!
         let commandEncoder = commandBuffer.makeComputeCommandEncoder(dispatchType: .concurrent)!
         var computePipelineState = (unityMesh.indexFormat == .uint16 ?
             transferTriangleIndices16Compute : transferTriangleIndices32Compute)!
@@ -1066,6 +1066,13 @@ extension PolySpatialRealityKit {
         commandEncoder.endEncoding()
         commandBuffer.commit()
 
+        // Publishing the mesh in this frame exposes its buffers to CPU readback, such as convex shape
+        // generation, so the copy has to have landed before anything can observe it.
+        let updateSynchronously = runtimeFlags.contains(.updateMeshesSynchronously)
+        if updateSynchronously {
+            commandBuffer.waitUntilCompleted()
+        }
+
         // If we reused the LowLevelMesh, the effect is immediate.  We can notify the observers directly.
         if reusedLowLevelMesh {
             NotifyMeshOrMaterialObservers(id, true)
@@ -1073,7 +1080,7 @@ extension PolySpatialRealityKit {
         }
 
         // Update the mesh synchronously iff the flag is set (used for testing).
-        if runtimeFlags.contains(.updateMeshesSynchronously) {
+        if updateSynchronously {
             UpdateMeshDefinition(id, .init(lowLevelMesh, numUVSets, vertexRanges))
             return
         }

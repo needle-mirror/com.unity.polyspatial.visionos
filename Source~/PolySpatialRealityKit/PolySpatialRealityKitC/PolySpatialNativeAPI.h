@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 
-typedef void (*SendHostCommand_t)(/* PolySpatialHostCommand */int command, int argCount, const void** const args, unsigned int* argSizes);
+typedef void (*SendHostCommand_t)(/* const PolySpatialHostCommandHeader* */ const void* header, int argCount, const void** const args, unsigned int* argSizes);
 
 typedef struct
 {
@@ -22,7 +22,7 @@ typedef struct
 } PolySpatialSimulationHostAPI;
 
 
-typedef void (*SendClientCommand_t)(/* PolySpatialCommand */int command, int argCount, void** args, unsigned int* argSizes);
+typedef void (*SendClientCommand_t)(/* const PolySpatialCommandHeader* */ const void* header, int argCount, void** args, unsigned int* argSizes);
 
 typedef struct
 {

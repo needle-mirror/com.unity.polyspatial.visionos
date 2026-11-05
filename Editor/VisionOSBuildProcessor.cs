@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -147,6 +148,9 @@ namespace Unity.PolySpatial.Internals.Editor
 
                 FilterXcodeProj(outputPath, k_XcodeProjName);
                 FilterPlist(outputPath);
+
+                if ((report.summary.options & BuildOptions.IncludeTestAssemblies) != 0)
+                    DisableThreadPerformanceCheckerForTests(outputPath, k_XcodeProjName);
             }
             catch (Exception e)
             {
@@ -581,6 +585,25 @@ extension UnityPolySpatialApp {{
             }
 
             pbx.WriteToFile(xcodePbx);
+        }
+
+        // The checker reports engine priority inversions as test issues, which makes xcodebuild treat a passing run as failed.
+        static void DisableThreadPerformanceCheckerForTests(string outputPath, string xcodeProjName)
+        {
+            var schemesPath = Path.Combine(outputPath, xcodeProjName, "xcshareddata", "xcschemes");
+            if (!Directory.Exists(schemesPath))
+                return;
+
+            foreach (var schemePath in Directory.GetFiles(schemesPath, "*.xcscheme"))
+            {
+                var scheme = XDocument.Load(schemePath);
+                var testAction = scheme.Root?.Element("TestAction");
+                if (testAction == null)
+                    continue;
+
+                testAction.SetAttributeValue("disablePerformanceAntipatternChecker", "YES");
+                scheme.Save(schemePath);
+            }
         }
 
         private void FilterPlist(string outputPath)

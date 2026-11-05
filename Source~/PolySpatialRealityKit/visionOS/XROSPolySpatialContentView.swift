@@ -66,7 +66,7 @@ struct XROSPolySpatialContentView: View {
 
     func handleGesture(events: SpatialEventCollection, viewSize: Size3D) {
         var i = 0
-        var hostId = PolySpatialHostID.localDefault
+        var connectionId = PolySpatialConnectionID.localDefault
         for pointerEvent in events {
             if i >= Self.maxPointers {
                 PolySpatialRealityKit.instance.LogError("Max number of touches processed at a single time is \(Self.maxPointers).")
@@ -152,12 +152,14 @@ struct XROSPolySpatialContentView: View {
                 selectionRayDirection = ConvertDirection(selectionRay.direction)
             }
 
-            var colliderId = PolySpatialInstanceID.none
-            var volumeId = PolySpatialInstanceID.none
+            var colliderId = PolySpatialEntityID.none
+            var volumeId = PolySpatialEntityID.none
+            var entityConnectionId: PolySpatialConnectionID?
             if let polyspatialEntity = pointerEvent.targetedEntity as? PolySpatialEntity {
                 colliderId = polyspatialEntity.unityId
                 polyspatialEntity.lastSentInteractionPhase = phase
-                if let volume = PolySpatialRealityKit.instance.tryGetVolume(colliderId) {
+                entityConnectionId = polyspatialEntity.connectionId
+                if let volume = polyspatialEntity.viewSubgraph.volume {
                     volumeId = volume.id
                 } else {
                     PolySpatialRealityKit.instance.LogError("Could not find a volume for PolySpatialEntity \(colliderId)")
@@ -165,8 +167,8 @@ struct XROSPolySpatialContentView: View {
             }
 
             if i == 0 {
-                hostId = colliderId.hostId
-            } else if colliderId.hostId != hostId {
+                connectionId = entityConnectionId ?? .localDefault
+            } else if let entityConnectionId, entityConnectionId != connectionId {
                 PolySpatialRealityKit.instance.LogError("Cannot process touches for objects belonging to different simulations at the same time")
                 break
             }
@@ -195,7 +197,8 @@ struct XROSPolySpatialContentView: View {
             i += 1
         }
 
-        PolySpatialRealityKit.instance.sendPointerInputEvents(with: .init(Self.polyspatialPointerEvents[0..<i]), hostId: hostId)
+        PolySpatialRealityKit.instance.sendPointerInputEvents(
+            with: .init(Self.polyspatialPointerEvents[0..<i]), to: connectionId)
     }
 
     func ConvertPosition(_ point: Point3D, _ viewSize: Size3D) -> SIMD3<Float> {

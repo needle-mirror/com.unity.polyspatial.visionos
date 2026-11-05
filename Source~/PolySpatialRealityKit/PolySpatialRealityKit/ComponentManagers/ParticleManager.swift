@@ -10,14 +10,11 @@ class ParticleManager {
     // We add all bakeToMesh particle systems and trails to the same model sort group so they can blend properly together
     var sortGroupComponent: ModelSortGroupComponent
 
-    // Maps the IDs of main emitters to their sub-emitter data (including the sub-emitter ID).
-    private var mainEmitterIdToSubEmitterData: [PolySpatialInstanceID: PolySpatialParticleSubEmitterData] = [:]
+    // Maps main emitters to their sub-emitter data (including the sub-emitter ID).
+    private var mainEmitterToSubEmitterData: [PolySpatialEntity: PolySpatialParticleSubEmitterData] = [:]
 
-    // Maps the IDs of sub-emitters to their main emitters.
-    private var subEmitterIdToMainEmitterId: [PolySpatialInstanceID: PolySpatialInstanceID] = [:]
-
-    // The IDs of the main emitters that need their sub-emitters updated on the current frame.
-    private var dirtyMainEmitterIds: Set<PolySpatialInstanceID> = []
+    // The main emitters that need their sub-emitters updated on the current frame.
+    private var dirtyMainEmitters: Set<PolySpatialEntity> = []
 
     private var gravitationalForce = PolySpatialVec3(x: 0, y: -9.81, z: 0).swapCoordinateSystem()
 
@@ -27,9 +24,9 @@ class ParticleManager {
     }
 
     func createOrUpdateParticleSystem(
-        _ id: PolySpatialInstanceID, _ data: UnsafeMutablePointer<PolySpatialParticleSystemData>?) {
+        _ entity: PolySpatialEntity, _ data: UnsafeMutablePointer<PolySpatialParticleSystemData>?) {
 
-        createOrUpdateParticleSystem(PolySpatialRealityKit.instance.GetEntity(id), data!.pointee)
+        createOrUpdateParticleSystem(entity, data!.pointee)
     }
 
     // Creates/updates the particle system with the resolved entity and system data.  Can be overridden to perform
@@ -105,7 +102,7 @@ class ParticleManager {
     func destroyParticleSystem(_ entity: PolySpatialEntity) {
         removeParticleBackingEntity(entity)
         removeTrailBackingEntity(entity)
-        removeSubEmitterDatum(entity.unityId)
+        removeSubEmitterDatum(entity)
     }
 
     func getOrCreateParticleBackingEntity(
@@ -114,9 +111,9 @@ class ParticleManager {
         if let particleBackingEntity = entity.particleBackingEntity {
             return particleBackingEntity
         }
-        let particleBackingEntity = PolySpatialEntity(entity.unityId)
+        let particleBackingEntity = PolySpatialEntity(entity.unityId, entity.viewSubgraph)
         particleBackingEntity.setParent(
-            parentToEntity ? entity : PolySpatialRealityKit.instance.GetRootEntity(entity.unityId))
+            parentToEntity ? entity : entity.viewSubgraph.root)
         entity.particleBackingEntity = particleBackingEntity
         return particleBackingEntity
     }
@@ -133,8 +130,8 @@ class ParticleManager {
         if let trailBackingEntity = entity.trailBackingEntity {
             return trailBackingEntity
         }
-        let trailBackingEntity = PolySpatialEntity(entity.unityId)
-        trailBackingEntity.setParent(PolySpatialRealityKit.instance.GetRootEntity(entity.unityId))
+        let trailBackingEntity = PolySpatialEntity(entity.unityId, entity.viewSubgraph)
+        trailBackingEntity.setParent(entity.viewSubgraph.root)
         entity.trailBackingEntity = trailBackingEntity
         return trailBackingEntity
     }
@@ -152,10 +149,17 @@ class ParticleManager {
         return (source & property.value) != 0
     }
 
-    func removeSubEmitterDatum(_ id: PolySpatialInstanceID) {
-        if let subEmitterDatum = mainEmitterIdToSubEmitterData.removeValue(forKey: id) {
-            subEmitterIdToMainEmitterId[subEmitterDatum.id] = nil
-            dirtyMainEmitterIds.remove(id)
+    func removeSubEmitterDatum(_ entity: PolySpatialEntity) {
+        if mainEmitterToSubEmitterData.removeValue(forKey: entity) != nil {
+            dirtyMainEmitters.remove(entity)
+        }
+    }
+
+    // The main emitters in the entity's view whose sub-emitter is the entity.
+    func mainEmitters(spawning entity: PolySpatialEntity) -> [PolySpatialEntity] {
+        mainEmitterToSubEmitterData.compactMap { mainEmitter, subEmitterDatum in
+            mainEmitter.viewSubgraph === entity.viewSubgraph && subEmitterDatum.id == entity.unityId
+                ? mainEmitter : nil
         }
     }
 
@@ -241,7 +245,7 @@ class ParticleManager {
 
         if gravityForce != 0 {
             let worldRotation = particleEntity.convert(
-                transform: Transform(), from: PolySpatialRealityKit.instance.GetRootEntity(entity.unityId)).rotation
+                transform: Transform(), from: entity.viewSubgraph.root).rotation
             let correctedGravity = worldRotation.act(gravitationalForce)
 
             emitter.acceleration += correctedGravity * gravityForce
@@ -262,7 +266,7 @@ class ParticleManager {
                 emitter.sizeMultiplierAtEndOfLifespanPower = sizeModule.size.x!.toSizeForce(curveKeyBuffer)
             } else {
                 PolySpatialRealityKit.instance.LogWarning(
-                    "Setting each axes separately on SizeOverLifetime  for particle sys \(entity.unityId) is currently not supported.")
+                    "Setting each axes separately on SizeOverLifetime  for particle sys \(entity) is currently not supported.")
             }
         }
 
@@ -272,7 +276,7 @@ class ParticleManager {
                 (emitter.angularSpeed, _, emitter.angularSpeedVariation) = rotationModule.angularVelocity.z!.getCurveValues(curveKeyBuffer)
             } else {
                 PolySpatialRealityKit.instance.LogWarning(
-                    "Setting each axes separately on RotationOverLifetime for particle sys \(entity.unityId) is currently not supported.")
+                    "Setting each axes separately on RotationOverLifetime for particle sys \(entity) is currently not supported.")
             }
         }
 
@@ -283,30 +287,22 @@ class ParticleManager {
         }
 
         // Remove any old mappings.
-        removeSubEmitterDatum(entity.unityId)
+        removeSubEmitterDatum(entity)
 
         component.spawnedEmitter = nil
         if particleSystem.subEmitters.count > 0 {
             if particleSystem.subEmitters.count > 1 {
                 PolySpatialRealityKit.LogWarning(
-                    "Only one subemitter for particle system \(entity.unityId) is supported in RK right now.")
+                    "Only one subemitter for particle system \(entity) is supported in RK right now.")
             }
-            var subEmitterDatum = particleSystem.subEmitters[0]
+            let subEmitterDatum = particleSystem.subEmitters[0]
             if subEmitterDatum.id.isValid {
-                // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-                subEmitterDatum = .init(
-                    id: .init(id: subEmitterDatum.id.id, hostId: entity.unityId.hostId,
-                        viewSubgraphIndex: entity.unityId.viewSubgraphIndex),
-                    type: subEmitterDatum.type, inherit: subEmitterDatum.inherit)
-                mainEmitterIdToSubEmitterData[entity.unityId] = subEmitterDatum
-                subEmitterIdToMainEmitterId[subEmitterDatum.id] = entity.unityId
-                dirtyMainEmitterIds.insert(entity.unityId)
+                mainEmitterToSubEmitterData[entity] = subEmitterDatum
+                dirtyMainEmitters.insert(entity)
             }
         }
 
-        if let mainEmitterId = subEmitterIdToMainEmitterId[entity.unityId] {
-            dirtyMainEmitterIds.insert(mainEmitterId)
-        }
+        dirtyMainEmitters.formUnion(mainEmitters(spawning: entity))
 
         if let imageSequenceModule = particleSystem.textureSheetAnimation {
             var imgSequence = ParticleEmitterComponent.ParticleEmitter.ImageSequence()
@@ -372,7 +368,7 @@ class ParticleManager {
 
                 } else {
                     PolySpatialRealityKit.instance.LogWarning(
-                        "No material found for \(entity.unityId) and for material id \(renderData.materialIds.first ?? PolySpatialAssetID()).")
+                        "No material found for \(entity) and for material id \(renderData.materialIds.first ?? PolySpatialAssetID()).")
                 }
                 particleEntity.setCastShadows(renderData.shadowCastingMode != .off)
             }
@@ -385,10 +381,10 @@ class ParticleManager {
     // Updates any sub-emitter relationships (that is, both main emitter and sub-emitter) that have changed
     // during the frame.
     func updateSubEmitters() {
-        for mainEmitterId in dirtyMainEmitterIds {
-            let subEmitterDatum = mainEmitterIdToSubEmitterData[mainEmitterId]!
+        for mainEntity in dirtyMainEmitters {
+            let subEmitterDatum = mainEmitterToSubEmitterData[mainEntity]!
             guard let spawnedParticleEntity =
-                    PolySpatialRealityKit.instance.TryGetEntity(subEmitterDatum.id)?.particleBackingEntity else {
+                    mainEntity.viewSubgraph.entities[subEmitterDatum.id]?.particleBackingEntity else {
                 // Try again next frame.
                 continue
             }
@@ -398,7 +394,6 @@ class ParticleManager {
             spawnedEmitterComponent.simulationState = .stop
             spawnedParticleEntity.components.set(spawnedEmitterComponent)
 
-            let mainEntity = PolySpatialRealityKit.instance.GetEntity(mainEmitterId)
             let mainParticleEntity = mainEntity.particleBackingEntity!
             var mainEmitterComponent = mainParticleEntity.components[ParticleEmitterComponent.self]!
 
@@ -415,7 +410,7 @@ class ParticleManager {
 
             mainParticleEntity.components.set(mainEmitterComponent)
         }
-        dirtyMainEmitterIds.removeAll()
+        dirtyMainEmitters.removeAll()
     }
 
     func handleEmitterShape(
@@ -540,7 +535,7 @@ class ParticleManager {
 
             if velocityModule.space.toBirthDirection() == .world {
                 // The original component emission dir is local, whereas the vector we've received is world, so we have to change transform spaces.
-                let worldRotation = particleEntity.convert(transform: Transform(), from: PolySpatialRealityKit.instance.GetRootEntity(particleEntity.unityId)).rotation
+                let worldRotation = particleEntity.convert(transform: Transform(), from: particleEntity.viewSubgraph.root).rotation
                 let correctedVelocity = worldRotation.act(velocityModule.linearVelocity.rk(curveKeyBuffer).value)
 
                 component.emissionDirection += correctedVelocity
@@ -566,7 +561,7 @@ class ParticleManager {
             if !limitVelocityModule.separateAxes {
                 maxSpeedLimit = (limitVelocityModule.speed?.x!.getValueAndVariation(curveKeyBuffer).value)!
             } else {
-                PolySpatialRealityKit.instance.LogWarning("Setting each axes separately on LimitVelocityOverLifetime::Speed  for particle sys \(particleEntity.unityId) is currently not supported.")
+                PolySpatialRealityKit.instance.LogWarning("Setting each axes separately on LimitVelocityOverLifetime::Speed  for particle sys \(particleEntity) is currently not supported.")
             }
 
             if magnitude > maxSpeedLimit {

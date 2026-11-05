@@ -12,9 +12,9 @@ class SkinnedMeshManager {
 
     // The backing entity acts as the root of the skeleton and caches data about bone ids and transforms.
     class UnitySkeletonData: Component {
-        var bones: [PolySpatialInstanceID]?
+        var bones: [PolySpatialEntityID]?
         var cachedJointTransforms: [Transform]
-        init (_ bones: [PolySpatialInstanceID]) {
+        init (_ bones: [PolySpatialEntityID]) {
             self.bones = bones
             self.cachedJointTransforms = .init(repeating: Transform(), count: bones.count)
         }
@@ -28,8 +28,7 @@ class SkinnedMeshManager {
     class UnityBoneComponent: Component {
         var boneIndexMapping: [PolySpatialEntity: Int] = [:]
 
-        init (_ smrInstanceId: PolySpatialInstanceID,
-              _ backEntity: PolySpatialEntity,
+        init (_ backEntity: PolySpatialEntity,
               _ jointIndex: Int) {
             self.boneIndexMapping[backEntity] = jointIndex
         }
@@ -101,15 +100,11 @@ class SkinnedMeshManager {
     }
 
     public func CreateBackingEntity(_ info: PolySpatialSkinnedRendererData,
-                                      _ originalEntity: PolySpatialEntity,
-                                      _ skinnedMeshInstanceId: PolySpatialInstanceID) -> PolySpatialEntity {
+                                      _ originalEntity: PolySpatialEntity) -> PolySpatialEntity {
         // Create backing entity on RK side, and make it a child of the parent of the root bone (according to Unity). If parent doesn't exist, make it a child of the root entity.
-        let backingEntity = PolySpatialEntity.init(skinnedMeshInstanceId)
+        let backingEntity = PolySpatialEntity.init(originalEntity.unityId, originalEntity.viewSubgraph)
 
-        // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-        let rootBoneId = PolySpatialInstanceID(
-            id: info.rootBoneId.id, hostId: skinnedMeshInstanceId.hostId,
-            viewSubgraphIndex: skinnedMeshInstanceId.viewSubgraphIndex)
+        let rootBoneEntity = originalEntity.viewSubgraph.entities[info.rootBoneId]
 
         // Parent to the root bone if we have blend shapes; otherwise, to the parent of the root bone.  We parent to
         // the root bone for blended meshes so that the local bounds supplied to the LowLevelMesh (parts) will be transformed
@@ -118,10 +113,9 @@ class SkinnedMeshManager {
         let parentEntity: Entity
         if meshAsset.blendShapes.count > 0 {
             // If the root bone is not supplied, we parent to the original entity.
-            parentEntity = rootBoneId.isValid ? PolySpatialRealityKit.instance.GetEntity(rootBoneId) : originalEntity
+            parentEntity = rootBoneEntity ?? originalEntity
         } else {
-            parentEntity = PolySpatialRealityKit.instance.TryGetEntity(rootBoneId)?.parent ??
-                PolySpatialRealityKit.instance.GetRootEntity(skinnedMeshInstanceId)
+            parentEntity = rootBoneEntity?.parent ?? originalEntity.viewSubgraph.root
         }
 
         backingEntity.setParent(parentEntity)
@@ -139,29 +133,26 @@ class SkinnedMeshManager {
     }
     
     public func SetUpBoneMapping(_ info: PolySpatialSkinnedRendererData,
-                                 _ originalEntityName: String,
-                                 _ skinnedMeshInstanceId: PolySpatialInstanceID,
-                                 _ backingEntity: PolySpatialEntity) -> [PolySpatialInstanceID] {
+                                 _ originalEntity: PolySpatialEntity,
+                                 _ backingEntity: PolySpatialEntity) -> [PolySpatialEntityID] {
         let boneIds = info.skeletonBoneIds
+        let viewSubgraph = originalEntity.viewSubgraph
 
-        var skeletonBones = Array(repeating: PolySpatialInstanceID(), count: boneIds.count)
+        var skeletonBones = Array(repeating: PolySpatialEntityID.none, count: boneIds.count)
         var boneIndex = 0
         for originalBoneId in boneIds {
-            // TODO LXR-1776: Need to fix up remapper on PolySpatialIDRemapper, then we can remove this hack.
-            let boneId = PolySpatialInstanceID.init(id: originalBoneId.id, hostId: skinnedMeshInstanceId.hostId, viewSubgraphIndex: skinnedMeshInstanceId.viewSubgraphIndex)
-
-            guard let boneEntity = PolySpatialRealityKit.instance.TryGetEntity(boneId) else {
-                PolySpatialRealityKit.LogWarning("Skinned mesh renderer \(originalEntityName) was missing a bone during skeleton initialization. If a skinned mesh renderer is using a game object as a bone, do not delete that game object.")
+            guard let boneEntity = viewSubgraph.entities[originalBoneId] else {
+                PolySpatialRealityKit.LogWarning("Skinned mesh renderer \(originalEntity.name) was missing a bone during skeleton initialization. If a skinned mesh renderer is using a game object as a bone, do not delete that game object.")
                 continue
             }
 
-            skeletonBones[boneIndex] = boneId
+            skeletonBones[boneIndex] = originalBoneId
 
             if boneEntity.components.has(UnityBoneComponent.self) {
                 let existingComponent = boneEntity.components[UnityBoneComponent.self]! as UnityBoneComponent
                 existingComponent.boneIndexMapping[backingEntity] = boneIndex
             } else {
-                boneEntity.components[UnityBoneComponent.self] = .init(skinnedMeshInstanceId, backingEntity, boneIndex)
+                boneEntity.components[UnityBoneComponent.self] = .init(backingEntity, boneIndex)
             }
 
             boneIndex += 1
@@ -173,11 +164,11 @@ class SkinnedMeshManager {
     }
     
     public func DestroyBoneMapping(_ backingEntity: PolySpatialEntity,
-                                   _ bones: [PolySpatialInstanceID]) {
+                                   _ bones: [PolySpatialEntityID]) {
         // Find all the polyspatial entities and remove references to this skinned mesh within their bone components.
         for boneId in bones {
             // Entity may have been deleted by the time we get to this cleanup.
-            if let boneEntity = PolySpatialRealityKit.instance.TryGetEntity(boneId) {
+            if let boneEntity = backingEntity.viewSubgraph.entities[boneId] {
                 let boneComponent = boneEntity.components[SkinnedMeshManager.UnityBoneComponent.self]! as UnityBoneComponent
                 boneComponent.boneIndexMapping.removeValue(forKey: backingEntity)
 
@@ -204,7 +195,7 @@ class SkinnedMeshManager {
 
             var boneIndex = 0
             for bone in skeletonData.bones! {
-                guard let boneEntity = PolySpatialRealityKit.instance.TryGetEntity(bone) else {
+                guard let boneEntity = backingEntity.viewSubgraph.entities[bone] else {
                     // Commented out this warning message - this is called too many times and will flood logs. Additionally, Unity allows for silent deletion of bones during runtime without issue.
                     continue
                 }
@@ -226,7 +217,7 @@ class SkinnedMeshManager {
         // This caching is not used right now, but in future can be used to reduce the number of calculations we have to do.
         var cachedTransforms = skeletonData.cachedJointTransforms
         
-        let rootEntity = PolySpatialRealityKit.instance.GetRootEntity(backingEntity.unityId)
+        let rootEntity = backingEntity.viewSubgraph.root
         
         for (index, pose) in poseArray.enumerated() {
             cachedTransforms[index].translation = pose.getPosition()

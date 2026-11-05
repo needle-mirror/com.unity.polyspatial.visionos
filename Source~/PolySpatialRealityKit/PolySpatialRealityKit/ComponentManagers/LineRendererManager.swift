@@ -5,8 +5,8 @@ import RealityKit
 @MainActor
 class LineRendererManager {
 
-    func createOrUpdateLineRenderer(_ id: PolySpatialInstanceID, _ data: UnsafeMutablePointer<PolySpatialLineRendererData>?) {
-        createOrUpdateLineRenderer(PolySpatialRealityKit.instance.GetEntity(id), data!.pointee)
+    func createOrUpdateLineRenderer(_ entity: PolySpatialEntity, _ data: UnsafeMutablePointer<PolySpatialLineRendererData>?) {
+        createOrUpdateLineRenderer(entity, data!.pointee)
     }
     
     func createOrUpdateLineRenderer(_ entity: PolySpatialEntity, _ lineRenderer: PolySpatialLineRendererData) {
@@ -26,7 +26,7 @@ class LineRendererManager {
         backingEntity.setRenderMeshAndMaterials(meshId, Array(renderData.materialIds))
 
         if !lineRenderer.isWorldSpace {
-            let rootEntity = PolySpatialRealityKit.instance.GetRootEntity(entity.unityId)
+            let rootEntity = entity.viewSubgraph.root
             // Convert the entity position from the entity parent's local space to root's local space
             let posRootSpace = entity.parent!.convert(position: entity.position, to: rootEntity)
             backingEntity.position = posRootSpace
@@ -45,9 +45,9 @@ class LineRendererManager {
         if let lineRendererEntity = entity.lineRendererBackingEntity {
             return lineRendererEntity
         }
-        let lineRendererBackingEntity = PolySpatialEntity(entity.unityId)
+        let lineRendererBackingEntity = PolySpatialEntity(entity.unityId, entity.viewSubgraph)
         lineRendererBackingEntity.setParent(
-            parentToEntity ? entity : PolySpatialRealityKit.instance.GetRootEntity(entity.unityId))
+            parentToEntity ? entity : entity.viewSubgraph.root)
         entity.lineRendererBackingEntity = lineRendererBackingEntity
         return lineRendererBackingEntity
     }

@@ -46,7 +46,7 @@ extension String: @retroactive LocalizedError {
     public var errorDescription: String? { return self }
 }
 
-// 128-bit struct that allows for a packed representation of PolySpatialInstanceID
+// 128-bit struct that packs an entity's id together with the viewSubgraph and connection it belongs to.
 public struct PackedIdentifier: CustomStringConvertible {
     public init(id0: UInt64, id1: UInt64) {
         _id0 = id0;
@@ -74,98 +74,25 @@ public struct PackedIdentifier: CustomStringConvertible {
     public var id1: UInt64 { _id1; }
 }
 
-// Extensions required so that HostID can be used in PolySpatialInstanceID extensions
-extension PolySpatialHostID : Equatable, Hashable, CustomStringConvertible {
-    public init(connectionId: UInt16) {
-        self.init(connectionId: connectionId, reserved: 0)
+extension PackedIdentifier {
+    init(_ entityId: PolySpatialEntityID, _ connectionId: PolySpatialConnectionID, _ viewSubgraphIndex: UInt8) {
+        self.init(id0: entityId.value, id1: UInt64(viewSubgraphIndex) << 32 | UInt64(connectionId.value))
     }
 
+    var entityId: PolySpatialEntityID { .init(value: id0) }
+
+    var viewSubgraphIndex: UInt8 { .init(truncatingIfNeeded: id1 >> 32) }
+}
+
+extension PolySpatialConnectionID : Equatable, CustomStringConvertible {
     public var description: String {
-        "\(connectionId)"
+        "\(value)"
     }
 
-    public static func == (lhs: PolySpatialHostID, rhs: PolySpatialHostID) -> Bool {
-        return lhs.connectionId == rhs.connectionId;
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(connectionId)
-    }
-
-    public var IsLocal: Bool { return connectionId == 0 }
-
-    public static let localDefault = PolySpatialHostID(connectionId: 0)
-}
-
-// Extension to add Hashable support to the PolySpatialInstanceID type. This allows it
-// to act as a key
-extension PolySpatialInstanceID: Equatable, Hashable, CustomStringConvertible {
-    public init(id: PolySpatialEntityID, hostId: PolySpatialHostID, viewSubgraphIndex: UInt8) {
-        self.init(id: Int64(bitPattern: id.value), hostId: hostId, viewSubgraphIndex: viewSubgraphIndex)
-    }
-
-    public var description: String {
-        viewSubgraphIndex == 0 ? (hostId.IsLocal ? "\(id)" : "\(id):\(hostId)") : "\(id):\(hostId):\(viewSubgraphIndex)";
-    }
-
-    public static func == (lhs: PolySpatialInstanceID, rhs: PolySpatialInstanceID) -> Bool {
-        return lhs.id == rhs.id && lhs.hostId == rhs.hostId && lhs.viewSubgraphIndex == rhs.viewSubgraphIndex
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(hostId)
-        hasher.combine(viewSubgraphIndex)
-    }
-
-    public var isValid: Bool { return id != 0 }
-
-    // The bare entity id, dropping the host/volume information (mirrors PolySpatialInstanceID.ToEntityID() in C#).
-    public var entityId: PolySpatialEntityID { .init(id) }
-
-    public static let none = PolySpatialInstanceID.init(id: 0, hostId: PolySpatialHostID.init(connectionId: 0), viewSubgraphIndex: 0)
-
-    public init(packed: PackedIdentifier) {
-        self.init(
-            id: .init(bitPattern: packed.id0),
-            hostId: .init(connectionId: .init(truncatingIfNeeded: packed.id1)),
-            viewSubgraphIndex: .init(truncatingIfNeeded: (packed.id1 >> 32)))
-    }
-
-    public var packed: PackedIdentifier {
-        .init(
-            id0: .init(bitPattern: id),
-            id1: .init(viewSubgraphIndex) << 32 | .init(hostId.connectionId))
+    public static func == (lhs: PolySpatialConnectionID, rhs: PolySpatialConnectionID) -> Bool {
+        return lhs.value == rhs.value
     }
 }
-
-// Read-Only access into a PolySpatialIdList data buffer.
-struct UnsafePolySpatialIDBufferPointer<T> {
-    private let data: UnsafeRawBufferPointer
-    private let headerSize = MemoryLayout<PolySpatialIDListHeader>.size
-
-    public init(_ data: UnsafeRawBufferPointer) {
-        precondition(data.count >= headerSize, "Buffer too small to contain header")
-        self.data = data
-    }
-
-    public var count: Int { (data.count - headerSize) / MemoryLayout<T>.size }
-
-    public var values: UnsafeBufferPointer<T> {
-        data[headerSize...].bindMemory(to: T.self)
-    }
-
-    public var hostId: PolySpatialHostID {
-        data.load(as: PolySpatialIDListHeader.self).hostId
-    }
-
-    public var viewSubgraphIndex: UInt8 {
-        data.load(as: PolySpatialIDListHeader.self).viewSubgraphIndex
-    }
-}
-
-typealias UnsafePolySpatialEntityIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialEntityID>
-typealias UnsafePolySpatialComponentIDBufferPointer = UnsafePolySpatialIDBufferPointer<PolySpatialEntityComponentIDPair>
 
 // Extension to add Hashable support to the PolySpatialEntityID type. This allows it to act as a key
 extension PolySpatialEntityID: Equatable, Hashable, CustomStringConvertible {

@@ -30,7 +30,7 @@ As with iOS, when building for a device, you must configure a valid provisioning
 Unity's visionOS RealityKit support includes **Play to Device**, a new workflow that allows you to enter Play Mode in the editor and instantly see your content on an attached device. You can inspect or make changes to your content live, and can provide input either via the device or the editor. See [Play To Device](PlayToDevice.md) for more information.
 
 ### Recording and Playback
-PolySpatial-based platforms support a recording and playback workflow that allows you to record a session (including input commands) and then play it back within the Unity Editor. For more information, see information about [PolySpatial tooling](Tooling.md)
+PolySpatial-based platforms support a recording and playback workflow that allows you to record a session (including input commands) and then play it back within the Unity Editor. The recording and playback support ships in `com.unity.polyspatial.record`, and the Editor UI for recording and playing back sessions ships in `com.unity.polyspatial.playtest`. Add `com.unity.polyspatial.playtest` to your project to use this workflow; it brings in `com.unity.polyspatial.record` as a dependency. For more information, see [Recording and playing back a session](xref:ps-record-workflow).
 
 ## Debugging Support
 The standard debugging workflow works normally on visionOS. Enable **Script Debugging** in the Build Settings and optionally **Wait for Managed Debugger**. Then attach a managed debugger/IDE to your running application and debug your script code. Note: at the moment, **Wait for Managed Debugger**  will wait for 30 seconds (printing a message in the Xcode debugger console). There is no window as there is on iOS.

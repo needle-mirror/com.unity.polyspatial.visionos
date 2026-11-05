@@ -34,7 +34,7 @@ extension PolySpatialRealityKit {
     }
 
     // Sets video component first time, optionally inverts mesh uvs.
-    func setVideoComponent(_ id: PolySpatialInstanceID,
+    func setVideoComponent(_ videoPlayerEntity: PolySpatialEntity,
                            _ info: PolySpatialVideoPlayerData,
                            _ rendererEntity: PolySpatialEntity,
                            _ videoUrl: URL) {
@@ -43,7 +43,7 @@ extension PolySpatialRealityKit {
             return
         }
 
-        let videoComp = PolySpatialComponents.UnityVideoPlayer(id, videoUrl, info.preroll)
+        let videoComp = PolySpatialComponents.UnityVideoPlayer(videoPlayerEntity, videoUrl, info.preroll)
 
         rendererEntity.components.set(videoComp)
         rendererEntity.updateVideoPlayerMesh()
@@ -91,20 +91,15 @@ extension PolySpatialRealityKit {
     }
 
     // Removes video component, optionally restores previous mesh and materials.
-    func cleanUpVideoPlayer(_ id: PolySpatialInstanceID) {
+    func cleanUpVideoPlayer(_ videoPlayerEntity: PolySpatialEntity) {
         // Video player was deleted or disabled, do some cleanup here.
-        guard let oldRenderId = videoPlayerEntityMap[id] else {
-            return
-        }
-
-        videoPlayerEntityMap[id] = nil
-
-        guard let oldRenderEntity = TryGetEntity(oldRenderId) else {
+        guard let oldRenderEntity = videoPlayerEntityMap.removeValue(forKey: videoPlayerEntity) else {
             return
         }
 
         if let videoPlayer = oldRenderEntity.components[PolySpatialComponents.UnityVideoPlayer.self] as PolySpatialComponents.UnityVideoPlayer? {
-            
+            videoPlayer.disposed = true
+
             // Sort of a shotgun approach to video player cleanup -
             // AVPlayerLooper can persist with a copy of the player if they aren't explicitly cleaned up.
             videoPlayer.avPlayerLooper?.disableLooping()
@@ -127,13 +122,15 @@ extension PolySpatialRealityKit {
         }
     }
 
-    // Resets all video players in the identified volume, recreating their assets and video materials/model components.
-    func resetVideoPlayers(_ volumeId: PolySpatialInstanceID) {
-        for entityId in videoPlayerEntityMap.values {
-            guard entityId.hostId == volumeId.hostId, entityId.viewSubgraphIndex == volumeId.viewSubgraphIndex else {
-                continue
-            }
-            let entity = GetEntity(entityId)
+    func cleanUpVideoPlayers(renderedBy rendererEntity: PolySpatialEntity) {
+        for (videoPlayerEntity, entity) in videoPlayerEntityMap where entity === rendererEntity {
+            cleanUpVideoPlayer(videoPlayerEntity)
+        }
+    }
+
+    // Resets all video players in the volume, recreating their assets and video materials/model components.
+    func resetVideoPlayers(_ volume: PolySpatialVolume) {
+        for entity in videoPlayerEntityMap.values where entity.viewSubgraph.volume === volume {
             let videoComp = entity.components[PolySpatialComponents.UnityVideoPlayer.self]!
             let previousState = videoComp.state
             let wasLooping = (videoComp.avPlayerLooper != nil)

@@ -32,6 +32,12 @@ public protocol PolySpatialWindowManagerDelegate {
 public class PolySpatialWindowManagerAccess {
     public static var delegate: PolySpatialWindowManagerDelegate? = nil
 
+    // Captured from an installed view; SwiftUI reports a runtime issue when these are read from the App or a model object.
+    public static var openImmersiveSpace: OpenImmersiveSpaceAction? = nil
+    public static var dismissImmersiveSpace: DismissImmersiveSpaceAction? = nil
+    public static var openWindow: OpenWindowAction? = nil
+    public static var dismissWindow: DismissWindowAction? = nil
+
     public static func entitiesForUnityInstanceId(id: Int32) -> [Entity] {
         PolySpatialRealityKit.instance.getEntities(unityInstanceId: id)
     }
@@ -41,11 +47,11 @@ public class PolySpatialWindowManagerAccess {
     }
 
     public static func entityForIdentifier(id: PackedIdentifier) -> Entity? {
-        PolySpatialRealityKit.instance.TryGetEntity(.init(packed: id))
+        PolySpatialRealityKit.instance.TryGetEntity(id)
     }
 
     public static func identifierForEntity(entity: Entity) -> PackedIdentifier? {
-        return (entity as? PolySpatialEntity)?.unityId.packed
+        return (entity as? PolySpatialEntity)?.packedIdentifier
     }
 
     // The ImmersiveSpace for Metal is defined outside of PolySpatialRealityKit, so it needs public APIs to inform
@@ -187,20 +193,20 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
                     // If we've gotten this far, and the initial window is Unbounded, we previously closed a Metal immersive space, and we need to
                     // open the loading window before closing the unbounded space to prevent the OS from sending our app to the background.
                     if initialWindowName == "Unbounded" {
-                        openWindow(id: "LoadingWindow")
+                        (PolySpatialWindowManagerAccess.openWindow ?? openWindow)(id: "LoadingWindow")
 
                         // Only if the initial window is unbounded do we need to dismiss the existing space. If the startup space is a compositor space,
                         // it will be dismissed later on by the window manager. Dismissing the startup immersive space in that situation is not necessary,
                         // and will send the app to the background. The following error message is expected, and safe to ignore:
                         // "Unable to present another Immersive Space when one is already requested or connected"
-                        await dismissImmersiveSpace()
+                        await (PolySpatialWindowManagerAccess.dismissImmersiveSpace ?? dismissImmersiveSpace)()
                     }
 
                     pslVolumeLog.trace("Reopening immersive space \(self.immersiveSpaceConfig) after it was closed by OS.")
                     PolySpatialWindowManagerAccess.delegate?.requestOpenWindow(immersiveSpaceConfig)
 
                     if initialWindowName == "Unbounded" {
-                        dismissWindow(id: "LoadingWindow")
+                        (PolySpatialWindowManagerAccess.dismissWindow ?? dismissWindow)(id: "LoadingWindow")
                     }
                 }
             }
@@ -299,7 +305,7 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
 
         // If we were transitioning into a compositor space from an Unbounded RealityKit ImmersiveSpace, we opened a loading window
         if window.windowConfiguration == "CompositorSpace" {
-            dismissWindow(id: "LoadingWindow")
+            (PolySpatialWindowManagerAccess.dismissWindow ?? dismissWindow)(id: "LoadingWindow")
         }
 
         needsUpdate = true
@@ -613,17 +619,13 @@ class PolySpatialWindowManager: ObservableObject, PolySpatialRealityKitDelegate 
                 // the app will be backgrounded if you close an immersive space with no open windows or volumes
                 if allWindows.count == 1 {
                     let config = allWindows.first!.value.windowConfiguration
-                    // If the last window is a compositor space, we can actually transition seamlessly
-                    if (config != "CompositorSpace") {
-                        if config == "Unbounded" {
-                            // If we are replacing a RealityKit immersive space with a Compositor Space, use a window to bridge the gap
-                            // For some reason, the opposite transition (Compositor Space -> Reality Kit Immersive Space) works fine
-                            if orphanVolumes.count == 1 && orphanVolumes.first!.desiredWindowConfiguration == "CompositorSpace" {
-                                openWindow(id: "LoadingWindow")
-                            }
-                        } else {
-                            break
+                    if PolySpatialWindow.windowConfigurationIsImmersive(config) {
+                        // Replacing one immersive space with another needs a window to bridge the gap
+                        if orphanVolumes.count == 1 && PolySpatialWindow.windowConfigurationIsImmersive(orphanVolumes.first!.desiredWindowConfiguration) {
+                            (PolySpatialWindowManagerAccess.openWindow ?? openWindow)(id: "LoadingWindow")
                         }
+                    } else {
+                        break
                     }
                 }
 

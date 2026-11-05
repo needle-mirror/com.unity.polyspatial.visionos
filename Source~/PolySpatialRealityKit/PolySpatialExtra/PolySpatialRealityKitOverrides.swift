@@ -11,24 +11,25 @@ import PolySpatialRealityKitC
 extension PolySpatialRealityKit {
     public static func overrideApi(_: Int, _ api: inout PolySpatialNativeAPI) {
         // convenient place to init
-        api.SendClientCommand = {(a, b, c, d) in PolySpatialRealityKit.instance.OnSendClientCommandOverrides(PolySpatialCommand.init(rawValue: a)!, b, c, d) }
+        api.SendClientCommand = {(a, b, c, d) in
+            guard let header = PolySpatialCommandHeader.load(validating: a) else { return }
+            PolySpatialRealityKit.instance.OnSendClientCommandOverrides(header, b, c, d) }
     }
 
     internal func OnSendClientCommandOverrides(
-        _ cmd: PolySpatialCommand,
+        _ header: PolySpatialCommandHeader,
         _ argCount: Int32,
         _ args: UnsafeMutablePointer<UnsafeMutableRawPointer?>?,
         _ argSizes: UnsafeMutablePointer<UInt32>?) {
 
-        switch cmd {
+        switch header.command {
 
             // entity APIs
 
 
             case .endAppFrame:
-                var instanceIdPtr: UnsafeMutablePointer<PolySpatialInstanceID>?
                 var frameDataPtr: UnsafeMutablePointer<PolySpatialFrameData>?
-                ExtractArgs(argCount, args, argSizes, &instanceIdPtr, &frameDataPtr)
+                ExtractArgs(argCount, args, argSizes, &frameDataPtr)
 
                 PolySpatialWindowManager.shared.matchVolumesAndWindows()
                 StaticBatchManager.instance.updateStaticBatches()
@@ -56,7 +57,7 @@ extension PolySpatialRealityKit {
                 ShaderManager.instance.SetShaderGlobalPropertyValues(shaderGlobalPropertyValues)
                 break
             default:
-                PolySpatialRealityKit.instance.OnSendClientCommand(cmd, argCount, args, argSizes)
+                PolySpatialRealityKit.instance.OnSendClientCommand(header, argCount, args, argSizes)
                 break
         }
     }

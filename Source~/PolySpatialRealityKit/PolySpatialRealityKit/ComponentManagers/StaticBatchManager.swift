@@ -7,8 +7,8 @@ import RealityKit
 class StaticBatchManager {
     static var instance = StaticBatchManager()
 
-    // The set of static batch roots that need to be updated on the current frame.
-    var dirtyStaticBatchRootIds: Set<PolySpatialInstanceID> = []
+    // The static batch roots (entities or view roots) that need to be updated on the current frame.
+    var dirtyStaticBatchRoots: Set<Entity> = []
 
     static let lightmapUVIdentifier = MeshBuffers.custom(
         PolySpatialRealityKit.instance.describe(vertexUVIndex: 1), type: simd_float2.self).id
@@ -36,30 +36,24 @@ class StaticBatchManager {
         }
     }
 
-    // Updates all static batches associated with the set of dirty static batch root IDs and clears the dirty set.
+    // Updates all static batches associated with the set of dirty static batch roots and clears the dirty set.
     func updateStaticBatches()
     {
-        if dirtyStaticBatchRootIds.isEmpty {
+        if dirtyStaticBatchRoots.isEmpty {
             return
         }
-        for staticBatchRootId in dirtyStaticBatchRootIds {
-            updateStaticBatch(staticBatchRootId, getStaticBatchRootEntity(staticBatchRootId)!)
+        for staticBatchRoot in dirtyStaticBatchRoots {
+            updateStaticBatch(staticBatchRoot)
         }
-        dirtyStaticBatchRootIds.removeAll()
+        dirtyStaticBatchRoots.removeAll()
     }
 
-    // Return the entity associated with the provided static batch root, if any.  Invalid instance IDs resolve to
-    // the scene root entity.
-    func getStaticBatchRootEntity(_ id: PolySpatialInstanceID) -> Entity? {
-        id.isValid ? PolySpatialRealityKit.instance.TryGetEntity(id) :
-            PolySpatialRealityKit.instance.viewSubgraphs[Int(id.viewSubgraphIndex)]?.root
-    }
-
-    // Updates the static batch with the given root id and associated entity, creating one or more children for each
+    // Updates the static batch with the given root entity, creating one or more children for each
     // batch key (set of lighting parameters) with per-material submeshes.
-    func updateStaticBatch(_ id: PolySpatialInstanceID, _ entity: Entity) {
+    func updateStaticBatch(_ entity: Entity) {
         // Require the presence of a StaticBatchRootInfo with our entity/elements.
         let staticBatchRootInfo = entity.components[PolySpatialComponents.StaticBatchRootInfo.self]!
+        let rootId = (entity as? PolySpatialEntity)?.unityId ?? PolySpatialEntityID.none
 
         // Remove all existing children of the entity.
         staticBatchRootInfo.clearContents()
@@ -72,6 +66,7 @@ class StaticBatchManager {
 
         // Create one or more merged entities for each batch key.
         for (staticBatchKey, elements) in staticBatchKeysToElements {
+            let viewSubgraph = elements.first!.viewSubgraph
             // Stores all buffers used for a material and their types so that we can compute size requirements.
             struct BufferSummary {
                 var elementTypes: Dictionary<MeshBuffers.Identifier, MeshBuffers.ElementType> = [:]
@@ -376,7 +371,7 @@ class StaticBatchManager {
                 // Create the mesh contents by merging all merge parts with the same material.
                 let parts = materialIdToBufferTotals.enumerated().map() {
                     let (index, (materialId, totals)) = $0
-                    var part = MeshResource.Part(id: "\(id):\(index)", materialIndex: index)
+                    var part = MeshResource.Part(id: "\(rootId):\(index)", materialIndex: index)
                     for (identifier, elementType) in materialBufferSummaries[materialId]!.elementTypes {
                         switch identifier.name {
                             case MeshBuffers.Identifier.triangleIndices.name:
@@ -419,11 +414,11 @@ class StaticBatchManager {
                 }
 
                 var contents = MeshResource.Contents()
-                let modelId = "\(id):model"
+                let modelId = "\(rootId):model"
                 contents.models = .init([.init(id: modelId, parts: parts)])
-                contents.instances = .init([.init(id: "\(id):instance", model: modelId)])
+                contents.instances = .init([.init(id: "\(rootId):instance", model: modelId)])
 
-                let child = PolySpatialEntity(id)
+                let child = PolySpatialEntity(rootId, viewSubgraph)
                 child.setParent(staticBatchRootInfo.entity)
                 child.setRenderInfo(.init(
                     try! MeshResource.generate(from: contents),
@@ -518,13 +513,13 @@ class StaticBatchManager {
                         commandBuffer = existingCommandBuffer
                         commandEncoder = existingCommandEncoder
                     } else {
-                        commandBuffer = PolySpatialRealityKit.instance.mtlCommandQueue!.makeCommandBuffer()!
+                        commandBuffer = PolySpatialRealityKit.instance.makeNativeCopyCommandBuffer()!
                         existingCommandBuffer = commandBuffer
                         commandEncoder = commandBuffer.makeComputeCommandEncoder(dispatchType: .concurrent)!
                         existingCommandEncoder = commandEncoder
                     }
 
-                    let child = PolySpatialEntity(id)
+                    let child = PolySpatialEntity(rootId, viewSubgraph)
                     child.setParent(staticBatchRootInfo.entity)
 
                     var destOffset = UInt32(0)

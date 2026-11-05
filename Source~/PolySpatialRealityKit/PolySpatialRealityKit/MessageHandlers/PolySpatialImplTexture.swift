@@ -67,17 +67,265 @@ extension PolySpatialRealityKit {
         return textureAssets[id]!
     }
 
+    // Scratch and backing texture reused across an asset's dirty-region updates. Both are full-size, so
+    // allocating them per update (and seeding the scratch with a whole-texture copy) would cost more than the
+    // whole-texture upload this path replaces.
+    // The bytes of the last whole-texture upload, with each level's position in them. applyDirtyRegions seeds
+    // its scratch from this instead of copying the published resource back off the GPU.
+    struct WholeTextureMirror {
+        let bytes: [UInt8]
+        // offset/bytesPerRow per mip level, in level order.
+        let levels: [(offset: Int, bytesPerRow: Int)]
+        let pixelFormat: MTLPixelFormat
+        let width: Int
+        let height: Int
+    }
+
+    @MainActor
+    class DirtyRegionTextureState {
+        // CPU-writable mirror of the texture's current contents, patched a rect at a time.
+        let scratch: MTLTexture
+        let lowLevelTexture: LowLevelTexture
+        // The resource published from lowLevelTexture. A whole-texture update swaps the asset's resource without
+        // going through us, so an identity mismatch means scratch no longer mirrors what's on screen.
+        let resource: TextureResource
+        // What the last blit wrote to. If replace(using:) hands back a different MTLTexture, it holds none of our
+        // pixels and every level has to be blitted rather than just the patched rects.
+        var destTexture: MTLTexture?
+        // That blit reads scratch on the GPU, so it has to finish before the CPU patches scratch again.
+        var blit: MTLCommandBuffer?
+
+        init(scratch: MTLTexture, lowLevelTexture: LowLevelTexture, resource: TextureResource) {
+            self.scratch = scratch
+            self.lowLevelTexture = lowLevelTexture
+            self.resource = resource
+        }
+
+        func matches(
+            _ liveResource: TextureResource, _ pixelFormat: MTLPixelFormat, _ width: Int, _ height: Int,
+            _ mipmapLevelCount: Int) -> Bool {
+            resource === liveResource && scratch.pixelFormat == pixelFormat && scratch.width == width
+                && scratch.height == height && scratch.mipmapLevelCount == mipmapLevelCount
+        }
+    }
+
+    // Allocates the scratch and LowLevelTexture that applyDirtyRegions reuses, seeding the scratch from the
+    // current contents so pixels no region touches survive. The caller publishes the resource once it has
+    // blitted the seeded contents into the LowLevelTexture.
+    func createDirtyRegionState(
+        _ asset: TextureAsset, _ metalFormat: MTLPixelFormat, _ width: Int, _ height: Int,
+        _ mipmapLevelCount: Int) -> DirtyRegionTextureState? {
+        // Scratch texture we can both CPU-write (replace(region:)) and GPU mip-generate. Shared storage so the
+        // CPU sub-rect copies are valid. An invalid metalFormat is caught here.
+        let scratchDescriptor = MTLTextureDescriptor()
+        scratchDescriptor.textureType = .type2D
+        scratchDescriptor.pixelFormat = metalFormat
+        scratchDescriptor.width = width
+        scratchDescriptor.height = height
+        scratchDescriptor.mipmapLevelCount = mipmapLevelCount
+        scratchDescriptor.storageMode = .shared
+        scratchDescriptor.usage = [.shaderRead, .shaderWrite]
+        guard let scratch = mtlDevice!.makeTexture(descriptor: scratchDescriptor) else { return nil }
+
+        // Seed from the CPU mirror of the last whole-texture upload rather than copying the published resource back
+        // with TextureResource.copy(to:). That copy runs on the GPU and returns success while writing nothing on
+        // some devices -- CI publishes a texture blank apart from the rects each update patched, while the same
+        // commit, SDK and runtime seed correctly on local hardware. A CPU write into shared storage has no such
+        // failure mode. No mirror means we cannot reconstruct the untouched texels, so give up on patching: the
+        // caller reports the upload as failed, which drops the host's baseline and resends the whole texture.
+        // Patching an unseeded scratch would publish garbage for every untouched texel.
+        guard let mirror = asset.wholeTextureMirror,
+            mirror.pixelFormat == metalFormat, mirror.width == width, mirror.height == height,
+            mirror.levels.count >= mipmapLevelCount else {
+            LogWarning("Cannot seed the dirty-region scratch: no matching whole-texture mirror for this asset.")
+            return nil
+        }
+        mirror.bytes.withUnsafeBytes { raw in
+            guard let base = raw.baseAddress else { return }
+            for level in 0..<mipmapLevelCount {
+                scratch.replace(
+                    region: MTLRegionMake2D(0, 0, max(1, width >> level), max(1, height >> level)),
+                    mipmapLevel: level,
+                    withBytes: base + mirror.levels[level].offset,
+                    bytesPerRow: mirror.levels[level].bytesPerRow)
+            }
+        }
+
+        guard let lowLevelTexture = try? LowLevelTexture(descriptor: .init(
+                textureType: .type2D,
+                pixelFormat: metalFormat,
+                width: width,
+                height: height,
+                mipmapLevelCount: mipmapLevelCount,
+                textureUsage: .shaderRead)),
+            let resource = try? TextureResource(from: lowLevelTexture) else {
+            return nil
+        }
+
+        return .init(scratch: scratch, lowLevelTexture: lowLevelTexture, resource: resource)
+    }
+
+    // Applies app-supplied dirty regions (texdata.dirtyRegions) into an existing texture, each at its own mip level.
+    // pixelData holds only the changed-region bytes, concatenated: each region's bytes start at its dataOffset
+    // and are tightly packed (width * bytesPerPixel per row, height rows). We CPU-copy each region into its level
+    // of the asset's cached scratch texture, then blit the patched rects into the cached LowLevelTexture backing the
+    // published resource. A payload that carried no lower-mip regions (a mipmapped RenderTexture, whose partials are
+    // mip-0 only) has its chain regenerated from mip 0 instead. Returns false (caller falls back to a whole-texture
+    // upload) when there is no compatible cached asset, the format isn't a directly-copyable raw format, or any
+    // Metal resource can't be created.
+    func applyDirtyRegions(
+        _ id: PolySpatialAssetID, _ texdata: PolySpatialTextureData,
+        _ pixelData: UnsafeMutableRawBufferPointer?) -> Bool {
+        guard let pixelData, let pixelBase = pixelData.baseAddress else { return false }
+
+        // Only an existing 2D texture can be partially updated in place.
+        guard let asset = textureAssets[id], texdata.shape == .texture2D || texdata.shape == .renderTexture else {
+            return false
+        }
+
+        // The sender only emits partials in a directly-copyable raw format; an invalid metalFormat is caught when
+        // the scratch texture is created.
+        let graphicsFormat = UnityGraphicsFormat(rawValue: texdata.unityGraphicsFormat.rawValue)
+        let (metalFormat, _) = PolySpatialRealityKit.unityToMetalFormat(graphicsFormat)
+
+        let width = Int(texdata.width)
+        let height = Int(texdata.height)
+
+        // Derive bytes-per-pixel from mip 0's row stride, exactly as the sender does (bytesPerRow == width * bpp
+        // for uncompressed formats). mips[] always carries the full-texture dimensions.
+        guard let mip0 = texdata.mips.first, mip0.width > 0, mip0.bytesPerRow > 0,
+            Int(mip0.bytesPerRow) % Int(mip0.width) == 0 else {
+            return false
+        }
+        let bytesPerPixel = Int(mip0.bytesPerRow) / Int(mip0.width)
+
+        let mipmapLevelCount = asset.texture.resource.mipmapLevelCount
+        let isMipMapped = mipmapLevelCount > 1
+
+        // Reuse the scratch and backing texture from previous updates while they still describe this texture; the
+        // scratch already holds its contents, so steady state allocates nothing and copies only the dirty rects.
+        var state = asset.dirtyRegionState
+        if let current = state,
+            !current.matches(asset.texture.resource, metalFormat, width, height, mipmapLevelCount) {
+            state = nil
+        }
+        let isNewState = state == nil
+        if isNewState {
+            state = createDirtyRegionState(asset, metalFormat, width, height, mipmapLevelCount)
+        }
+        guard let state else { return false }
+
+        // The previous update's blit reads the scratch, so let it finish before overwriting rects in it.
+        state.blit?.waitUntilCompleted()
+        state.blit = nil
+
+        // CPU-copy each region's tightly-packed bytes into its own mip level of the scratch texture. Each region is
+        // addressed against that level's dimensions.
+        var patchedRegions: [(level: Int, region: MTLRegion)] = []
+        var patchedLowerMip = false
+        for index in 0..<texdata.dirtyRegions.count {
+            let region = texdata.dirtyRegions[index]
+            let level = Int(region.mipIndex)
+            if level < 0 || level >= mipmapLevelCount {
+                // Dropping a region silently leaves that level stale with no way to tell from the rendered result.
+                LogWarning(
+                    "Dropping dirty region for \(id): mip \(level) is outside the texture's \(mipmapLevelCount) " +
+                    "level(s).")
+                continue
+            }
+            let levelWidth = max(1, width >> level)
+            let levelHeight = max(1, height >> level)
+            let rx = Int(region.x)
+            let ry = Int(region.y)
+            let rw = Int(region.width)
+            let rh = Int(region.height)
+            if rw <= 0 || rh <= 0 || rx < 0 || ry < 0 || rx + rw > levelWidth || ry + rh > levelHeight {
+                // Same here: a rect that doesn't fit its level would otherwise be dropped without a trace.
+                LogWarning(
+                    "Dropping dirty region for \(id): rect \(rx),\(ry) \(rw)x\(rh) does not fit mip \(level) " +
+                    "(\(levelWidth)x\(levelHeight)).")
+                continue
+            }
+            let bytesPerRow = rw * bytesPerPixel
+            let regionSize = bytesPerRow * rh
+            let dataOffset = Int(region.dataOffset)
+            if dataOffset < 0 || dataOffset + regionSize > pixelData.count {
+                // And here: a payload that can't hold the region's bytes must not fail quietly.
+                LogWarning(
+                    "Dropping dirty region for \(id): mip \(level) wants \(regionSize) byte(s) at offset " +
+                    "\(dataOffset), past the \(pixelData.count)-byte payload.")
+                continue
+            }
+            let mtlRegion = MTLRegionMake2D(rx, ry, rw, rh)
+            state.scratch.replace(
+                region: mtlRegion,
+                mipmapLevel: level,
+                withBytes: pixelBase + dataOffset,
+                bytesPerRow: bytesPerRow)
+            patchedRegions.append((level, mtlRegion))
+            if level > 0 {
+                patchedLowerMip = true
+            }
+        }
+
+        let commandBuffer = mtlCommandQueue!.makeCommandBuffer()!
+        let destTexture = state.lowLevelTexture.replace(using: commandBuffer)
+        guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else { return false }
+        // A mip-0-only payload has its chain regenerated from mip 0; a per-mip payload carries every level.
+        let regenerateMips = isMipMapped && !patchedLowerMip
+        if state.destTexture === destTexture {
+            // The backing texture still holds what we last blitted, so only the patched rects have to move.
+            for patched in patchedRegions {
+                blitEncoder.copy(
+                    from: state.scratch, sourceSlice: 0, sourceLevel: patched.level,
+                    sourceOrigin: patched.region.origin,
+                    sourceSize: patched.region.size,
+                    to: destTexture, destinationSlice: 0, destinationLevel: patched.level,
+                    destinationOrigin: patched.region.origin)
+            }
+        } else {
+            // First blit into this texture: it holds none of our pixels, so seed the levels we own from the scratch.
+            for level in 0..<(regenerateMips ? 1 : mipmapLevelCount) {
+                blitEncoder.copy(
+                    from: state.scratch, sourceSlice: 0, sourceLevel: level,
+                    sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                    sourceSize: MTLSize(width: max(1, width >> level), height: max(1, height >> level), depth: 1),
+                    to: destTexture, destinationSlice: 0, destinationLevel: level,
+                    destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            }
+        }
+        if regenerateMips {
+            blitEncoder.generateMipmaps(for: destTexture)
+        }
+        blitEncoder.endEncoding()
+        commandBuffer.commit()
+        state.destTexture = destTexture
+        state.blit = commandBuffer
+
+        if isNewState {
+            // Publish now that the seeded contents have been blitted. Replacing the TextureResource (rather than
+            // relying on replace(with: LowLevelTexture)) keeps the shader graph parameters in sync (see FB16501956).
+            asset.texture.resource = state.resource
+            asset.lowLevelTexture = state.lowLevelTexture
+            asset.dirtyRegionState = state
+        }
+        asset.cgImage = nil
+        asset.flipped = nil
+        UpdateTextureDefinition(id, asset)
+        return true
+    }
+
     func CreateOrUpdateTextureAsset(_ id: PolySpatialAssetID, _ texdata: PolySpatialTextureData, _ pixelData: UnsafeMutableRawBufferPointer?) -> Bool {
-        // LXR-5904: The optional dirtyRegions vector describes the changed sub-regions of the texture.
-        // When absent (or empty), the entire texture is considered dirty. Partial-apply is not yet
-        // implemented on this receiver, so for now we always fall back to the whole-texture path below.
+        // The optional dirtyRegions vector describes the changed sub-regions of the texture. When absent (or
+        // empty), the entire texture is considered dirty. When present, pixelData carries only the concatenated
+        // region bytes; apply them in place at each region's mip level. Do NOT fall through to the
+        // whole-texture path on failure — pixelData is region-only, so that path (CFData / Metal mip mappings
+        // using the full dataSize/dataOffset) would read out of bounds. Drop the update instead.
         if texdata.dirtyRegions.count > 0 {
-            // Partial-apply lands in the stacked PR (#4617). Here pixelData carries only the changed-region
-            // bytes, so falling through to the whole-texture path (CFDataCreate / Metal mip mappings using the
-            // full dataSize/dataOffset) would read out of bounds. Drop rather than crash — senders only emit
-            // partial payloads to hosts advertising the texturePartialUpdates capability (also #4617), so this
-            // is defensive and unreachable in this PR.
-            assertionFailure("PolySpatial: dirty-region texture update received but partial-apply is not implemented on the RealityKit host (see LXR-5904 / #4617)")
+            if applyDirtyRegions(id, texdata, pixelData) {
+                return true
+            }
+            LogWarning("Dropping dirty-region texture update for \(id): could not apply regions in place.")
             return false
         }
 
@@ -173,6 +421,18 @@ extension PolySpatialRealityKit {
                                          length: pixelData!.count,
                                          options: .storageModeShared)!
 
+        // Keep the payload so a later partial can seed its scratch from it (createDirtyRegionState). Only 2D
+        // shapes take the dirty-region path, so only they are worth mirroring.
+        var wholeTextureMirror: WholeTextureMirror?
+        if texdata.shape == .texture2D || texdata.shape == .renderTexture {
+            wholeTextureMirror = .init(
+                bytes: [UInt8](UnsafeRawBufferPointer(start: pixelData!.baseAddress!, count: pixelData!.count)),
+                levels: texdata.mips.map { (offset: Int($0.dataOffset), bytesPerRow: Int($0.bytesPerRow)) },
+                pixelFormat: metalFormat,
+                width: Int(texdata.width),
+                height: Int(texdata.height))
+        }
+
         do {
             let rsrc: TextureResource = switch texdata.shape {
                 // Treat render texture like we would a texture2D in RK.
@@ -214,8 +474,10 @@ extension PolySpatialRealityKit {
             }
 
             let sampler = CreateTextureSampler(texdata.filterMode, texdata.wrapModeU, texdata.wrapModeV)
-            UpdateTextureDefinition(id, .init(.init(rsrc, sampler: sampler),
-                .init(Float(texdata.width), Float(texdata.height), Float(texdata.depth))))
+            let asset = TextureAsset(.init(rsrc, sampler: sampler),
+                .init(Float(texdata.width), Float(texdata.height), Float(texdata.depth)))
+            asset.wholeTextureMirror = wholeTextureMirror
+            UpdateTextureDefinition(id, asset)
         } catch {
             LogError("Failed to create native texture asset \(id): \(error)")
             return false

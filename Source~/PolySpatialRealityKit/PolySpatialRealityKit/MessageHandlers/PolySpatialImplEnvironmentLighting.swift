@@ -3,9 +3,8 @@ import RealityKit
 extension PolySpatialRealityKit {
 
     func createOrUpdateEnvironmentLightingConfiguration(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ environmentLightingConfigurationInfo: UnsafeMutablePointer<PolySpatialEnvironmentLightingConfigurationData>?) {
-        let entity = GetEntity(id)
         let info = environmentLightingConfigurationInfo!.pointee
         entity.components.set(EnvironmentLightingConfigurationComponent(
             environmentLightingWeight: info.environmentLightingWeight))

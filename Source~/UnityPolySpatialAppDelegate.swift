@@ -143,37 +143,41 @@ class UnityPolySpatialAppDelegate: NSObject, UIApplicationDelegate, ObservableOb
     }
 
     func onRemoveForegroundScene(_ scene: UIScene) {
+        // Only the last scene to enter the background notifies Unity as if the whole app has entered the background.
+        if foregroundScenes.count > 0 {
+            return
+        }
+
         // If there are pending volumes, do not send didEnterBackground--there will be a new foreground scene immediately after this
         if PolySpatialSceneDelegate.hasPendingVolumes() {
             skippedEnterBackground = true
             return
         }
 
-        // If this is the last scene to enter the background, notify Unity as if the whole app has entered the background.
-        if foregroundScenes.count == 0 {
-            UnityLibrary.instance?.didEnterBackground()
-        }
+        UnityLibrary.instance?.didEnterBackground()
     }
 
     func onRemoveActiveScene(_ scene: UIScene) {
+        // Only the last scene to resign notifies Unity as if the whole app has resigned.
+        if activeScenes.count > 0 {
+            return
+        }
+
         // If there are pending volumes, do not send willResignActive--there will be a new active scene immediately after this
         if PolySpatialSceneDelegate.hasPendingVolumes() {
             skippedResignedActive = true
             return
         }
 
-        // If this is the last scene to resign, notify Unity as if the whole app has resigned.
-        if activeScenes.count == 0 {
-            if let instance = UnityLibrary.instance {
-                // If runInBackground is true, do not call willResignActive, which results in pausing Unity
-                // unless we're using the special CompositorServices render loop. The logic in repaintCompositorLayer
-                // (from  UnityAppController+Rendering+visionOS.mm) relies on this signal to detect the situation
-                // where the Control Center system UI is visible, and we need to keep rendering despite other signals
-                // telling the app to pause. Without the second part of this check, the app will stop submitting frames
-                // to the compositor when the user opens Control Center, and will be killed by the OS.
-                if (!instance.shouldRunInBackground() || GetLayerRenderer() != nil) {
-                    instance.willResignActive()
-                }
+        if let instance = UnityLibrary.instance {
+            // If runInBackground is true, do not call willResignActive, which results in pausing Unity
+            // unless we're using the special CompositorServices render loop. The logic in repaintCompositorLayer
+            // (from  UnityAppController+Rendering+visionOS.mm) relies on this signal to detect the situation
+            // where the Control Center system UI is visible, and we need to keep rendering despite other signals
+            // telling the app to pause. Without the second part of this check, the app will stop submitting frames
+            // to the compositor when the user opens Control Center, and will be killed by the OS.
+            if (!instance.shouldRunInBackground() || GetLayerRenderer() != nil) {
+                instance.willResignActive()
             }
         }
     }

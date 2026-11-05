@@ -1,20 +1,20 @@
 extension PolySpatialRealityKit {
 
     func createOrUpdateSpriteRenderer(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ spriteRenderData: UnsafeMutablePointer<PolySpatialSpriteRenderData>?) {
 
         let info = spriteRenderData!.pointee
 
         guard var renderData = info.renderData else {
-            LogException("No render info available for \(id).")
+            LogException("No render info available for \(entity).")
             return
         }
 
-        GetEntity(id).setMaskedRendererInfo(
+        entity.setMaskedRendererInfo(
             info.color.cgColor(), info.mainTextureId, info.maskTextureId, info.maskUvtransform.toFloat4x4(),
             info.maskingOperation, info.maskAlphaCutoff)
-        createOrUpdateMeshRenderer(id, &renderData)
+        createOrUpdateMeshRenderer(entity, &renderData)
     }
     
     func destroySpriteRenderer(_ entity: PolySpatialEntity) {
@@ -22,7 +22,7 @@ extension PolySpatialRealityKit {
         destroyMeshRenderer(entity)
     }
 
-    func createOrUpdateSpriteMask(_ id: PolySpatialInstanceID, _ spriteMaskData: UnsafeMutablePointer<PolySpatialSpriteMaskData>?) {
+    func createOrUpdateSpriteMask(_ entity: PolySpatialEntity, _ spriteMaskData: UnsafeMutablePointer<PolySpatialSpriteMaskData>?) {
         // Don't actually render anything here. This is setup material for masking out sprites
         // when called in createOrUpdateSpriteRenderer.
     }

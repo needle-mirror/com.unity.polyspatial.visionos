@@ -21,6 +21,8 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
     @Environment(\.dismissImmersiveSpace) var dismissImmersiveSpace
     @Environment(\.scenePhase) var scenePhase
 
+    @MainActor static var immersiveSpaceOpenPending = false
+
     init() {
         PolySpatialWindowManagerAccess.delegate = self
 
@@ -43,13 +45,25 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
         let useParameterizedProvider = configuration == "CompositorSpace" ? 0 : 1
         unityVisionOS?.perform(Selector(("setUseParameterizedDisplayProvider:")), with: useParameterizedProvider)
         if PolySpatialWindow.windowConfigurationIsImmersive(configuration) {
+            // visionOS rejects a second immersive space request while one is pending; the window manager matches the
+            // waiting volume once the pending space opens.
+            if UnityPolySpatialApp.immersiveSpaceOpenPending {
+                return
+            }
+
+            UnityPolySpatialApp.immersiveSpaceOpenPending = true
             Task {
-                await openImmersiveSpace(id: configuration)
+                let result = await (PolySpatialWindowManagerAccess.openImmersiveSpace ?? openImmersiveSpace)(id: configuration)
+                UnityPolySpatialApp.immersiveSpaceOpenPending = false
+
+                if result == .opened && configuration == "Unbounded" {
+                    (PolySpatialWindowManagerAccess.dismissWindow ?? dismissWindow)(id: "LoadingWindow")
+                }
                 // TODO: Handle failure case where user dismisses safety dialog without allowing the space to open
                 // or clicks "Learn More," which will background the app and open Safari
             }
         } else {
-            openWindow(id: configuration)
+            (PolySpatialWindowManagerAccess.openWindow ?? openWindow)(id: configuration)
         }
     }
 
@@ -57,7 +71,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
         let configuration = window.windowConfiguration
         if PolySpatialWindow.windowConfigurationIsImmersive(configuration) {
             Task {
-                await dismissImmersiveSpace()
+                await (PolySpatialWindowManagerAccess.dismissImmersiveSpace ?? dismissImmersiveSpace)()
 
                 if configuration == "CompositorSpace" {
                     // Inform the Unity trampoline that we are turning off Metal rendering
@@ -79,7 +93,7 @@ struct UnityPolySpatialApp: App, PolySpatialWindowManagerDelegate {
                 }
             }
         } else {
-            dismissWindow(id: configuration, value: window.uuid)
+            (PolySpatialWindowManagerAccess.dismissWindow ?? dismissWindow)(id: configuration, value: window.uuid)
         }
     }
 

@@ -9,15 +9,21 @@ import SwiftUI
 import Combine
 
 @MainActor
-public class PolySpatialViewSubgraph {
+public class PolySpatialViewSubgraph: CustomStringConvertible {
     let viewSubgraphIndex: UInt8
+    let connectionId: PolySpatialConnectionID
     let root: Entity
     var entities: [PolySpatialEntityID: PolySpatialEntity] = [:]
     var volume: PolySpatialVolume? = nil
 
-    init(_ vidx: UInt8) {
+    init(_ vidx: UInt8, _ connectionId: PolySpatialConnectionID) {
         viewSubgraphIndex = vidx
+        self.connectionId = connectionId
         root = Entity()
+    }
+
+    nonisolated public var description: String {
+        "view \(viewSubgraphIndex) of connection \(connectionId.value)"
     }
 }
 
@@ -49,7 +55,9 @@ public class PolySpatialVolume: ObservableObject, Equatable, Hashable {
     static let compositorConfigString = "CompositorSpace"
     static let boundedConfigString = "Bounded-"
 
-    let id: PolySpatialInstanceID
+    let id: PolySpatialEntityID
+    // The session this volume belongs to; host commands about it are addressed here.
+    let connectionId: PolySpatialConnectionID
     let root: Entity
 
     var rootEntity: Entity { get { root }}
@@ -100,7 +108,7 @@ public class PolySpatialVolume: ObservableObject, Equatable, Hashable {
     var alignmentMarkerPath: AlignmentMarkerPath?
 
     // Maps alignment marker IDs to their states.
-    var alignmentMarkerStates: [PolySpatialInstanceID: PolySpatialAlignmentMarkerState] = [:] {
+    var alignmentMarkerStates: [PolySpatialEntityID: PolySpatialAlignmentMarkerState] = [:] {
         didSet {
             // If there are no markers, return to the default behavior.
             if alignmentMarkerStates.isEmpty {
@@ -178,8 +186,9 @@ public class PolySpatialVolume: ObservableObject, Equatable, Hashable {
     let volumeToWorldLowLevelTexture: LowLevelTexture
     let volumeToWorldTextureResource: TextureResource
 
-    init(_ cameraId: PolySpatialInstanceID, _ rootEntity: Entity) {
+    init(_ cameraId: PolySpatialEntityID, _ connectionId: PolySpatialConnectionID, _ rootEntity: Entity) {
         id = cameraId
+        self.connectionId = connectionId
         root = rootEntity
         root.components.set(InputTargetComponent())
 
@@ -419,11 +428,12 @@ public class PolySpatialVolume: ObservableObject, Equatable, Hashable {
         commandBuffer.commit()
     }
 
+    // A volume camera's entity id is only unique within its session, so volumes compare by identity.
     nonisolated public static func == (lhs: PolySpatialVolume, rhs: PolySpatialVolume) -> Bool {
-        lhs.id == rhs.id
+        lhs === rhs
     }
 
     nonisolated public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        hasher.combine(ObjectIdentifier(self))
     }
 }

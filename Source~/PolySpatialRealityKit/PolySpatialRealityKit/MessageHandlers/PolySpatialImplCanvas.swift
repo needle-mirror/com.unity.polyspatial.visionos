@@ -1,19 +1,19 @@
 extension PolySpatialRealityKit {
     
     func createOrUpdateCanvasRenderer(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ canvasRendererData: UnsafeMutablePointer<PolySpatialCanvasRendererData>?) {
         
         let info = canvasRendererData!.pointee
 
         guard var renderData = info.renderData else {
-            LogException("No render info available for \(id).")
+            LogException("No render info available for \(entity).")
             return
         }
 
-        GetEntity(id).setMaskedRendererInfo(
+        entity.setMaskedRendererInfo(
             info.color.cgColor(), info.mainTextureId, info.maskTextureId, info.maskUvtransform.toFloat4x4())
-        createOrUpdateMeshRenderer(id, &renderData)
+        createOrUpdateMeshRenderer(entity, &renderData)
     }
     
     func destroyCanvasRenderer(_ entity: PolySpatialEntity) {

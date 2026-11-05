@@ -4,9 +4,8 @@ import RealityKit
 extension PolySpatialRealityKit {
 
     func createOrUpdateAlignmentMarker(
-        _ id: PolySpatialInstanceID,
+        _ entity: PolySpatialEntity,
         _ alignmentMarkerInfo: UnsafeMutablePointer<PolySpatialAlignmentMarkerData>?) {
-        let entity = GetEntity(id)
         let info = alignmentMarkerInfo!.pointee
         entity.setAlignmentMarkerInfo(info)
     }

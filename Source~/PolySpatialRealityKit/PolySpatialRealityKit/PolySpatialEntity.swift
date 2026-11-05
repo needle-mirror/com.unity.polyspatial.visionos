@@ -9,13 +9,26 @@ import RealityKit
 // Provides quick access to components that we may use (RenderInfo, ModelComponent, etc.),
 // as well as helper methods for updating things like RenderInfo+ModelComponent
 //
-class PolySpatialEntity: Entity, HasModel, TextureObserver {
+class PolySpatialEntity: Entity, HasModel, TextureObserver, CustomStringConvertible {
 
     // The single collision component shared by all raycast targets.
     static let raycastTargetCollisionComponent = CollisionComponent(
         shapes: [.generateBox(size: .one)], mode: .trigger, collisionOptions: .static)
 
-    public var unityId: PolySpatialInstanceID { self.instanceRef.unityId }
+    public var unityId: PolySpatialEntityID { self.instanceRef.unityId }
+
+    public var packedIdentifier: PackedIdentifier { .init(unityId, connectionId, viewSubgraph.viewSubgraphIndex) }
+
+    // Backing entities share their owner's Unity ID, but only the owner is registered under it.
+    var isBackingEntity: Bool { viewSubgraph.entities[unityId] !== self }
+
+    var description: String {
+        let connectionId = viewSubgraph.connectionId.value
+        let viewSubgraphIndex = viewSubgraph.viewSubgraphIndex
+        return viewSubgraphIndex == 0
+            ? (connectionId == 0 ? "\(unityId)" : "\(unityId):\(connectionId)")
+            : "\(unityId):\(connectionId):\(viewSubgraphIndex)"
+    }
 
     // this is required to be present, otherwise something went very wrong
     var instanceRef: PolySpatialComponents.InstanceRef {
@@ -206,13 +219,18 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
     private var disposed: Bool = false
 
     required init() {
-        assertionFailure("Should never use this init on PolySpatialEntity")
+        fatalError("Should never use this init on PolySpatialEntity")
     }
 
-    init(_ unityId: PolySpatialInstanceID) {
+    let viewSubgraph: PolySpatialViewSubgraph
+
+    var connectionId: PolySpatialConnectionID { viewSubgraph.connectionId }
+
+    init(_ unityId: PolySpatialEntityID, _ viewSubgraph: PolySpatialViewSubgraph) {
+        self.viewSubgraph = viewSubgraph
         super.init()
 
-        self.name = "\(unityId.id):\(unityId.hostId):\(unityId.viewSubgraphIndex)"
+        self.name = "\(unityId):\(viewSubgraph.connectionId):\(viewSubgraph.viewSubgraphIndex)"
         self.components.set(PolySpatialComponents.InstanceRef(unityId))
     }
 
@@ -234,6 +252,14 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
             break
         }
 
+        // Drop every reference the scene-wide maps hold to this entity, whether or not its components were destroyed
+        // individually first. Must precede disposeBackingEntities: video cleanup can rebuild this entity's model.
+        PolySpatialRealityKit.instance.cleanUpVideoPlayer(self)
+        PolySpatialRealityKit.instance.cleanUpVideoPlayers(renderedBy: self)
+        PolySpatialRealityKit.instance.particleManager.removeSubEmitterDatum(self)
+        PolySpatialRealityKit.instance.CleanUpSortingGroups(self)
+        clearRendererSortingGroup()
+
         disposeBackingEntities()
 
         unregisterMeshesAndMaterials()
@@ -248,7 +274,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         // If we were host to a static batch, make sure we dispose of its elements as well.
         if let staticBatchRootInfo = components[PolySpatialComponents.StaticBatchRootInfo.self] {
             staticBatchRootInfo.clearContents()
-            StaticBatchManager.instance.dirtyStaticBatchRootIds.remove(unityId)
+            StaticBatchManager.instance.dirtyStaticBatchRoots.remove(self)
         }
 
         // Likewise, make sure that we are removed from any existing static batch
@@ -283,7 +309,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
             // the merged entity.
             if let staticBatchElementInfo = components[PolySpatialComponents.StaticBatchElementInfo.self] {
                 if renderInfo.meshId == id {
-                    StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(staticBatchElementInfo.rootId)
+                    StaticBatchManager.instance.dirtyStaticBatchRoots.insert(staticBatchElementInfo.root)
                 }
             // If the reference is preserved and the mesh's properties still match the materials, then we only
             // need to update the raycast target transforms (which are based on the mesh contents).
@@ -340,13 +366,16 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         // If we had previously inherited a sorting group, we need to clear it out.
         PolySpatialRealityKit.instance.clearInheritedSortingGroupRecursively(self)
 
-        // Add ourselves and our descendants to the parent's sorting group, if it includes descendants.
-        if let sortGroupInfo = parent?.components[PolySpatialComponents.ModelSortGroupInfo.self],
+        // Add ourselves and our descendants to the parent's sorting group, if it includes descendants.  Backing
+        // entities instead receive their owner's sort group through updateBackingEntityComponents.
+        if !isBackingEntity,
+            let sortGroupInfo = parent?.components[PolySpatialComponents.ModelSortGroupInfo.self],
             let component = sortGroupInfo.sortGroupComponentOverride,
+            let sortGroupEntity = sortGroupInfo.overrideSortGroupEntity,
             sortGroupInfo.overrideAppliesToDescendants {
 
             PolySpatialRealityKit.instance.setSortingGroupRecursively(
-                sortGroupInfo.overrideSortGroupEntityId,
+                sortGroupEntity,
                 self,
                 component.group,
                 component.order,
@@ -421,11 +450,11 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
                 raycastTargetBackingEntity = existingRaycastTargetBackingEntity
                 grandchildEntity = raycastTargetBackingEntity.raycastTargetBackingEntity!
             } else {
-                raycastTargetBackingEntity = .init(unityId)
+                raycastTargetBackingEntity = .init(unityId, viewSubgraph)
                 raycastTargetBackingEntity.setParent(self)
                 raycastTargetBackingEntity.components.set(PolySpatialEntity.raycastTargetCollisionComponent)
 
-                grandchildEntity = .init(unityId)
+                grandchildEntity = .init(unityId, viewSubgraph)
                 grandchildEntity.setParent(raycastTargetBackingEntity)
                 raycastTargetBackingEntity.raycastTargetBackingEntity = grandchildEntity
 
@@ -739,7 +768,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
                     let localToWorldTransform = update.anchor.originFromAnchorTransform *
                         simd_float4x4(scale: update.anchor.estimatedScaleFactor)
                     Task { @MainActor in
-                        guard let volume = PolySpatialRealityKit.instance.tryGetVolume(unityId) else {
+                        guard let volume = self.viewSubgraph.volume else {
                             return
                         }
                         volume.alignmentMarkerStates[unityId] = .init(
@@ -756,7 +785,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
             tracker.task.cancel()
             components.remove(PolySpatialComponents.AlignmentMarkerTracker.self)
 
-            if let volume = PolySpatialRealityKit.instance.tryGetVolume(unityId) {
+            if let volume = viewSubgraph.volume {
                 volume.alignmentMarkerStates.removeValue(forKey: unityId)
             }
         }
@@ -768,10 +797,9 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
     }
 
-    func setStaticBatchElementInfo(_ rootId: PolySpatialInstanceID) {
-        components.set(PolySpatialComponents.StaticBatchElementInfo(rootId))
+    func setStaticBatchElementInfo(_ rootEntity: Entity) {
+        components.set(PolySpatialComponents.StaticBatchElementInfo(rootEntity))
 
-        let rootEntity = StaticBatchManager.instance.getStaticBatchRootEntity(rootId)!
         var staticBatchRootInfo = rootEntity.components[PolySpatialComponents.StaticBatchRootInfo.self] as
             PolySpatialComponents.StaticBatchRootInfo?
         if staticBatchRootInfo == nil {
@@ -781,7 +809,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
         staticBatchRootInfo!.elements.insert(self)
 
-        StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(rootId)
+        StaticBatchManager.instance.dirtyStaticBatchRoots.insert(rootEntity)
     }
 
     func clearStaticBatchElementInfo() {
@@ -791,8 +819,8 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
         components.remove(PolySpatialComponents.StaticBatchElementInfo.self)
 
-        guard let rootEntity = StaticBatchManager.instance.getStaticBatchRootEntity(staticBatchElementInfo.rootId),
-            let staticBatchRootInfo = rootEntity.components[PolySpatialComponents.StaticBatchRootInfo.self] as
+        let rootEntity = staticBatchElementInfo.root
+        guard let staticBatchRootInfo = rootEntity.components[PolySpatialComponents.StaticBatchRootInfo.self] as
                 PolySpatialComponents.StaticBatchRootInfo? else {
             return
         }
@@ -802,22 +830,21 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
             staticBatchRootInfo.clearContents()
             staticBatchRootInfo.entity.removeFromParent()
             rootEntity.components.remove(PolySpatialComponents.StaticBatchRootInfo.self)
-            StaticBatchManager.instance.dirtyStaticBatchRootIds.remove(staticBatchElementInfo.rootId)
+            StaticBatchManager.instance.dirtyStaticBatchRoots.remove(rootEntity)
 
         } else {
-            StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(staticBatchElementInfo.rootId)
+            StaticBatchManager.instance.dirtyStaticBatchRoots.insert(rootEntity)
         }
     }
 
     func setRendererSortingGroup(
-        _ sortGroupEntityId: PolySpatialInstanceID,
+        _ sortGroupEntity: PolySpatialEntity,
         _ sortGroup: ModelSortGroup,
         _ sortOrder: Int32,
         _ appliesToDescendants: Bool,
         _ isAncestor: Bool) {
 
         if let info = components[PolySpatialComponents.ModelSortGroupInfo.self], info.sortGroupComponentOverride != nil {
-            let sortGroupEntity = PolySpatialRealityKit.instance.GetEntity(sortGroupEntityId)
             PolySpatialRealityKit.instance.LogWarning(
                 "\(self.name) is either already a member of a different sort group or has been referenced " +
                 "twice in the same sorting group - membership to the custom sort group defined on " +
@@ -826,7 +853,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         }
 
         setModelSortGroupOverride(
-            .init(group: sortGroup, order: sortOrder), sortGroupEntityId, appliesToDescendants, isAncestor)
+            .init(group: sortGroup, order: sortOrder), sortGroupEntity, appliesToDescendants, isAncestor)
     }
 
     func clearRendererSortingGroup() {
@@ -841,27 +868,27 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
 
     func setModelSortGroupOverride(
         _ component: ModelSortGroupComponent?,
-        _ sortGroupEntityId: PolySpatialInstanceID = PolySpatialInstanceID.none,
+        _ sortGroupEntity: PolySpatialEntity? = nil,
         _ appliesToDescendants: Bool = false,
         _ isAncestor: Bool = false) {
 
         var info = components[PolySpatialComponents.ModelSortGroupInfo.self] ?? .init()
 
         // Remove from the old sort group set, if any.
-        if info.overrideSortGroupEntityId.isValid {
-            PolySpatialRealityKit.instance.customSortGroup[info.overrideSortGroupEntityId, default: []].remove(unityId)
-            if PolySpatialRealityKit.instance.customSortGroup[info.overrideSortGroupEntityId]!.isEmpty {
-                PolySpatialRealityKit.instance.customSortGroup.removeValue(forKey: info.overrideSortGroupEntityId)
+        if let oldSortGroupEntity = info.overrideSortGroupEntity {
+            PolySpatialRealityKit.instance.customSortGroup[oldSortGroupEntity, default: []].remove(self)
+            if PolySpatialRealityKit.instance.customSortGroup[oldSortGroupEntity]!.isEmpty {
+                PolySpatialRealityKit.instance.customSortGroup.removeValue(forKey: oldSortGroupEntity)
             }
         }
 
         // And add to the new, if any.
-        if sortGroupEntityId.isValid {
-            PolySpatialRealityKit.instance.customSortGroup[sortGroupEntityId, default: []].insert(unityId)
+        if let sortGroupEntity {
+            PolySpatialRealityKit.instance.customSortGroup[sortGroupEntity, default: []].insert(self)
         }
 
         info.sortGroupComponentOverride = component
-        info.overrideSortGroupEntityId = sortGroupEntityId
+        info.overrideSortGroupEntity = sortGroupEntity
         info.overrideAppliesToDescendants = appliesToDescendants
         info.overrideIsAncestor = isAncestor
         setModelSortGroupInfo(info)
@@ -923,7 +950,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         if let staticBatchElementInfo = components[PolySpatialComponents.StaticBatchElementInfo.self] as
                 PolySpatialComponents.StaticBatchElementInfo? {
             // Request a static batch root update.  The update will merge the elements' synchronized components.
-            StaticBatchManager.instance.dirtyStaticBatchRootIds.insert(staticBatchElementInfo.rootId)
+            StaticBatchManager.instance.dirtyStaticBatchRoots.insert(staticBatchElementInfo.root)
         }
     }
 
@@ -953,7 +980,7 @@ class PolySpatialEntity: Entity, HasModel, TextureObserver {
         castShadows = castShadows && instance.castShadows
 
         if instance.hasVolumeToWorldTextureProperty,
-                let volume = PolySpatialRealityKit.instance.tryGetVolume(unityId) {
+                let volume = viewSubgraph.volume {
             try! shaderGraphMaterial.setParameter(
                 handle: ShaderManager.kVolumeToWorldTextureHandle,
                 value: .textureResource(volume.volumeToWorldTextureResource))

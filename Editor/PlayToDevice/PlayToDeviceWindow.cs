@@ -286,7 +286,7 @@ namespace UnityEditor.PolySpatial.PlayToDevice
             else
             {
                 m_MismatchedVersionsHelpBox.text = string.Format(k_MismatchedVersionHelpBoxTextFormat, m_MismatchedVersionNames,
-                    PolySpatialSettings.Instance.PackageVersion, ((long)PolySpatialMagicCookie.Value).ToString().Substring(0,5));
+                    PolySpatialSettings.Instance.PackageVersion, PolySpatialMagicCookieUtils.LocalDisplayPrefix);
                 m_MismatchedVersionsHelpBox.style.display = DisplayStyle.Flex;
             }
 

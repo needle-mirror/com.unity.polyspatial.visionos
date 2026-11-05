@@ -485,6 +485,21 @@ class RealityKitStateVerifier {
         return results
     }
 
+    // The LowLevelTexture applyDirtyRegions (and the native-texture path) publishes for the asset backing this
+    // resource, if any -- what is actually on screen, including the lower mips regenerated into it. Its own storage is
+    // not CPU-readable, so verifyMipmapLevelsState blits read() into a shared copy rather than reading it directly.
+    static func dirtyRegionLowLevelTexture(for texture: TextureResource) -> LowLevelTexture? {
+        // Match by == (shared resource), not === (handle identity): RealityKit hands out distinct TextureResource
+        // handles for the asset, the material, and the ModelComponent, so the resource read off the live entity is
+        // never the same instance the asset holds -- but == compares the underlying resource, which is shared.
+        for asset in PolySpatialRealityKit.instance.textureAssets.values {
+            if asset.texture.resource == texture {
+                return asset.lowLevelTexture
+            }
+        }
+        return nil
+    }
+
     static func verifyMipmapLevelsState(_ texture: TextureResource, _ expectedState: Any, _ path: String) -> String {
         // For simplicity's sake, we only support RGBA32 for now.
         let bytesPerPixel: Int
@@ -495,7 +510,12 @@ class RealityKitStateVerifier {
                 return "\(path) has unsupported pixel format \(texture.pixelFormat)"
         }
 
-        // Copy to an MTLTexture with the same type/format/dimensions/etc.
+        // Copy to an MTLTexture with the same type/format/dimensions/etc. Neither the device nor the allocation is
+        // force-unwrapped: this verifier runs inside the player it is verifying, so a trap here costs every other
+        // assertion in the run, not just this one.
+        guard let device = PolySpatialRealityKit.instance.mtlDevice else {
+            return "\(path) could not be read back: no Metal device"
+        }
         let descriptor = MTLTextureDescriptor()
         descriptor.textureType = texture.textureType
         descriptor.pixelFormat = texture.pixelFormat
@@ -504,16 +524,38 @@ class RealityKitStateVerifier {
         descriptor.depth = texture.depth
         descriptor.arrayLength = texture.arrayLength
         descriptor.mipmapLevelCount = texture.mipmapLevelCount
-        // Explicit usage flags required for recent simulators.
+        // Explicit usage flags required for recent simulators; shared so getBytes below reads it on the CPU.
         descriptor.usage = [.shaderRead, .shaderWrite, .renderTarget]
         descriptor.storageMode = .shared
-        guard let copy = PolySpatialRealityKit.instance.mtlDevice!.makeTexture(descriptor: descriptor) else {
-            return "\(path) could not allocate a readback texture"
+        guard let copy = device.makeTexture(descriptor: descriptor) else {
+            return "\(path) could not be read back: no texture for \(texture.pixelFormat) " +
+                "\(texture.width)x\(texture.height)x\(texture.depth)"
         }
+
+        // copy(to:) throws CopyError.textureCopyFailed for a resource backed by a LowLevelTexture, which is what the
+        // dirty-region apply path (and the native-texture path) publishes. Read that LowLevelTexture directly and blit
+        // it into the CPU-readable copy: its own storage is not CPU-readable, so a blit + waitUntilCompleted is the
+        // only way to see the published pixels -- the bytes actually on screen, including the mips regenerated into it.
+        // Report a failed match rather than trapping: this verifier runs inside the player it verifies, so a trap costs
+        // every other assertion in the run.
+        let source: MTLTexture
         do {
             try texture.copy(to: copy)
+            source = copy
         } catch {
-            return "\(path) texture copy(to:) failed: \(error)"
+            guard let lowLevelTexture = dirtyRegionLowLevelTexture(for: texture) else {
+                return "\(path) could not be read back: \(error)"
+            }
+            guard let commandBuffer = PolySpatialRealityKit.instance.mtlCommandQueue?.makeCommandBuffer(),
+                let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
+                return "\(path) could not be read back after \(error): no blit command encoder"
+            }
+            blitEncoder.copy(from: lowLevelTexture.read(), to: copy)
+            blitEncoder.endEncoding()
+            commandBuffer.commit()
+            // getBytes below reads on the CPU, so the blit has to have landed first.
+            commandBuffer.waitUntilCompleted()
+            source = copy
         }
 
         // Get that texture's contents as Data.
@@ -525,9 +567,13 @@ class RealityKitStateVerifier {
                     let bytesPerRow = width * bytesPerPixel
                     var data = Data(count: height * bytesPerRow)
                     data.withUnsafeMutableBytes {
-                        copy.getBytes(
-                            $0.baseAddress!, bytesPerRow: bytesPerRow,
-                            from: MTLRegionMake2D(0, 0, width, height), mipmapLevel: mipmapLevel)
+                        // The four-parameter getBytes does not honour mipmapLevel here: every level comes back as
+                        // level 0, so each level was compared against level 0's contents. Verified on a texture
+                        // written level-by-level with distinct fills -- this overload reads them correctly, the
+                        // short one returns the base level four times. The cube path below already uses this form.
+                        source.getBytes(
+                            $0.baseAddress!, bytesPerRow: bytesPerRow, bytesPerImage: 0,
+                            from: MTLRegionMake2D(0, 0, width, height), mipmapLevel: mipmapLevel, slice: 0)
                     }
                     return data
                 }
@@ -542,7 +588,7 @@ class RealityKitStateVerifier {
                     return (0..<6).map { slice in
                         var data = Data(count: bytesPerImage)
                         data.withUnsafeMutableBytes {
-                            copy.getBytes(
+                            source.getBytes(
                                 $0.baseAddress!, bytesPerRow: bytesPerRow, bytesPerImage: bytesPerImage,
                                 from: MTLRegionMake2D(0, 0, width, height), mipmapLevel: mipmapLevel, slice: slice)
                         }

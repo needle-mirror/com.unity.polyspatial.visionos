@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 For general changes to PolySpatial, refer to the [PolySpatial Changelog](https://docs.unity3d.com/Packages/com.unity.polyspatial@latest?subfolder=/changelog/CHANGELOG.html).
 
-## [3.4.0] - 2026-11-05
+## [3.4.1] - 2026-11-16
 
 ### Changed
 - Recording & Playback documentation now points at the `com.unity.polyspatial.record` package, which the feature moved to.
